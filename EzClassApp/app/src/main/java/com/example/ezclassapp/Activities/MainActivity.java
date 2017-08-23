@@ -46,13 +46,15 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.main_menu,menu);
+
+        // the search bar for searching classes, this will be very important
         final MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         EditText searchEditText = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
         searchEditText.setTextColor(getResources().getColor(R.color.material_white));
         searchEditText.setHintTextColor(getResources().getColor(R.color.material_white));
-        //searchView.setOnQueryTextListener(this);
-
+        searchEditText.setHint(R.string.searchbar_hint);
+        searchEditText.setSingleLine();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -77,8 +79,6 @@ public class MainActivity extends AppCompatActivity {
         if(item.getItemId() == R.id.main_logout_btn) {
             FirebaseAuth.getInstance().signOut();
             sendToStart();
-        } else if (item.getItemId() == R.id.action_search) {
-            Log.d("clicked action search","manage to click action search");
         }
         return true;
     }
