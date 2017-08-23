@@ -13,13 +13,16 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import java.util.ArrayList;
+
 import com.example.ezclassapp.Models.WonderModel;
 import com.example.ezclassapp.R;
 
@@ -28,8 +31,8 @@ public class CardFragment extends Fragment {
 
     ArrayList<WonderModel> listitems = new ArrayList<>();
     RecyclerView MyRecyclerView;
-    String Wonders[] = {"Chichen Itza","Christ the Redeemer","Great Wall of China","Machu Picchu","Petra","Taj Mahal","Colosseum"};
-    int  Images[] = {R.drawable.chichen_itza,R.drawable.christ_the_redeemer,R.drawable.great_wall_of_china,R.drawable.machu_picchu,R.drawable.petra,R.drawable.taj_mahal,R.drawable.colosseum};
+    String Wonders[] = {"Chichen Itza", "Christ the Redeemer", "Great Wall of China", "Machu Picchu", "Petra", "Taj Mahal", "Colosseum"};
+    int Images[] = {R.drawable.chichen_itza, R.drawable.christ_the_redeemer, R.drawable.great_wall_of_china, R.drawable.machu_picchu, R.drawable.petra, R.drawable.taj_mahal, R.drawable.colosseum};
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,7 +72,7 @@ public class CardFragment extends Fragment {
         }
 
         @Override
-        public MyViewHolder onCreateViewHolder(ViewGroup parent,int viewType) {
+        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             // create a new view
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.recycle_items, parent, false);
@@ -93,7 +96,7 @@ public class CardFragment extends Fragment {
         }
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public TextView titleTextView;
         public ImageView coverImageView;
@@ -110,19 +113,19 @@ public class CardFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
 
-                    int id = (int)likeImageView.getTag();
-                    if( id == R.drawable.ic_like){
+                    int id = (int) likeImageView.getTag();
+                    if (id == R.drawable.ic_like) {
 
                         likeImageView.setTag(R.drawable.ic_liked);
                         likeImageView.setImageResource(R.drawable.ic_liked);
 
-                        Toast.makeText(getActivity(),titleTextView.getText()+" added to favourites",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), titleTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
 
-                    }else{
+                    } else {
 
                         likeImageView.setTag(R.drawable.ic_like);
                         likeImageView.setImageResource(R.drawable.ic_like);
-                        Toast.makeText(getActivity(),titleTextView.getText()+" removed from favourites",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), titleTextView.getText() + " removed from favourites", Toast.LENGTH_SHORT).show();
 
 
                     }
@@ -136,26 +139,37 @@ public class CardFragment extends Fragment {
                 public void onClick(View v) {
                     Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
                             "://" + getResources().getResourcePackageName(coverImageView.getId())
-                            + '/' + "drawable" + '/' + getResources().getResourceEntryName((int)coverImageView.getTag()));
+                            + '/' + "drawable" + '/' + getResources().getResourceEntryName((int) coverImageView.getTag()));
 
 
                     Intent shareIntent = new Intent();
                     shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM,imageUri);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
                     shareIntent.setType("image/jpeg");
                     startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));
 
 
-
                 }
             });
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            /*
+                TODO should launch to a more specific activity LOL
+            */
+            Toast.makeText(getActivity(),"u click " + titleTextView.getText().toString(),Toast.LENGTH_SHORT).show();
+            Log.d("manage to click","yes u are clicking for the title " +  titleTextView.getText().toString());
+//            Intent intent = CrimePagerActivity.newIntent(getActivity(),mCrime.getId());
+//            startActivity(intent);
         }
     }
 
     public void initializeList() {
         listitems.clear();
 
-        for(int i =0;i<7;i++) {
+        for (int i = 0; i < 7; i++) {
 
 
             WonderModel item = new WonderModel();

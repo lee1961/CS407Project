@@ -67,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
         searchEditText.setHintTextColor(getResources().getColor(R.color.material_white));
         searchEditText.setHint(R.string.searchbar_hint);
         searchEditText.setSingleLine();
+
+
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -75,6 +78,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                CardFragment fragment = (CardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+                if (fragment != null) {
+                    Log.d("yeah yeah", "Yeah");
+                }
                 // whenever the you type something into the search Bar
                 Log.d("clicked action search","changing text");
                 return true;
