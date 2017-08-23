@@ -3,4 +3,5 @@
     <item name="visible" type="id"/>
     <item name="masked" type="id"/>
     <string name="searchbar_hint">Type to search for classes...</string>
+    <string name="send_to">Send to?</string>
 </resources>
