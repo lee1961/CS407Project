@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary"
+                tools:context="com.example.ezclassapp.StartActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="55dp"
+        android:text="Welcome to EZclass"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        android:layout_above="@+id/start_login_button"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/start_reg_button"
+        android:layout_width="192dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="109dp"
+        android:text="NEED A NEW ACCOUNT?"
+        android:textColor="@color/colorPrimary"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/start_login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ALREADY HAVE ACCOUNT"
+        android:textColor="@android:color/white"
+        app:backgroundTint="@color/colorAccent"
+        tools:textSize="14sp"
+        android:layout_above="@+id/start_reg_button"
+        android:layout_alignStart="@+id/start_reg_button"
+        android:layout_marginBottom="25dp" />
+</RelativeLayout>
