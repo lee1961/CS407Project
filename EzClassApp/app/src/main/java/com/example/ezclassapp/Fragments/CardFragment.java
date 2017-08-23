@@ -110,7 +110,6 @@ public class CardFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
 
-
                     int id = (int)likeImageView.getTag();
                     if( id == R.drawable.ic_like){
 
@@ -132,16 +131,9 @@ public class CardFragment extends Fragment {
             });
 
 
-
             shareImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-
-
-
-
-
                     Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
                             "://" + getResources().getResourcePackageName(coverImageView.getId())
                             + '/' + "drawable" + '/' + getResources().getResourceEntryName((int)coverImageView.getTag()));
@@ -157,16 +149,13 @@ public class CardFragment extends Fragment {
 
                 }
             });
-
-
-
         }
     }
 
     public void initializeList() {
         listitems.clear();
 
-        for(int i =0;i<7;i++){
+        for(int i =0;i<7;i++) {
 
 
             WonderModel item = new WonderModel();
@@ -177,9 +166,5 @@ public class CardFragment extends Fragment {
             listitems.add(item);
 
         }
-
-
-
-
     }
 }
