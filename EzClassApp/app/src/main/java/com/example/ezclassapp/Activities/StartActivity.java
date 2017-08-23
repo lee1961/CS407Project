@@ -1,10 +1,12 @@
-package com.example.ezclassapp;
+package com.example.ezclassapp.Activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
+import com.example.ezclassapp.R;
 
 public class StartActivity extends AppCompatActivity {
     private Button mRegBtn;

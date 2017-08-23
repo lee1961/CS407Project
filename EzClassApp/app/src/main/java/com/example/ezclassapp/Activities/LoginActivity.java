@@ -1,4 +1,4 @@
-package com.example.ezclassapp;
+package com.example.ezclassapp.Activities;
 
 
 import android.app.ProgressDialog;
@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.ezclassapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
