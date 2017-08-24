@@ -1,6 +1,7 @@
 package com.example.ezclassapp.Activities;
 
 import android.content.Intent;
+
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.provider.BaseColumns;
@@ -20,18 +21,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
+
 import com.example.ezclassapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
 import com.example.ezclassapp.Models.User;
 import com.example.ezclassapp.Fragments.CardFragment;
 
 import java.util.ArrayList;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private Toolbar mToolbar;
+
     private static ArrayList<String> SUGGESTIONS;
     private SimpleCursorAdapter mAdapter;
     private SearchView searchView;
@@ -44,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mAuth = FirebaseAuth.getInstance();
+
 
         mToolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
         setSupportActionBar(mToolbar);
@@ -196,10 +202,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
-        if (item.getItemId() == R.id.main_logout_btn) {
+        if(item.getItemId() == R.id.main_logout_btn) {
             FirebaseAuth.getInstance().signOut();
             sendToStart();
         }
