@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 //        Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
 
 
-        final String[] from = new String[]{"cityName"};
+        final String[] from = new String[]{"className"};
         SUGGESTIONS = new ArrayList<>();
         /*
             Hardcoded populating adapters
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
     private void populateAdapter(String query) {
 
 
-        final MatrixCursor c = new MatrixCursor(new String[]{BaseColumns._ID, "cityName"});
+        final MatrixCursor c = new MatrixCursor(new String[]{BaseColumns._ID, "className"});
         for (int i = 0; i < SUGGESTIONS.size(); i++) {
             if (SUGGESTIONS.get(i).toLowerCase().startsWith(query.toLowerCase()))
                 c.addRow(new Object[]{i, SUGGESTIONS.get(i)});
