@@ -14,14 +14,23 @@ public class User {
         this.name = name;
         this.age = age;
     }
-
-    public List<User> getListUsers() {
+    public String getName() {
+        return this.name;
+    }
+    public int getAge() {
+        return this.age;
+    }
+    public static ArrayList<User> getListUsers() {
         ArrayList<User> list = new ArrayList<>();
         list.add(new User("victor",1));
-        list.add(new User("abi",2));
-        list.add(new User("gg",3));
-        list.add(new User("hehe",4));
+        list.add(new User("abiii",2));
+        list.add(new User("ggggg",3));
+        list.add(new User("heheeee",4));
         list.add(new User("heyhey",5));
         return list;
+    }
+    @Override
+    public String toString() {
+        return this.name;
     }
 }

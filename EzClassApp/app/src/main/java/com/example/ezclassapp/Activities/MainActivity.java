@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 //        Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
 
 
-        final String[] from = new String[]{"cityName"};
+        final String[] from = new String[]{"cityName","age"};
         SUGGESTIONS = new ArrayList<>();
         /*
             Hardcoded populating adapters
@@ -109,10 +109,11 @@ public class MainActivity extends AppCompatActivity {
     private void populateAdapter(String query) {
 
 
-        final MatrixCursor c = new MatrixCursor(new String[]{BaseColumns._ID, "cityName"});
-        for (int i = 0; i < SUGGESTIONS.size(); i++) {
-            if (SUGGESTIONS.get(i).toLowerCase().startsWith(query.toLowerCase()))
-                c.addRow(new Object[]{i, SUGGESTIONS.get(i)});
+        final MatrixCursor c = new MatrixCursor(new String[]{BaseColumns._ID, "cityName","age"});
+        ArrayList<User> users = User.getListUsers();
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getName().toLowerCase().startsWith(query.toLowerCase()))
+                c.addRow(new Object[]{i, users.get(i),users.get(i).getAge()});
         }
         mAdapter.changeCursor(c);
     }
@@ -161,8 +162,8 @@ public class MainActivity extends AppCompatActivity {
                 // Your code here
                 Cursor cursor = searchView.getSuggestionsAdapter().getCursor();
                 cursor.moveToPosition(position);
-                String suggestion = cursor.getString(1);
-                Log.d("debug", "u click suggestion " + suggestion);
+                String suggestion = cursor.getString(2);
+                Log.d("debug", "u click age " + suggestion);
                 searchEditText.setText(suggestion);
                 searchEditText.setSelection(suggestion.length());
                 searchView.setQuery(suggestion, true);//setting suggestion
