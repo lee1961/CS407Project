@@ -28,16 +28,33 @@ import com.example.ezclassapp.R;
 
 
 public class CardFragment extends Fragment {
-
+    ArrayList<WonderModel> permanentItems = new ArrayList<>();
     ArrayList<WonderModel> listitems = new ArrayList<>();
     RecyclerView MyRecyclerView;
+    private MyAdapter mAdapter;
     String Wonders[] = {"Chichen Itza", "Christ the Redeemer", "Great Wall of China", "Machu Picchu", "Petra", "Taj Mahal", "Colosseum"};
     int Images[] = {R.drawable.chichen_itza, R.drawable.christ_the_redeemer, R.drawable.great_wall_of_china, R.drawable.machu_picchu, R.drawable.petra, R.drawable.taj_mahal, R.drawable.colosseum};
 
+    public void clearItems() {
+        listitems.clear();
+        mAdapter.notifyDataSetChanged();
+    }
+    public void onNewQuery(String text) {
+        listitems.clear();
+        for (WonderModel wonderModel : permanentItems) {
+            if(wonderModel.getCardName().contains(text)) {
+                listitems.add(wonderModel);
+                Log.d("matched stuff","the matching wonder name is " + wonderModel.getCardName());
+            }
+        }
+        mAdapter.notifyDataSetChanged();
+
+    }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initializeList();
+        /* TODO should listen to firebase data changed here*/
+        initializeList(); // initialise all this hardcoded list but should listen from firebase
         getActivity().setTitle("7 Wonders of the Modern World");
     }
 
@@ -51,7 +68,11 @@ public class CardFragment extends Fragment {
         LinearLayoutManager MyLayoutManager = new LinearLayoutManager(getActivity());
         MyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         if (listitems.size() > 0 & MyRecyclerView != null) {
-            MyRecyclerView.setAdapter(new MyAdapter(listitems));
+            //MyRecyclerView.setAdapter(new MyAdapter(listitems));
+            MyAdapter adapter = new MyAdapter((listitems));
+            this.mAdapter = adapter;
+            MyRecyclerView.setAdapter(this.mAdapter);
+            this.mAdapter.notifyDataSetChanged();
         }
         MyRecyclerView.setLayoutManager(MyLayoutManager);
 
@@ -173,12 +194,12 @@ public class CardFragment extends Fragment {
 
 
             WonderModel item = new WonderModel();
-            item.setCardName(Wonders[i]);
+            item.setCardName(Wonders[i].toLowerCase());
             item.setImageResourceId(Images[i]);
             item.setIsfav(0);
             item.setIsturned(0);
             listitems.add(item);
-
+            permanentItems.add(item);
         }
     }
 }

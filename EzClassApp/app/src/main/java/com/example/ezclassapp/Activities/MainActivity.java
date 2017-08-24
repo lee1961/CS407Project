@@ -3,9 +3,11 @@ package com.example.ezclassapp.Activities;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -79,8 +81,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 CardFragment fragment = (CardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-                if (fragment != null) {
-                    Log.d("yeah yeah", "Yeah");
+                if (fragment != null && fragment.isVisible() && newText.length() > 2) {
+                    Log.d("yeah yeah", "someone has input some text into the query");
+//                    CardFragment newFragment = new CardFragment();
+//                    //Bundle args = new Bundle();
+//                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//                    transaction.replace(R.id.fragmentContainer, newFragment);
+//                    transaction.setTransition(FragmentTransaction.TRANSIT_ENTER_MASK);
+                    //transaction.addToBackStack(null);
+        //            transaction.commit();
+                    RecyclerView myRecyclerView = (RecyclerView) findViewById(R.id.cardView);
+                    myRecyclerView.scrollToPosition(0);
+
+                    fragment.onNewQuery(newText);
+
+                } else if (newText.length() < 2) {
+
                 }
                 // whenever the you type something into the search Bar
                 Log.d("clicked action search","changing text");
