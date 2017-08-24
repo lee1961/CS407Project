@@ -42,7 +42,7 @@ public class CardFragment extends Fragment {
     public void onNewQuery(String text) {
         listitems.clear();
         for (WonderModel wonderModel : permanentItems) {
-            if(wonderModel.getCardName().contains(text)) {
+            if(wonderModel.getCardName().contains(text) || wonderModel.getCardName().toLowerCase().contains(text)) {
                 listitems.add(wonderModel);
                 Log.d("matched stuff","the matching wonder name is " + wonderModel.getCardName());
             }
@@ -194,7 +194,7 @@ public class CardFragment extends Fragment {
 
 
             WonderModel item = new WonderModel();
-            item.setCardName(Wonders[i].toLowerCase());
+            item.setCardName(Wonders[i]);
             item.setImageResourceId(Images[i]);
             item.setIsfav(0);
             item.setIsturned(0);

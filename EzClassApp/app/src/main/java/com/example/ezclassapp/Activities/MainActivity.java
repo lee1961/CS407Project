@@ -1,10 +1,15 @@
 package com.example.ezclassapp.Activities;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.provider.BaseColumns;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -20,10 +25,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.example.ezclassapp.Fragments.CardFragment;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private Toolbar mToolbar;
+    private static ArrayList<String> SUGGESTIONS;
+    private SimpleCursorAdapter mAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +47,24 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("EZclass");
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
+
+
+        final String[] from = new String[] {"cityName"};
+        SUGGESTIONS = new ArrayList<>();
+        /*
+            Hardcoded populating adapters
+         */
+        String [] arr = {"Chichen Itza", "Christ the Redeemer", "Great Wall of China", "Machu Picchu", "Petra", "Taj Mahal", "Colosseum"};
+        for(String str : arr) {
+            SUGGESTIONS.add(str);
+        }
+        final int[] to = new int[] {android.R.id.text1};
+        mAdapter = new SimpleCursorAdapter(getApplicationContext(),
+                android.R.layout.simple_list_item_1,
+                null,
+                from,
+                to,
+                CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
         if (fragment == null) {
             fragment = new CardFragment();
@@ -64,13 +92,34 @@ public class MainActivity extends AppCompatActivity {
         // the search bar for searching classes, this will be very important
         final MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        EditText searchEditText = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        final EditText searchEditText = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
         searchEditText.setTextColor(getResources().getColor(R.color.material_white));
         searchEditText.setHintTextColor(getResources().getColor(R.color.material_white));
         searchEditText.setHint(R.string.searchbar_hint);
         searchEditText.setSingleLine();
 
+        searchView.setSuggestionsAdapter(mAdapter);
+        searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+            @Override
+            public boolean onSuggestionClick(int position) {
+                // Your code here
+                Cursor cursor= searchView.getSuggestionsAdapter().getCursor();
+                cursor.moveToPosition(position);
+                String suggestion =cursor.getString(1);
+                Log.d("debug","u click suggestion "+ suggestion);
+                searchEditText.setText(suggestion);
+                searchEditText.setSelection(suggestion.length());
+                searchView.setQuery(suggestion,true);//setting suggestion
+                updateCardFragment(suggestion);
+                return true;
+            }
 
+            @Override
+            public boolean onSuggestionSelect(int position) {
+                // Your code here
+                return true;
+            }
+        });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -80,32 +129,48 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                CardFragment fragment = (CardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-                if (fragment != null && fragment.isVisible() && newText.length() > 2) {
-                    Log.d("yeah yeah", "someone has input some text into the query");
-//                    CardFragment newFragment = new CardFragment();
-//                    //Bundle args = new Bundle();
-//                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//                    transaction.replace(R.id.fragmentContainer, newFragment);
-//                    transaction.setTransition(FragmentTransaction.TRANSIT_ENTER_MASK);
-                    //transaction.addToBackStack(null);
-        //            transaction.commit();
-                    RecyclerView myRecyclerView = (RecyclerView) findViewById(R.id.cardView);
-                    myRecyclerView.scrollToPosition(0);
-
-                    fragment.onNewQuery(newText);
-
-                } else if (newText.length() < 2) {
-
-                }
+                populateAdapter(newText);
+                updateCardFragment(newText);
                 // whenever the you type something into the search Bar
                 Log.d("clicked action search","changing text");
                 return true;
             }
         });
+
         return true;
     }
 
+    // You must implements your logic to get data using firebase
+    /*
+            TODO: This populates the adapter for query suggestion
+     */
+    private void populateAdapter(String query) {
+
+
+        final MatrixCursor c = new MatrixCursor(new String[]{ BaseColumns._ID, "cityName" });
+        for (int i=0; i< SUGGESTIONS.size(); i++) {
+            if (SUGGESTIONS.get(i).toLowerCase().startsWith(query.toLowerCase()))
+                c.addRow(new Object[] {i, SUGGESTIONS.get(i)});
+        }
+        mAdapter.changeCursor(c);
+    }
+
+    private void updateCardFragment(String query) {
+        CardFragment fragment = (CardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        Log.d("debug","query is " + query);
+        if (fragment != null && fragment.isVisible() && query.length() > 2) {
+            Log.d("yeah yeah", "someone has input some text into the query");
+            RecyclerView myRecyclerView = (RecyclerView) findViewById(R.id.cardView);
+            myRecyclerView.scrollToPosition(0);
+            fragment.onNewQuery(query);
+
+        } else if (query.length() < 2) {
+                /*
+                Dont do anything? i am not sure
+                 */
+        }
+
+    }
 
 
     @Override
