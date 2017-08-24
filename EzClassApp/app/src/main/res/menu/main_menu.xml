@@ -4,11 +4,19 @@
 
     <item
         android:id="@+id/main_settings_btn"
-        android:title="Account Settings" />
+        android:title="Need to add" />
     <item
         android:id="@+id/main_all_btn"
-        android:title="All Users" />
+        android:title="Need to add" />
     <item
         android:id="@+id/main_logout_btn"
         android:title="Log out" />
+
+    <item
+        android:id="@+id/action_search"
+        android:title="Search....."
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        android:icon="@drawable/ic_search_black_24dp"
+        app:showAsAction="always" />
+
 </menu>
