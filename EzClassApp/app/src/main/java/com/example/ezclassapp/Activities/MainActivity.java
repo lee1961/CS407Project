@@ -23,6 +23,7 @@ import android.widget.EditText;
 import com.example.ezclassapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.example.ezclassapp.Models.User;
 import com.example.ezclassapp.Fragments.CardFragment;
 
 import java.util.ArrayList;
