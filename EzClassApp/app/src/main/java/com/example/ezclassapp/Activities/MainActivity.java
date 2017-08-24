@@ -33,7 +33,9 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private static ArrayList<String> SUGGESTIONS;
     private SimpleCursorAdapter mAdapter;
-
+    private SearchView searchView;
+    // hardcoded needs to be removed
+    final String[] arr = {"Chichen Itza", "Christ the Redeemer", "Great Wall of China", "Machu Picchu", "Petra", "Taj Mahal", "Colosseum"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,23 +44,24 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        mToolbar = (Toolbar)findViewById(R.id.main_page_toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("EZclass");
-        FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
+//        FragmentManager fm = getSupportFragmentManager();
+//        Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
 
 
-        final String[] from = new String[] {"cityName"};
+        final String[] from = new String[]{"cityName"};
         SUGGESTIONS = new ArrayList<>();
         /*
             Hardcoded populating adapters
-         */
-        String [] arr = {"Chichen Itza", "Christ the Redeemer", "Great Wall of China", "Machu Picchu", "Petra", "Taj Mahal", "Colosseum"};
-        for(String str : arr) {
+            TODO: should populate with the classes
+        */
+
+        for (String str : arr) {
             SUGGESTIONS.add(str);
         }
-        final int[] to = new int[] {android.R.id.text1};
+        final int[] to = new int[]{android.R.id.text1};
         mAdapter = new SimpleCursorAdapter(getApplicationContext(),
                 android.R.layout.simple_list_item_1,
                 null,
@@ -66,12 +69,12 @@ public class MainActivity extends AppCompatActivity {
                 to,
                 CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
-        if (fragment == null) {
-            fragment = new CardFragment();
-            fm.beginTransaction()
-                    .add(R.id.fragmentContainer, fragment)
-                    .commit();
-        }
+//        if (fragment == null) {
+//            fragment = new CardFragment();
+//            fm.beginTransaction()
+//                    .add(R.id.fragmentContainer, fragment)
+//                    .commit();
+//        }
     }
 
     public void onStart() {
@@ -87,30 +90,82 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.main_menu,menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
 
         // the search bar for searching classes, this will be very important
         final MenuItem searchItem = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        // this basically sets up the search view listeners
+        setUpSearchView();
+
+        return true;
+    }
+
+    // You must implements your logic to get data using firebase
+    /*
+            TODO: This populates the adapter for query suggestion
+     */
+    private void populateAdapter(String query) {
+
+
+        final MatrixCursor c = new MatrixCursor(new String[]{BaseColumns._ID, "cityName"});
+        for (int i = 0; i < SUGGESTIONS.size(); i++) {
+            if (SUGGESTIONS.get(i).toLowerCase().startsWith(query.toLowerCase()))
+                c.addRow(new Object[]{i, SUGGESTIONS.get(i)});
+        }
+        mAdapter.changeCursor(c);
+    }
+
+    private void updateCardFragment(String query) {
+        CardFragment fragment = (CardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        Log.d("debug", "query is " + query);
+        if (fragment != null && fragment.isVisible() && query.length() > 2) {
+            Log.d("yeah yeah", "someone has input some text into the query");
+            RecyclerView myRecyclerView = (RecyclerView) findViewById(R.id.cardView);
+            myRecyclerView.scrollToPosition(0);
+            fragment.onNewQuery(query);
+
+        } else if (fragment == null && query.length() > 2) {
+
+
+            FragmentManager fm = getSupportFragmentManager();
+            fragment = new CardFragment();
+            fm.beginTransaction().add(R.id.fragmentContainer, fragment).commit();
+
+        }
+
+    }
+
+    public void setUpSearchView() {
         final EditText searchEditText = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
         searchEditText.setTextColor(getResources().getColor(R.color.material_white));
         searchEditText.setHintTextColor(getResources().getColor(R.color.material_white));
         searchEditText.setHint(R.string.searchbar_hint);
         searchEditText.setSingleLine();
-
         searchView.setSuggestionsAdapter(mAdapter);
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                CardFragment fragment = (CardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+                if (fragment != null && fragment.isVisible()) {
+                    fragment.clearItems();
+                }
+                Log.d("Debug", "closing the search");
+                return false;
+            }
+        });
         searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
             @Override
             public boolean onSuggestionClick(int position) {
                 // Your code here
-                Cursor cursor= searchView.getSuggestionsAdapter().getCursor();
+                Cursor cursor = searchView.getSuggestionsAdapter().getCursor();
                 cursor.moveToPosition(position);
-                String suggestion =cursor.getString(1);
-                Log.d("debug","u click suggestion "+ suggestion);
+                String suggestion = cursor.getString(1);
+                Log.d("debug", "u click suggestion " + suggestion);
                 searchEditText.setText(suggestion);
                 searchEditText.setSelection(suggestion.length());
-                searchView.setQuery(suggestion,true);//setting suggestion
-                updateCardFragment(suggestion);
+                searchView.setQuery(suggestion, true);//setting suggestion
+                updateCardFragment(suggestion.trim());
                 return true;
             }
 
@@ -132,43 +187,10 @@ public class MainActivity extends AppCompatActivity {
                 populateAdapter(newText);
                 updateCardFragment(newText);
                 // whenever the you type something into the search Bar
-                Log.d("clicked action search","changing text");
+                Log.d("clicked action search", "changing text");
                 return true;
             }
         });
-
-        return true;
-    }
-
-    // You must implements your logic to get data using firebase
-    /*
-            TODO: This populates the adapter for query suggestion
-     */
-    private void populateAdapter(String query) {
-
-
-        final MatrixCursor c = new MatrixCursor(new String[]{ BaseColumns._ID, "cityName" });
-        for (int i=0; i< SUGGESTIONS.size(); i++) {
-            if (SUGGESTIONS.get(i).toLowerCase().startsWith(query.toLowerCase()))
-                c.addRow(new Object[] {i, SUGGESTIONS.get(i)});
-        }
-        mAdapter.changeCursor(c);
-    }
-
-    private void updateCardFragment(String query) {
-        CardFragment fragment = (CardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-        Log.d("debug","query is " + query);
-        if (fragment != null && fragment.isVisible() && query.length() > 2) {
-            Log.d("yeah yeah", "someone has input some text into the query");
-            RecyclerView myRecyclerView = (RecyclerView) findViewById(R.id.cardView);
-            myRecyclerView.scrollToPosition(0);
-            fragment.onNewQuery(query);
-
-        } else if (query.length() < 2) {
-                /*
-                Dont do anything? i am not sure
-                 */
-        }
 
     }
 
@@ -176,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
-        if(item.getItemId() == R.id.main_logout_btn) {
+        if (item.getItemId() == R.id.main_logout_btn) {
             FirebaseAuth.getInstance().signOut();
             sendToStart();
         }
@@ -184,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendToStart() {
-        Intent startIntent = new Intent(MainActivity.this,StartActivity.class);
+        Intent startIntent = new Intent(MainActivity.this, StartActivity.class);
         startActivity(startIntent);
         finish();
     }
