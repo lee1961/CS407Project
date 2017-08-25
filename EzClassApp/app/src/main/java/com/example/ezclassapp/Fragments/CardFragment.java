@@ -24,11 +24,13 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import com.example.ezclassapp.Activities.MainActivity;
 import com.example.ezclassapp.Models.WonderModel;
 import com.example.ezclassapp.R;
 
 
 public class CardFragment extends Fragment {
+    private static final String ARG_PARAM1 = "query";
     ArrayList<WonderModel> permanentItems = new ArrayList<>();
     ArrayList<WonderModel> listitems = new ArrayList<>();
     RecyclerView MyRecyclerView;
@@ -43,6 +45,7 @@ public class CardFragment extends Fragment {
     }
     public void onNewQuery(String text) {
         listitems.clear();
+        text = text.trim();
         for (WonderModel wonderModel : permanentItems) {
             if(wonderModel.getCardName().contains(text) || wonderModel.getCardName().toLowerCase().contains(text)) {
                 listitems.add(wonderModel);
@@ -51,6 +54,22 @@ public class CardFragment extends Fragment {
         }
         mAdapter.notifyDataSetChanged();
 
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @return A new instance of fragment ReviewListFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static CardFragment newInstance(String param1) {
+        final Bundle args = new Bundle();
+        args.putString(ARG_PARAM1,param1);
+        CardFragment fragment = new CardFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -70,7 +89,6 @@ public class CardFragment extends Fragment {
         /* TODO should listen to firebase data changed here*/
         initializeList(); // initialise all this hardcoded list but should listen from firebase
         getActivity().setTitle("7 Wonders of the Modern World");
-
     }
 
     @Override
@@ -90,6 +108,10 @@ public class CardFragment extends Fragment {
             this.mAdapter.notifyDataSetChanged();
         }
         MyRecyclerView.setLayoutManager(MyLayoutManager);
+
+        if(getArguments() != null) {
+            onNewQuery(getArguments().getString(ARG_PARAM1));
+        }
 
         return view;
     }
@@ -209,12 +231,14 @@ public class CardFragment extends Fragment {
         void onCardSelected(String name);
     }
 
+
+    /*
+        TODO: to be removed, just for a dummy objects
+     */
     public void initializeList() {
         listitems.clear();
 
         for (int i = 0; i < 7; i++) {
-
-
             WonderModel item = new WonderModel();
             item.setCardName(Wonders[i]);
             item.setImageResourceId(Images[i]);

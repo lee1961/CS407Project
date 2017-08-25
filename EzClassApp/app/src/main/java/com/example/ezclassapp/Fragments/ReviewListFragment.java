@@ -1,4 +1,4 @@
-package com.example.ezclassapp.Activities;
+package com.example.ezclassapp.Fragments;
 
 
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.ezclassapp.Activities.MainActivity;
 import com.example.ezclassapp.R;
 
 /**
@@ -26,10 +27,6 @@ public class ReviewListFragment extends Fragment {
     private String mParam2;
 
 
-    public ReviewListFragment() {
-        // Required empty public constructor
-    }
-
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -46,13 +43,14 @@ public class ReviewListFragment extends Fragment {
         return fragment;
     }
 
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//        }
-//    }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+        }
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,6 +61,19 @@ public class ReviewListFragment extends Fragment {
         final Bundle args = getArguments();
         nameTextView.setText(args.getString(ARG_PARAM1));
         return view;
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity)getActivity()).getSupportActionBar().hide();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        ((MainActivity)getActivity()).getSupportActionBar().show();
     }
 
 }

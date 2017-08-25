@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.provider.BaseColumns;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -22,11 +20,11 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 
+import com.example.ezclassapp.Fragments.ReviewListFragment;
 import com.example.ezclassapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import com.example.ezclassapp.Models.User;
 import com.example.ezclassapp.Fragments.CardFragment;
 
 import java.util.ArrayList;
@@ -128,20 +126,19 @@ public class MainActivity extends AppCompatActivity implements CardFragment.onCa
     }
 
     private void updateCardFragment(String query) {
-        CardFragment fragment = (CardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        CardFragment cardFragment = (CardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         Log.d("debug", "query is " + query);
-        if (fragment != null && fragment.isVisible() && query.length() > 2) {
+        if (cardFragment != null && cardFragment.isVisible() && query.length() > 2) {
             Log.d("yeah yeah", "someone has input some text into the query");
             RecyclerView myRecyclerView = (RecyclerView) findViewById(R.id.cardView);
             myRecyclerView.scrollToPosition(0);
-            fragment.onNewQuery(query);
+            cardFragment.onNewQuery(query);
 
-        } else if (fragment == null && query.length() > 2) {
-
+        } else if (cardFragment == null && query.length() > 2) {
 
             FragmentManager fm = getSupportFragmentManager();
-            fragment = new CardFragment();
-            fm.beginTransaction().add(R.id.fragmentContainer, fragment).commit();
+            cardFragment = CardFragment.newInstance(query);
+            fm.beginTransaction().add(R.id.fragmentContainer, cardFragment).commit();
 
         }
 
@@ -208,16 +205,15 @@ public class MainActivity extends AppCompatActivity implements CardFragment.onCa
     /*
         When the class is selected
         - Interface is from card Fragment
+        - when the user clicks on the class Card
     */
     @Override
     public void onCardSelected(String name) {
-        final ReviewListFragment detailsFragment =
-                ReviewListFragment.newInstance(name);
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragmentContainer, detailsFragment, "reviewListFragment")
+        final ReviewListFragment detailsFragment = ReviewListFragment.newInstance(name);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, detailsFragment, "reviewListFragment")
                 .addToBackStack(null)
                 .commit();
+
     }
 
 
@@ -236,4 +232,6 @@ public class MainActivity extends AppCompatActivity implements CardFragment.onCa
         startActivity(startIntent);
         finish();
     }
+
+
 }
