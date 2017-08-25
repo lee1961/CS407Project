@@ -20,17 +20,16 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 
+import com.example.ezclassapp.Fragments.ClassesCardFragment;
 import com.example.ezclassapp.Fragments.ReviewListFragment;
 import com.example.ezclassapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import com.example.ezclassapp.Fragments.CardFragment;
-
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity implements CardFragment.onCardSelected {
+public class MainActivity extends AppCompatActivity implements ClassesCardFragment.onCardSelected {
 
 
 
@@ -77,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements CardFragment.onCa
                 CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
 //        if (fragment == null) {
-//            fragment = new CardFragment();
+//            fragment = new ClassesCardFragment();
 //            fm.beginTransaction()
 //                    .add(R.id.fragmentContainer, fragment)
 //                    .commit();
@@ -126,19 +125,19 @@ public class MainActivity extends AppCompatActivity implements CardFragment.onCa
     }
 
     private void updateCardFragment(String query) {
-        CardFragment cardFragment = (CardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        ClassesCardFragment classesCardFragment = (ClassesCardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         Log.d("debug", "query is " + query);
-        if (cardFragment != null && cardFragment.isVisible() && query.length() > 2) {
+        if (classesCardFragment != null && classesCardFragment.isVisible() && query.length() > 2) {
             Log.d("yeah yeah", "someone has input some text into the query");
             RecyclerView myRecyclerView = (RecyclerView) findViewById(R.id.cardView);
             myRecyclerView.scrollToPosition(0);
-            cardFragment.onNewQuery(query);
+            classesCardFragment.onNewQuery(query);
 
-        } else if (cardFragment == null && query.length() > 2) {
+        } else if (classesCardFragment == null && query.length() > 2) {
 
             FragmentManager fm = getSupportFragmentManager();
-            cardFragment = CardFragment.newInstance(query);
-            fm.beginTransaction().add(R.id.fragmentContainer, cardFragment).commit();
+            classesCardFragment = ClassesCardFragment.newInstance(query);
+            fm.beginTransaction().add(R.id.fragmentContainer, classesCardFragment).commit();
 
         }
 
@@ -154,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements CardFragment.onCa
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                CardFragment fragment = (CardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+                ClassesCardFragment fragment = (ClassesCardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
                 if (fragment != null && fragment.isVisible()) {
                     fragment.clearItems();
                 }

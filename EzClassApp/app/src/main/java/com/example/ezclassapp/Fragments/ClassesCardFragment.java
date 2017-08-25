@@ -13,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,12 +23,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import com.example.ezclassapp.Activities.MainActivity;
 import com.example.ezclassapp.Models.WonderModel;
 import com.example.ezclassapp.R;
 
 
-public class CardFragment extends Fragment {
+public class ClassesCardFragment extends Fragment {
     private static final String ARG_PARAM1 = "query";
     ArrayList<WonderModel> permanentItems = new ArrayList<>();
     ArrayList<WonderModel> listitems = new ArrayList<>();
@@ -64,10 +62,10 @@ public class CardFragment extends Fragment {
      * @return A new instance of fragment ReviewListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CardFragment newInstance(String param1) {
+    public static ClassesCardFragment newInstance(String param1) {
         final Bundle args = new Bundle();
         args.putString(ARG_PARAM1,param1);
-        CardFragment fragment = new CardFragment();
+        ClassesCardFragment fragment = new ClassesCardFragment();
         fragment.setArguments(args);
         return fragment;
     }
