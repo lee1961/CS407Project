@@ -32,7 +32,9 @@ import com.example.ezclassapp.Fragments.CardFragment;
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CardFragment.onCardSelected {
+
+
 
     private FirebaseAuth mAuth;
     private Toolbar mToolbar;
@@ -82,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
 //                    .add(R.id.fragmentContainer, fragment)
 //                    .commit();
 //        }
+
     }
 
     public void onStart() {
@@ -107,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
         return true;
     }
+
 
     // You must implements your logic to get data using firebase
     /*
@@ -201,6 +205,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /*
+        When the class is selected
+        - Interface is from card Fragment
+    */
+    @Override
+    public void onCardSelected(String name) {
+        final ReviewListFragment detailsFragment =
+                ReviewListFragment.newInstance(name);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, detailsFragment, "reviewListFragment")
+                .addToBackStack(null)
+                .commit();
+    }
 
 
     @Override

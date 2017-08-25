@@ -5,6 +5,7 @@ package com.example.ezclassapp.Fragments;
  */
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ public class CardFragment extends Fragment {
     ArrayList<WonderModel> listitems = new ArrayList<>();
     RecyclerView MyRecyclerView;
     private MyAdapter mAdapter;
+    private onCardSelected mListener;
     String Wonders[] = {"Chichen Itza", "Christ the Redeemer", "Great Wall of China", "Machu Picchu", "Petra", "Taj Mahal", "Colosseum"};
     int Images[] = {R.drawable.chichen_itza, R.drawable.christ_the_redeemer, R.drawable.great_wall_of_china, R.drawable.machu_picchu, R.drawable.petra, R.drawable.taj_mahal, R.drawable.colosseum};
 
@@ -50,12 +52,25 @@ public class CardFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
 
     }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof onCardSelected) {
+            mListener = (onCardSelected) context;
+        } else {
+            throw new ClassCastException(context.toString() + " must implement onCardSelected.");
+        }
+
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         /* TODO should listen to firebase data changed here*/
         initializeList(); // initialise all this hardcoded list but should listen from firebase
         getActivity().setTitle("7 Wonders of the Modern World");
+
     }
 
     @Override
@@ -84,6 +99,7 @@ public class CardFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
     }
+
 
     public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
         private ArrayList<WonderModel> list;
@@ -175,16 +191,22 @@ public class CardFragment extends Fragment {
             itemView.setOnClickListener(this);
         }
 
+        /*
+                TODO should launch to a more specific activity LOL
+         */
         @Override
         public void onClick(View v) {
-            /*
-                TODO should launch to a more specific activity LOL
-            */
+
             Toast.makeText(getActivity(),"u click " + titleTextView.getText().toString(),Toast.LENGTH_SHORT).show();
             Log.d("manage to click","yes u are clicking for the title " +  titleTextView.getText().toString());
+            mListener.onCardSelected(titleTextView.getText().toString());
 //            Intent intent = CrimePagerActivity.newIntent(getActivity(),mCrime.getId());
 //            startActivity(intent);
         }
+    }
+
+    public interface onCardSelected {
+        void onCardSelected(String name);
     }
 
     public void initializeList() {
