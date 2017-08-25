@@ -210,6 +210,9 @@ public class MainActivity extends AppCompatActivity {
             FirebaseAuth.getInstance().signOut();
             sendToStart();
         }
+        if (item.getItemId() == R.id.main_settings_btn) {
+            sendToSettings();
+        }
         return true;
     }
 
@@ -217,5 +220,10 @@ public class MainActivity extends AppCompatActivity {
         Intent startIntent = new Intent(MainActivity.this, StartActivity.class);
         startActivity(startIntent);
         finish();
+    }
+
+    private void sendToSettings() {
+        Intent settingsIntent = new Intent(MainActivity.this,SettingsActivity.class);
+        startActivity(settingsIntent);
     }
 }

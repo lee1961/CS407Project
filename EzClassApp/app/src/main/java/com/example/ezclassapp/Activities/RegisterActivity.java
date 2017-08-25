@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.ezclassapp.Models.User;
 import com.example.ezclassapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -85,12 +86,13 @@ public class RegisterActivity extends AppCompatActivity {
                     FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
                     String uid = current_user.getUid();
                     mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
-                    HashMap<String,String> userMap = new HashMap<String, String>();
+                    /*HashMap<String,String> userMap = new HashMap<String, String>();
                     userMap.put("name",display_name);
                     userMap.put("major","Computer Science");
                     userMap.put("image","default");
-                    userMap.put("thumb_image","default");
-                    mDatabase.setValue(userMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    userMap.put("thumb_image","default"); */
+                    User newUser = new User(display_name,"Computer Science","default","default");
+                    mDatabase.setValue(newUser).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
