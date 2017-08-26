@@ -96,7 +96,7 @@ public class ClassesCardFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_card, container, false);
+        View view = inflater.inflate(R.layout.fragment_recyclerview_class, container, false);
         MyRecyclerView = (RecyclerView) view.findViewById(R.id.cardView);
         MyRecyclerView.setHasFixedSize(true);
         LinearLayoutManager MyLayoutManager = new LinearLayoutManager(getActivity());
@@ -134,7 +134,7 @@ public class ClassesCardFragment extends Fragment {
         @Override
         public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             // create a new view
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycle_items, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_class, parent, false);
             MyViewHolder holder = new MyViewHolder(view);
             return holder;
         }

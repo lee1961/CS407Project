@@ -1,9 +1,6 @@
 package com.example.ezclassapp.Fragments;
 
 
-import android.content.ContentResolver;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,11 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ezclassapp.Activities.MainActivity;
-import com.example.ezclassapp.Models.WonderModel;
 import com.example.ezclassapp.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -71,12 +66,17 @@ public class ReviewListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_review_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_recyclerview_review, container, false);
         ReviewRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_review);
         ReviewRecyclerView.setHasFixedSize(true);
         LinearLayoutManager MyLayoutManager = new LinearLayoutManager(getActivity());
         MyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        /*
 
+            TODO: need to initialise firebase here
+            -- assuming it gets the classID/key here
+            -- need to use firebase to retrieve all the reviews associated with the classID
+         */
 
 
         if (ReviewRecyclerView != null) {
@@ -115,7 +115,7 @@ public class ReviewListFragment extends Fragment {
             // create a new view
             // each individual item in the card layout
 
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_review, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_review, parent, false);
             MyViewHolder holder = new MyViewHolder(view);
             return holder;
         }
