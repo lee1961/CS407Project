@@ -73,7 +73,7 @@ public class ReviewListFragment extends Fragment {
         MyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         /*
 
-            TODO: need to initialise firebase here
+            TODO: need to initialise firebase database here
             -- assuming it gets the classID/key here
             -- need to use firebase to retrieve all the reviews associated with the classID
          */

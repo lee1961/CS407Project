@@ -101,6 +101,12 @@ public class ClassesCardFragment extends Fragment {
         MyRecyclerView.setHasFixedSize(true);
         LinearLayoutManager MyLayoutManager = new LinearLayoutManager(getActivity());
         MyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
+         /*
+            TODO: need to initialise firebase database here
+            -- need to use firebase to retrieve all the class according to the text input into the query
+         */
+
         if (listitems.size() > 0 & MyRecyclerView != null) {
             //MyRecyclerView.setAdapter(new MyAdapter(listitems));
             MyAdapter adapter = new MyAdapter((listitems));
