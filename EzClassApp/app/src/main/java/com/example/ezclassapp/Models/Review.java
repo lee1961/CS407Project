@@ -25,7 +25,7 @@ public class Review {
 
     }
 
-    public String getID() {
+    public String getId() {
         return ID;
     }
 

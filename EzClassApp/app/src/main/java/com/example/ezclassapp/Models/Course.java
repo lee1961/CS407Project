@@ -9,7 +9,7 @@ import java.util.UUID;
  */
 
 public class Course {
-    String ID;
+    String id;
     String courseName;
     String courseNumber;
     String imageUrl;
@@ -34,12 +34,12 @@ public class Course {
         this.courseNumber = courseNumber;
     }
 
-    public String getID() {
-        return ID;
+    public String getId() {
+        return id;
     }
 
     public void setId(String ID) {
-        this.ID = ID;
+        this.id = ID;
     }
 
     public String getCourseNumber() {
