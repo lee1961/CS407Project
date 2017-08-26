@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.ezclassapp.Models.Class;
+import com.example.ezclassapp.Models.Course;
 import com.example.ezclassapp.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -56,7 +56,7 @@ public class CreateClassActivity extends AppCompatActivity {
                 String coursenum = mCourseNumber.getText().toString().trim();
                 if (!TextUtils.isEmpty(coursename) && !TextUtils.isEmpty(coursenum)) {
                     DatabaseReference classReference = mDatabase.child("Course");
-                    Class course = new Class(coursenum, coursename);
+                    Course course = new Course(coursenum, coursename);
                     String key = classReference.push().getKey();
                     classReference.child(key).setValue(course);
                     Toast.makeText(CreateClassActivity.this, coursenum + " Added", Toast.LENGTH_LONG).show();
