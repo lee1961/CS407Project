@@ -223,6 +223,9 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
             FirebaseAuth.getInstance().signOut();
             sendToStart();
         }
+        if (item.getItemId() == R.id.main_settings_btn) {
+            sendToSettings();
+        }
         return true;
     }
 
@@ -232,5 +235,10 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         finish();
     }
 
+
+    private void sendToSettings() {
+        Intent settingsIntent = new Intent(MainActivity.this,SettingsActivity.class);
+        startActivity(settingsIntent);
+    }
 
 }
