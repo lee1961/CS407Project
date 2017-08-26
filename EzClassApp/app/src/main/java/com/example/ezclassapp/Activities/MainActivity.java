@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     FirebaseDatabase database;
     DatabaseReference classDatabaseReference;
 
-    private static ArrayList<String> SUGGESTIONS;
+    private static ArrayList<Class> SUGGESTIONS;
     private SimpleCursorAdapter mAdapter;
     private SearchView searchView;
     // hardcoded needs to be removed
@@ -63,23 +63,15 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
               this database points at the class
         */
         classDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constants.CLASS);
-
-
         mToolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("EZclass");
 
 
         final String[] from = new String[]{"className"};
-        SUGGESTIONS = new ArrayList<>();
-        /*
-            Hardcoded populating adapters
-            TODO: should populate with the classes
-        */
+        SUGGESTIONS = new ArrayList<Class>();
 
-        for (String str : arr) {
-            SUGGESTIONS.add(str);
-        }
+
         final int[] to = new int[]{android.R.id.text1};
         mAdapter = new SimpleCursorAdapter(getApplicationContext(),
                 android.R.layout.simple_list_item_1,
@@ -87,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                 from,
                 to,
                 CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+
+        populateClassName(); // retrieve all the coursename first
 
     }
 
@@ -122,13 +116,16 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
      */
     private void populateAdapter(String query) {
 
-
         final MatrixCursor c = new MatrixCursor(new String[]{BaseColumns._ID, "className"});
         for (int i = 0; i < SUGGESTIONS.size(); i++) {
-            if (SUGGESTIONS.get(i).toLowerCase().startsWith(query.toLowerCase()))
-                c.addRow(new Object[]{i, SUGGESTIONS.get(i)});
+            if (SUGGESTIONS.get(i).getCourseName().toLowerCase().startsWith(query.toLowerCase())) {
+                c.addRow(new Object[]{i, SUGGESTIONS.get(i).getCourseName()});
+            }
         }
         mAdapter.changeCursor(c);
+
+
+
     }
 
     private void updateCardFragment(String query) {
@@ -199,23 +196,13 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
             @Override
             public boolean onQueryTextChange(String newText) {
 
-                classDatabaseReference.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for(DataSnapshot data: dataSnapshot.getChildren()) {
-                            Class currentClass = (Class) data.getValue(Class.class);
-                            Log.d("retreiving"," retreiving class " + currentClass.getCourseName());
-                        }
-                    }
+                if(newText.length() > 2) {
+                    populateAdapter(newText.trim());
+                    updateCardFragment(newText);
+                } else {
+                    populateAdapter(newText.trim());
+                }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-                populateAdapter(newText);
-                updateCardFragment(newText);
                 // whenever the you type something into the search Bar
                 Log.d("clicked action search", "changing text");
                 return true;
@@ -258,6 +245,27 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         finish();
     }
 
+
+    /*
+    initially populate the suggestions tab
+     */
+    private void populateClassName() {
+        classDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot data: dataSnapshot.getChildren()) {
+                    Class currentClass = (Class) data.getValue(Class.class);
+                    SUGGESTIONS.add(currentClass);
+                    Log.d("populating","populating class" + currentClass.getCourseName());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     private void sendToSettings() {
         Intent settingsIntent = new Intent(MainActivity.this,SettingsActivity.class);
