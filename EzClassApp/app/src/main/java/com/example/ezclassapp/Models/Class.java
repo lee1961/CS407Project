@@ -9,17 +9,21 @@ import java.util.UUID;
  */
 
 public class Class {
-    String ID;
+    String id;
     String courseName;
     String courseNumber;
     String imageUrl;
     List<UUID> reviewID_list;
 
-//    public Class(String ID, String courseName) {
+    //    public Class(String ID, String courseName) {
 //        this.ID = ID;
 //        this.courseName = courseName;
 //    }
-     public Class(String courseName) {
+    public Class() {
+
+    }
+
+    public Class(String courseName) {
         this.courseName = courseName;
     }
 
@@ -28,24 +32,47 @@ public class Class {
         this.courseNumber = courseNumber;
     }
 
-    public String getID() {
-        return ID;
+    public static List<Class> getDummyClassList() {
+        List<Class> classList = new ArrayList<Class>();
+        classList.add(new Class("CS354", "Operating System"));
+        classList.add(new Class("CS448", "Database Systems"));
+        classList.add(new Class("CS240", "C Programming"));
+        classList.add(new Class("CS180", "Java Programming"));
+        return classList;
+//        butto.setonclicSiter {
+//
+//            List<Class> classes = Class.getDummyClassList();
+//            for(Class class: classes) {
+//                String key = database.getReference("Class").push().getKey();
+//                String id = generateID;
+//                class.setID(id);
+//
+//            }
+//        }
     }
 
-    public void setId(String ID) {
-        this.ID = ID;
+    public String getId() {
+        return id;
     }
 
-    public String getCourseNumber() {
-        return courseNumber;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getCourseName() {
         return courseName;
     }
 
-    public void setClassName(String courseName) {
+    public void setCourseName(String courseName) {
         this.courseName = courseName;
+    }
+
+    public String getCourseNumber() {
+        return courseNumber;
+    }
+
+    public void setCourseNumber(String courseNumber) {
+        this.courseNumber = courseNumber;
     }
 
     public String getImageUrl() {
@@ -62,24 +89,5 @@ public class Class {
 
     public void setReviewID_list(List<UUID> reviewID_list) {
         this.reviewID_list = reviewID_list;
-    }
-
-    public static List<Class> getDummyClassList() {
-        List<Class> classList = new ArrayList<Class>();
-        classList.add(new Class("CS354","Operating System"));
-        classList.add(new Class("CS448","Database Systems"));
-        classList.add(new Class("CS240","C Programming"));
-        classList.add(new Class("CS180","Java Programming"));
-        return classList;
-//        butto.setonclicSiter {
-//
-//            List<Class> classes = Class.getDummyClassList();
-//            for(Class class: classes) {
-//                String key = database.getReference("Class").push().getKey();
-//                String id = generateID;
-//                class.setID(id);
-//
-//            }
-//        }
     }
 }
