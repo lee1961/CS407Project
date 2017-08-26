@@ -31,6 +31,7 @@ public class User {
     }
 
     public void setName(String name) {
+    }
 
     int age;
     public User(String name, int age) {
