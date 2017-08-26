@@ -9,6 +9,7 @@ import java.util.List;
 
 public class User {
     String name;
+    String major;
     int age;
     public User(String name, int age) {
         this.name = name;
