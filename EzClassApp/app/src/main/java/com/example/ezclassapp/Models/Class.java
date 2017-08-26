@@ -19,13 +19,13 @@ public class Class {
 //        this.ID = ID;
 //        this.courseName = courseName;
 //    }
-    public Class(String courseName) {
+     public Class(String courseName) {
         this.courseName = courseName;
     }
 
     public Class(String courseNumber, String courseName) {
         this.courseName = courseName;
-        this.courseName = courseNumber;
+        this.courseNumber = courseNumber;
     }
 
     public String getID() {
@@ -34,6 +34,10 @@ public class Class {
 
     public void setId(String ID) {
         this.ID = ID;
+    }
+
+    public String getCourseNumber() {
+        return courseNumber;
     }
 
     public String getCourseName() {
@@ -63,9 +67,9 @@ public class Class {
     public static List<Class> getDummyClassList() {
         List<Class> classList = new ArrayList<Class>();
         classList.add(new Class("CS354","Operating System"));
-        classList.add(new Class("CS448","Operating System"));
-        classList.add(new Class("CS333","Operating System"));
-        classList.add(new Class("CS354","Operating System"));
+        classList.add(new Class("CS448","Database Systems"));
+        classList.add(new Class("CS240","C Programming"));
+        classList.add(new Class("CS180","Java Programming"));
         return classList;
 //        butto.setonclicSiter {
 //
