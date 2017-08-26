@@ -1,7 +1,10 @@
 package com.example.ezclassapp.Activities;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +28,9 @@ public class SettingsActivity extends AppCompatActivity {
     private TextView mName;
     private TextView mMajor;
 
+    private Button mStatusBtn;
+    private Button mImageBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +39,7 @@ public class SettingsActivity extends AppCompatActivity {
         mDisplayImage = (CircleImageView)findViewById(R.id.settings_image);
         mName = (TextView)findViewById(R.id.settings_display_name);
         mMajor = (TextView)findViewById(R.id.settings_status);
+        mStatusBtn = (Button)findViewById(R.id.settings_status_btn);
 
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         String current_uid = mCurrentUser.getUid();
@@ -54,6 +61,14 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
+            }
+        });
+
+        mStatusBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent status_intent = new Intent(SettingsActivity.this,StatusActivity.class);
+                startActivity(status_intent);
             }
         });
     }
