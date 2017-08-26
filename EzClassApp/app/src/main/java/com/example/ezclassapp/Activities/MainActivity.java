@@ -48,8 +48,6 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     private static ArrayList<Class> SUGGESTIONS;
     private SimpleCursorAdapter mAdapter;
     private SearchView searchView;
-    // hardcoded needs to be removed
-    final String[] arr = {"Chichen Itza", "Christ the Redeemer", "Great Wall of China", "Machu Picchu", "Petra", "Taj Mahal", "Colosseum"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
