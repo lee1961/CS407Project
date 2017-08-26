@@ -82,7 +82,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 List<Class> classes = Class.getDummyClassList();
-                mClassDatabase = FirebaseDatabase.getInstance().getReference().child("Class");
+                mClassDatabase = FirebaseDatabase.getInstance().getReference().child("Course");
                 for (Class currentClass: classes) {
                     String key = mClassDatabase.push().getKey();
                     mClassDatabase.child(key).setValue(currentClass);
