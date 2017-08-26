@@ -23,7 +23,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.example.ezclassapp.Fragments.ClassesCardFragment;
 import com.example.ezclassapp.Fragments.ReviewListFragment;
@@ -311,6 +310,11 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                     case R.id.menu_item_onSignout:
                         FirebaseAuth.getInstance().signOut();
                         sendToStart();
+                        return true;
+                    case R.id.menu_create_class:
+                        Log.d("menu_create_class", "nav bar create class clicked");
+                        Intent createClass = new Intent(MainActivity.this, CreateClassActivity.class);
+                        startActivity(createClass);
                         return true;
                     default:
                         return true;
