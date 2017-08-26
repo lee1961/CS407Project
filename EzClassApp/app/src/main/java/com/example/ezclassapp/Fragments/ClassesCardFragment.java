@@ -5,6 +5,7 @@ package com.example.ezclassapp.Fragments;
  */
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,11 +27,16 @@ import com.example.ezclassapp.Models.WonderModel;
 import com.example.ezclassapp.R;
 
 
-public class CardFragment extends Fragment {
+public class ClassesCardFragment extends Fragment {
+    private static final String ARG_PARAM1 = "query";
+
     ArrayList<WonderModel> permanentItems = new ArrayList<>();
     ArrayList<WonderModel> listitems = new ArrayList<>();
+
     RecyclerView MyRecyclerView;
     private MyAdapter mAdapter;
+    private onCardSelected mListener;
+
     String Wonders[] = {"Chichen Itza", "Christ the Redeemer", "Great Wall of China", "Machu Picchu", "Petra", "Taj Mahal", "Colosseum"};
     int Images[] = {R.drawable.chichen_itza, R.drawable.christ_the_redeemer, R.drawable.great_wall_of_china, R.drawable.machu_picchu, R.drawable.petra, R.drawable.taj_mahal, R.drawable.colosseum};
 
@@ -41,6 +46,7 @@ public class CardFragment extends Fragment {
     }
     public void onNewQuery(String text) {
         listitems.clear();
+        text = text.trim();
         for (WonderModel wonderModel : permanentItems) {
             if(wonderModel.getCardName().contains(text) || wonderModel.getCardName().toLowerCase().contains(text)) {
                 listitems.add(wonderModel);
@@ -50,6 +56,34 @@ public class CardFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
 
     }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @return A new instance of fragment ReviewListFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static ClassesCardFragment newInstance(String param1) {
+        final Bundle args = new Bundle();
+        args.putString(ARG_PARAM1,param1);
+        ClassesCardFragment fragment = new ClassesCardFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof onCardSelected) {
+            mListener = (onCardSelected) context;
+        } else {
+            throw new ClassCastException(context.toString() + " must implement onCardSelected.");
+        }
+
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +96,7 @@ public class CardFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_card, container, false);
+        View view = inflater.inflate(R.layout.fragment_recyclerview_class, container, false);
         MyRecyclerView = (RecyclerView) view.findViewById(R.id.cardView);
         MyRecyclerView.setHasFixedSize(true);
         LinearLayoutManager MyLayoutManager = new LinearLayoutManager(getActivity());
@@ -76,6 +110,10 @@ public class CardFragment extends Fragment {
         }
         MyRecyclerView.setLayoutManager(MyLayoutManager);
 
+        if(getArguments() != null) {
+            onNewQuery(getArguments().getString(ARG_PARAM1));
+        }
+
         return view;
     }
 
@@ -84,6 +122,7 @@ public class CardFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
     }
+
 
     public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
         private ArrayList<WonderModel> list;
@@ -95,8 +134,7 @@ public class CardFragment extends Fragment {
         @Override
         public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             // create a new view
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.recycle_items, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_class, parent, false);
             MyViewHolder holder = new MyViewHolder(view);
             return holder;
         }
@@ -133,22 +171,15 @@ public class CardFragment extends Fragment {
             likeImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                     int id = (int) likeImageView.getTag();
                     if (id == R.drawable.ic_like) {
-
                         likeImageView.setTag(R.drawable.ic_liked);
                         likeImageView.setImageResource(R.drawable.ic_liked);
-
                         Toast.makeText(getActivity(), titleTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
-
                     } else {
-
                         likeImageView.setTag(R.drawable.ic_like);
                         likeImageView.setImageResource(R.drawable.ic_like);
                         Toast.makeText(getActivity(), titleTextView.getText() + " removed from favourites", Toast.LENGTH_SHORT).show();
-
-
                     }
 
                 }
@@ -175,24 +206,32 @@ public class CardFragment extends Fragment {
             itemView.setOnClickListener(this);
         }
 
+        /*
+                TODO should launch to a more specific activity LOL
+         */
         @Override
         public void onClick(View v) {
-            /*
-                TODO should launch to a more specific activity LOL
-            */
+
             Toast.makeText(getActivity(),"u click " + titleTextView.getText().toString(),Toast.LENGTH_SHORT).show();
             Log.d("manage to click","yes u are clicking for the title " +  titleTextView.getText().toString());
+            mListener.onCardSelected(titleTextView.getText().toString());
 //            Intent intent = CrimePagerActivity.newIntent(getActivity(),mCrime.getId());
 //            startActivity(intent);
         }
     }
 
+    public interface onCardSelected {
+        void onCardSelected(String name);
+    }
+
+
+    /*
+        TODO: to be removed, just for a dummy objects
+     */
     public void initializeList() {
         listitems.clear();
 
         for (int i = 0; i < 7; i++) {
-
-
             WonderModel item = new WonderModel();
             item.setCardName(Wonders[i]);
             item.setImageResourceId(Images[i]);
