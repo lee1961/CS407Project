@@ -1,47 +1,53 @@
 package com.example.ezclassapp.Activities;
 
 import android.content.Intent;
-
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.os.Bundle;
 import android.provider.BaseColumns;
-import android.support.v4.app.Fragment;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
-
+import com.example.ezclassapp.Fragments.CardFragment;
 import com.example.ezclassapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import com.example.ezclassapp.Models.User;
-import com.example.ezclassapp.Fragments.CardFragment;
 
 import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private FirebaseAuth mAuth;
-    private Toolbar mToolbar;
-
     private static ArrayList<String> SUGGESTIONS;
-    private SimpleCursorAdapter mAdapter;
-    private SearchView searchView;
     // hardcoded needs to be removed
     final String[] arr = {"Chichen Itza", "Christ the Redeemer", "Great Wall of China", "Machu Picchu", "Petra", "Taj Mahal", "Colosseum"};
+    private FirebaseAuth mAuth;
+    private Toolbar mToolbar;
+    private SimpleCursorAdapter mAdapter;
+    private SearchView searchView;
+    private String APPNAME = "EZclass";
+    /* Used for navigation drawer */
+    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout mDrawerLayout;
+    private NavigationView mNavmenu;
+    private String mActivityTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,13 +56,22 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-
+        // Set up the toolbar
         mToolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("EZclass");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setTitle(APPNAME);
+
+        // Initialize the drawer layout and navigation view
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mNavmenu = (NavigationView) findViewById(R.id.navigation_view);
+        mActivityTitle = getTitle().toString();
+
+        setupDrawer();
+        setupNavigationMenu();
 //        FragmentManager fm = getSupportFragmentManager();
 //        Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
-
 
         final String[] from = new String[]{"className"};
         SUGGESTIONS = new ArrayList<>();
@@ -108,13 +123,48 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Activate the navigation drawer toggle
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    /* Called whenever we call invalidateOptionsMenu() */
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // If the nav drawer is open, hide action items related to the content view
+        // Menu is the one inflated in the current activity, not the navigation drawer menu
+        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mNavmenu);
+        hideMenuItems(menu, !drawerOpen);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void sendToStart() {
+        Intent startIntent = new Intent(MainActivity.this, StartActivity.class);
+        startActivity(startIntent);
+        finish();
+    }
+
     // You must implements your logic to get data using firebase
     /*
             TODO: This populates the adapter for query suggestion
      */
     private void populateAdapter(String query) {
-
-
         final MatrixCursor c = new MatrixCursor(new String[]{BaseColumns._ID, "className"});
         for (int i = 0; i < SUGGESTIONS.size(); i++) {
             if (SUGGESTIONS.get(i).toLowerCase().startsWith(query.toLowerCase()))
@@ -133,14 +183,10 @@ public class MainActivity extends AppCompatActivity {
             fragment.onNewQuery(query);
 
         } else if (fragment == null && query.length() > 2) {
-
-
             FragmentManager fm = getSupportFragmentManager();
             fragment = new CardFragment();
             fm.beginTransaction().add(R.id.fragmentContainer, fragment).commit();
-
         }
-
     }
 
     public void setUpSearchView() {
@@ -201,21 +247,51 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void setupDrawer() {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open,
+                R.string.drawer_close) {
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle("Navigation");
+                invalidateOptionsMenu(); // Creates call to onPrepareOptionsMenu()
+            }
 
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
-        if(item.getItemId() == R.id.main_logout_btn) {
-            FirebaseAuth.getInstance().signOut();
-            sendToStart();
-        }
-        return true;
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle(mActivityTitle);
+                invalidateOptionsMenu(); // Creates call to onPrepareOptionsMenu()
+            }
+        };
+        // Set drawer indicator
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
     }
 
-    private void sendToStart() {
-        Intent startIntent = new Intent(MainActivity.this, StartActivity.class);
-        startActivity(startIntent);
-        finish();
+    private void setupNavigationMenu() {
+        mNavmenu.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId(); // Gets the id of the item pressed
+                switch (id) {
+                    case R.id.menu_item_settings:
+                        Toast.makeText(MainActivity.this, "Settings Pressed", Toast.LENGTH_LONG).show();
+                        return true;
+                    case R.id.menu_item_onSignout:
+                        FirebaseAuth.getInstance().signOut();
+                        sendToStart();
+                        return true;
+                    default:
+                        return true;
+                }
+            }
+        });
+    }
+
+    private void hideMenuItems(Menu menu, boolean visible) {
+        for (int i = 0; i < menu.size(); i++) {
+            menu.getItem(i).setVisible(visible);
+        }
     }
 }
