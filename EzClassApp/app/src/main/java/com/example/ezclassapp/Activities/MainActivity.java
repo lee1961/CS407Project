@@ -208,8 +208,8 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     */
     @Override
     public void onCardSelected(String name) {
-        final ReviewListFragment detailsFragment = ReviewListFragment.newInstance(name);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, detailsFragment, "reviewListFragment")
+        final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
                 .addToBackStack(null)
                 .commit();
 

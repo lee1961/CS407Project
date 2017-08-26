@@ -29,11 +29,14 @@ import com.example.ezclassapp.R;
 
 public class ClassesCardFragment extends Fragment {
     private static final String ARG_PARAM1 = "query";
+
     ArrayList<WonderModel> permanentItems = new ArrayList<>();
     ArrayList<WonderModel> listitems = new ArrayList<>();
+
     RecyclerView MyRecyclerView;
     private MyAdapter mAdapter;
     private onCardSelected mListener;
+
     String Wonders[] = {"Chichen Itza", "Christ the Redeemer", "Great Wall of China", "Machu Picchu", "Petra", "Taj Mahal", "Colosseum"};
     int Images[] = {R.drawable.chichen_itza, R.drawable.christ_the_redeemer, R.drawable.great_wall_of_china, R.drawable.machu_picchu, R.drawable.petra, R.drawable.taj_mahal, R.drawable.colosseum};
 
@@ -131,8 +134,7 @@ public class ClassesCardFragment extends Fragment {
         @Override
         public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             // create a new view
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.recycle_items, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycle_items, parent, false);
             MyViewHolder holder = new MyViewHolder(view);
             return holder;
         }
@@ -169,22 +171,15 @@ public class ClassesCardFragment extends Fragment {
             likeImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                     int id = (int) likeImageView.getTag();
                     if (id == R.drawable.ic_like) {
-
                         likeImageView.setTag(R.drawable.ic_liked);
                         likeImageView.setImageResource(R.drawable.ic_liked);
-
                         Toast.makeText(getActivity(), titleTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
-
                     } else {
-
                         likeImageView.setTag(R.drawable.ic_like);
                         likeImageView.setImageResource(R.drawable.ic_like);
                         Toast.makeText(getActivity(), titleTextView.getText() + " removed from favourites", Toast.LENGTH_SHORT).show();
-
-
                     }
 
                 }
