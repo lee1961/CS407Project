@@ -14,6 +14,10 @@ public class User {
     String thumb_image;
     int karmaPoints;
 
+    public User() {
+
+    }
+
     public String getName() {
         return name;
     }

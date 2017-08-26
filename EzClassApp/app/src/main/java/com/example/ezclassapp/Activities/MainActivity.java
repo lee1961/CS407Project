@@ -27,29 +27,35 @@ import android.widget.Toast;
 
 import com.example.ezclassapp.Fragments.ClassesCardFragment;
 import com.example.ezclassapp.Fragments.ReviewListFragment;
+import com.example.ezclassapp.Models.Course;
 import com.example.ezclassapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements ClassesCardFragment.onCardSelected {
 
-
-    private static ArrayList<String> SUGGESTIONS;
-    // hardcoded needs to be removed
-    final String[] arr = {"Chichen Itza", "Christ the Redeemer", "Great Wall of China", "Machu Picchu", "Petra", "Taj Mahal", "Colosseum"};
     private FirebaseAuth mAuth;
     private Toolbar mToolbar;
-    private SimpleCursorAdapter mAdapter;
-    private SearchView searchView;
     private String APPNAME = "EZclass";
     /* Used for navigation drawer */
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavmenu;
     private String mActivityTitle;
+    FirebaseDatabase database;
+    DatabaseReference classDatabaseReference;
+
+    private static ArrayList<Course> SUGGESTIONS;
+    private SimpleCursorAdapter mAdapter;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         setContentView(R.layout.activity_main);
 
         mAuth = FirebaseAuth.getInstance();
+        database= FirebaseDatabase.getInstance();
+
 
         // Set up the toolbar
         mToolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
@@ -75,16 +83,18 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
 //        FragmentManager fm = getSupportFragmentManager();
 //        Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
 
-        final String[] from = new String[]{"className"};
-        SUGGESTIONS = new ArrayList<>();
         /*
-            Hardcoded populating adapters
-            TODO: should populate with the classes
+              this database points at the class
         */
+        classDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constants.COURSE);
+        mToolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle("EZclass");
 
-        for (String str : arr) {
-            SUGGESTIONS.add(str);
-        }
+        final String[] from = new String[]{"className"};
+        SUGGESTIONS = new ArrayList<Course>();
+
+
         final int[] to = new int[]{android.R.id.text1};
         mAdapter = new SimpleCursorAdapter(getApplicationContext(),
                 android.R.layout.simple_list_item_1,
@@ -93,12 +103,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                 to,
                 CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
-//        if (fragment == null) {
-//            fragment = new ClassesCardFragment();
-//            fm.beginTransaction()
-//                    .add(R.id.fragmentContainer, fragment)
-//                    .commit();
-//        }
+        populateClassName(); // retrieve all the coursename first
 
     }
 
@@ -171,10 +176,12 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     private void populateAdapter(String query) {
         final MatrixCursor c = new MatrixCursor(new String[]{BaseColumns._ID, "className"});
         for (int i = 0; i < SUGGESTIONS.size(); i++) {
-            if (SUGGESTIONS.get(i).toLowerCase().startsWith(query.toLowerCase()))
-                c.addRow(new Object[]{i, SUGGESTIONS.get(i)});
+            if (SUGGESTIONS.get(i).getCourseName().toLowerCase().startsWith(query.toLowerCase())) {
+                c.addRow(new Object[]{i, SUGGESTIONS.get(i).getCourseName()});
+            }
         }
         mAdapter.changeCursor(c);
+
     }
 
     private void updateCardFragment(String query) {
@@ -240,8 +247,14 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                populateAdapter(newText);
-                updateCardFragment(newText);
+
+                if(newText.length() > 2) {
+                    populateAdapter(newText.trim());
+                    updateCardFragment(newText);
+                } else {
+                    populateAdapter(newText.trim());
+                }
+
                 // whenever the you type something into the search Bar
                 Log.d("clicked action search", "changing text");
                 return true;
@@ -310,6 +323,27 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         for (int i = 0; i < menu.size(); i++) {
             menu.getItem(i).setVisible(visible);
         }
+    }
+
+    /*
+    initially populate the suggestions tab
+     */
+    private void populateClassName() {
+        classDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot data: dataSnapshot.getChildren()) {
+                    Course currentClass = (Course) data.getValue(Course.class);
+                    SUGGESTIONS.add(currentClass);
+                    Log.d("populating","populating class" + currentClass.getCourseName());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void sendToSettings() {

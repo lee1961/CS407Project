@@ -21,7 +21,9 @@ public class Review {
     int downvote;
     HashMap<String,Boolean> checkUserVoted;
 
+    public Review() {
 
+    }
 
     public String getID() {
         return ID;
