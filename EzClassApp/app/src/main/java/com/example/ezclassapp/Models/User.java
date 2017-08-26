@@ -9,19 +9,47 @@ import java.util.List;
 
 public class User {
     String name;
-    int age;
-    public User(String name, int age) {
-        this.name = name;
-        this.age = age;
+    String major;
+    String image;
+    String thumb_image;
+
+    public String getName() {
+        return name;
     }
 
-    public List<User> getListUsers() {
-        ArrayList<User> list = new ArrayList<>();
-        list.add(new User("victor",1));
-        list.add(new User("abi",2));
-        list.add(new User("gg",3));
-        list.add(new User("hehe",4));
-        list.add(new User("heyhey",5));
-        return list;
+    public String getMajor() {
+        return major;
     }
+
+    public String getImage() {
+        return image;
+    }
+
+    public String getThumb_image() {
+        return thumb_image;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setMajor(String major) {
+        this.major = major;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public void setThumb_image(String thumb_image) {
+        this.thumb_image = thumb_image;
+    }
+
+    public User(String name, String major, String image, String thumb_image) {
+        this.name = name;
+        this.major = major;
+        this.image = image;
+        this.thumb_image = thumb_image;
+    }
+
 }
