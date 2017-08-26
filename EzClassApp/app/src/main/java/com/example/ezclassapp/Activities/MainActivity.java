@@ -22,11 +22,18 @@ import android.widget.EditText;
 
 import com.example.ezclassapp.Fragments.ClassesCardFragment;
 import com.example.ezclassapp.Fragments.ReviewListFragment;
+import com.example.ezclassapp.Models.Class;
 import com.example.ezclassapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements ClassesCardFragment.onCardSelected {
@@ -35,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
 
     private FirebaseAuth mAuth;
     private Toolbar mToolbar;
+    FirebaseDatabase database;
+    DatabaseReference classDatabaseReference;
 
     private static ArrayList<String> SUGGESTIONS;
     private SimpleCursorAdapter mAdapter;
@@ -48,13 +57,17 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         setContentView(R.layout.activity_main);
 
         mAuth = FirebaseAuth.getInstance();
+        database= FirebaseDatabase.getInstance();
+
+        /*
+              this database points at the class
+        */
+        classDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constants.CLASS);
 
 
         mToolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("EZclass");
-//        FragmentManager fm = getSupportFragmentManager();
-//        Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
 
 
         final String[] from = new String[]{"className"};
@@ -74,13 +87,6 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                 from,
                 to,
                 CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-
-//        if (fragment == null) {
-//            fragment = new ClassesCardFragment();
-//            fm.beginTransaction()
-//                    .add(R.id.fragmentContainer, fragment)
-//                    .commit();
-//        }
 
     }
 
@@ -192,6 +198,22 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
 
             @Override
             public boolean onQueryTextChange(String newText) {
+
+                classDatabaseReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for(DataSnapshot data: dataSnapshot.getChildren()) {
+                            Class currentClass = (Class) data.getValue(Class.class);
+                            Log.d("retreiving"," retreiving class " + currentClass.getCourseName());
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
                 populateAdapter(newText);
                 updateCardFragment(newText);
                 // whenever the you type something into the search Bar

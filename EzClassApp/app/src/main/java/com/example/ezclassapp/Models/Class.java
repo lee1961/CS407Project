@@ -19,13 +19,16 @@ public class Class {
 //        this.ID = ID;
 //        this.courseName = courseName;
 //    }
+    public Class() {
+
+    }
     public Class(String courseName) {
         this.courseName = courseName;
     }
 
     public Class(String courseNumber, String courseName) {
         this.courseName = courseName;
-        this.courseName = courseNumber;
+        this.courseNumber = courseNumber;
     }
 
     public String getID() {
