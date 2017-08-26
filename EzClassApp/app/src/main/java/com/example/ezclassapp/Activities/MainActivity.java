@@ -22,7 +22,7 @@ import android.widget.EditText;
 
 import com.example.ezclassapp.Fragments.ClassesCardFragment;
 import com.example.ezclassapp.Fragments.ReviewListFragment;
-import com.example.ezclassapp.Models.Class;
+import com.example.ezclassapp.Models.Course;
 import com.example.ezclassapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,7 +33,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements ClassesCardFragment.onCardSelected {
@@ -45,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     FirebaseDatabase database;
     DatabaseReference classDatabaseReference;
 
-    private static ArrayList<Class> SUGGESTIONS;
+    private static ArrayList<Course> SUGGESTIONS;
     private SimpleCursorAdapter mAdapter;
     private SearchView searchView;
 
@@ -60,14 +59,14 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         /*
               this database points at the class
         */
-        classDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constants.CLASS);
+        classDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constants.COURSE);
         mToolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("EZclass");
 
 
         final String[] from = new String[]{"className"};
-        SUGGESTIONS = new ArrayList<Class>();
+        SUGGESTIONS = new ArrayList<Course>();
 
 
         final int[] to = new int[]{android.R.id.text1};
@@ -252,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot data: dataSnapshot.getChildren()) {
-                    Class currentClass = (Class) data.getValue(Class.class);
+                    Course currentClass = (Course) data.getValue(Course.class);
                     SUGGESTIONS.add(currentClass);
                     Log.d("populating","populating class" + currentClass.getCourseName());
                 }

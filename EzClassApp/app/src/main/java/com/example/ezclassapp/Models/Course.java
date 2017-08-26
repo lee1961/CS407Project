@@ -8,7 +8,7 @@ import java.util.UUID;
  * Created by victorlee95 on 8/26/2017.
  */
 
-public class Class {
+public class Course {
     String ID;
     String courseName;
     String courseNumber;
@@ -19,14 +19,14 @@ public class Class {
 //        this.ID = ID;
 //        this.courseName = courseName;
 //    }
-    public Class() {
+    public Course() {
 
     }
-    public Class(String courseName) {
+    public Course(String courseName) {
         this.courseName = courseName;
     }
 
-    public Class(String courseNumber, String courseName) {
+    public Course(String courseNumber, String courseName) {
         this.courseName = courseName;
         this.courseNumber = courseNumber;
     }
@@ -63,12 +63,12 @@ public class Class {
         this.reviewID_list = reviewID_list;
     }
 
-    public static List<Class> getDummyClassList() {
-        List<Class> classList = new ArrayList<Class>();
-        classList.add(new Class("CS354","Operating System"));
-        classList.add(new Class("CS448","Operating System"));
-        classList.add(new Class("CS333","Operating System"));
-        classList.add(new Class("CS354","Operating System"));
+    public static List<Course> getDummyClassList() {
+        List<Course> classList = new ArrayList<Course>();
+        classList.add(new Course("CS354","Operating System"));
+        classList.add(new Course("CS448","Operating System"));
+        classList.add(new Course("CS333","Operating System"));
+        classList.add(new Course("CS354","Operating System"));
         return classList;
 //        butto.setonclicSiter {
 //

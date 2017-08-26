@@ -5,6 +5,6 @@ package com.example.ezclassapp.Activities;
  */
 
 public class Constants {
-    public static String CLASS = "Class";
+    public static String COURSE = "Course";
     public static String USER = "User";
 }
