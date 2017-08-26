@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     // You must implements your logic to get data using firebase
     /*
             TODO: This populates the adapter for query suggestion
+            need to use firebase Database to populate it!
      */
     private void populateAdapter(String query) {
 
