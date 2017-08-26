@@ -29,6 +29,7 @@ public class RegisterActivity extends AppCompatActivity {
     private TextInputLayout mDisplayName;
     private TextInputLayout mEmail;
     private TextInputLayout mPassword;
+    private TextInputLayout rePassword;
     private Button mCreateBtn;
 
     private Toolbar mToolbar;
@@ -56,6 +57,8 @@ public class RegisterActivity extends AppCompatActivity {
         mDisplayName = (TextInputLayout)findViewById(R.id.reg_display_name);
         mEmail = (TextInputLayout)findViewById(R.id.login_email);
         mPassword = (TextInputLayout)findViewById(R.id.login_password);
+        rePassword = (TextInputLayout)findViewById(R.id.retype_password);
+
         mCreateBtn = (Button)findViewById(R.id.reg_Create_btn);
 
         mCreateBtn.setOnClickListener(new View.OnClickListener() {
@@ -64,13 +67,19 @@ public class RegisterActivity extends AppCompatActivity {
                 String display_name = mDisplayName.getEditText().getText().toString();
                 String email = mEmail.getEditText().getText().toString();
                 String password = mPassword.getEditText().getText().toString();
+                String retypePassword = rePassword.getEditText().getText().toString();
 
-                if (!TextUtils.isEmpty(display_name) || !TextUtils.isEmpty(email) || !TextUtils.isEmpty(password)) {
-                    mRegProgress.setTitle("Registering User");
-                    mRegProgress.setMessage("Please wait while we create your account!");
-                    mRegProgress.setCanceledOnTouchOutside(false);
-                    mRegProgress.show();
-                    register_user(display_name,email,password);
+                if (!TextUtils.isEmpty(display_name) || !TextUtils.isEmpty(email) || !TextUtils.isEmpty(password) || !TextUtils.isEmpty(retypePassword)) {
+                    if (!password.equals(retypePassword)) {
+                        Toast.makeText(RegisterActivity.this, "The password you retyped does not match!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        mRegProgress.setTitle("Registering User");
+                        mRegProgress.setMessage("Please wait while we create your account!");
+                        mRegProgress.setCanceledOnTouchOutside(false);
+                        mRegProgress.show();
+                        register_user(display_name,email,password);
+
+                    }
                 }
 
 
