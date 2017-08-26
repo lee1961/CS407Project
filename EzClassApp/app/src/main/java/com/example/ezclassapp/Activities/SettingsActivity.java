@@ -16,7 +16,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.example.ezclassapp.Models.Class;
+import com.example.ezclassapp.Models.Course;
 
 import java.util.List;
 
@@ -81,11 +81,11 @@ public class SettingsActivity extends AppCompatActivity {
         mAddClassBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                List<Class> classes = Class.getDummyClassList();
+                List<Course> classes = Course.getDummyCourseList();
                 mClassDatabase = FirebaseDatabase.getInstance().getReference().child("Course");
-                for (Class currentClass: classes) {
+                for (Course currentCourse: classes) {
                     String key = mClassDatabase.push().getKey();
-                    mClassDatabase.child(key).setValue(currentClass);
+                    mClassDatabase.child(key).setValue(currentCourse);
                     Toast.makeText(SettingsActivity.this, key, Toast.LENGTH_SHORT).show();
                 }
             }

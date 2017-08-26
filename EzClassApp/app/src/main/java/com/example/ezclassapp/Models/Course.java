@@ -19,14 +19,13 @@ public class Course {
 //        this.ID = ID;
 //        this.courseName = courseName;
 //    }
-<<<<<<< HEAD:EzClassApp/app/src/main/java/com/example/ezclassapp/Models/Class.java
-     public Class(String courseName) {
-=======
+
+   
+
     public Course() {
 
     }
     public Course(String courseName) {
->>>>>>> retrieveClassName:EzClassApp/app/src/main/java/com/example/ezclassapp/Models/Course.java
         this.courseName = courseName;
     }
 
@@ -71,21 +70,14 @@ public class Course {
         this.reviewID_list = reviewID_list;
     }
 
-<<<<<<< HEAD:EzClassApp/app/src/main/java/com/example/ezclassapp/Models/Class.java
-    public static List<Class> getDummyClassList() {
-        List<Class> classList = new ArrayList<Class>();
-        classList.add(new Class("CS354","Operating System"));
-        classList.add(new Class("CS448","Database Systems"));
-        classList.add(new Class("CS240","C Programming"));
-        classList.add(new Class("CS180","Java Programming"));
-=======
-    public static List<Course> getDummyClassList() {
+
+
+    public static List<Course> getDummyCourseList() {
         List<Course> classList = new ArrayList<Course>();
         classList.add(new Course("CS354","Operating System"));
         classList.add(new Course("CS448","Operating System"));
         classList.add(new Course("CS333","Operating System"));
         classList.add(new Course("CS354","Operating System"));
->>>>>>> retrieveClassName:EzClassApp/app/src/main/java/com/example/ezclassapp/Models/Course.java
         return classList;
 //        butto.setonclicSiter {
 //
