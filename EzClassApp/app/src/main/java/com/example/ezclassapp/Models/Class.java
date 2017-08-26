@@ -1,5 +1,6 @@
 package com.example.ezclassapp.Models;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,13 +10,22 @@ import java.util.UUID;
 
 public class Class {
     String ID;
-    String className;
+    String courseName;
+    String courseNumber;
     String imageUrl;
     List<UUID> reviewID_list;
 
-    public Class(String ID, String className) {
-        this.ID = ID;
-        this.className = className;
+//    public Class(String ID, String courseName) {
+//        this.ID = ID;
+//        this.courseName = courseName;
+//    }
+     public Class(String courseName) {
+        this.courseName = courseName;
+    }
+
+    public Class(String courseNumber, String courseName) {
+        this.courseName = courseName;
+        this.courseNumber = courseNumber;
     }
 
     public String getID() {
@@ -26,12 +36,16 @@ public class Class {
         this.ID = ID;
     }
 
-    public String getClassName() {
-        return className;
+    public String getCourseNumber() {
+        return courseNumber;
     }
 
-    public void setClassName(String className) {
-        this.className = className;
+    public String getCourseName() {
+        return courseName;
+    }
+
+    public void setClassName(String courseName) {
+        this.courseName = courseName;
     }
 
     public String getImageUrl() {
@@ -48,5 +62,24 @@ public class Class {
 
     public void setReviewID_list(List<UUID> reviewID_list) {
         this.reviewID_list = reviewID_list;
+    }
+
+    public static List<Class> getDummyClassList() {
+        List<Class> classList = new ArrayList<Class>();
+        classList.add(new Class("CS354","Operating System"));
+        classList.add(new Class("CS448","Database Systems"));
+        classList.add(new Class("CS240","C Programming"));
+        classList.add(new Class("CS180","Java Programming"));
+        return classList;
+//        butto.setonclicSiter {
+//
+//            List<Class> classes = Class.getDummyClassList();
+//            for(Class class: classes) {
+//                String key = database.getReference("Class").push().getKey();
+//                String id = generateID;
+//                class.setID(id);
+//
+//            }
+//        }
     }
 }

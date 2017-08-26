@@ -16,12 +16,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.example.ezclassapp.Models.Class;
+
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SettingsActivity extends AppCompatActivity {
 
     private DatabaseReference mUserDatabase;
+    private DatabaseReference mClassDatabase;
     private FirebaseUser mCurrentUser;
 
     private CircleImageView mDisplayImage;
@@ -30,6 +34,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private Button mStatusBtn;
     private Button mImageBtn;
+    private Button mAddClassBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +45,10 @@ public class SettingsActivity extends AppCompatActivity {
         mName = (TextView)findViewById(R.id.settings_display_name);
         mMajor = (TextView)findViewById(R.id.settings_status);
         mStatusBtn = (Button)findViewById(R.id.settings_status_btn);
+        mAddClassBtn = (Button)findViewById(R.id.add_class_btn);
 
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
-        String current_uid = mCurrentUser.getUid();
+        final String current_uid = mCurrentUser.getUid();
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(current_uid);
         mUserDatabase.addValueEventListener(new ValueEventListener() {
             @Override
@@ -69,6 +75,19 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent status_intent = new Intent(SettingsActivity.this,StatusActivity.class);
                 startActivity(status_intent);
+            }
+        });
+
+        mAddClassBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                List<Class> classes = Class.getDummyClassList();
+                mClassDatabase = FirebaseDatabase.getInstance().getReference().child("Class");
+                for (Class currentClass: classes) {
+                    String key = mClassDatabase.push().getKey();
+                    mClassDatabase.child(key).setValue(currentClass);
+                    Toast.makeText(SettingsActivity.this, key, Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

@@ -5,6 +5,8 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="activity_right_margin">10dp</dimen>
     <dimen name="activity_left_margin">10dp</dimen>
+    <dimen name="content_spacing">8dp</dimen>
+    <dimen name="subtitle_height">56dp</dimen>
     <dimen name="icon_width">60dip</dimen>
     <dimen name="icon_height">60dip</dimen>
     <dimen name="icon_padding">8dp</dimen>
