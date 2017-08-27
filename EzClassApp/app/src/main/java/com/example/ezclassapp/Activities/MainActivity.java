@@ -1,5 +1,7 @@
 package com.example.ezclassapp.Activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -22,11 +24,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
 
 import com.example.ezclassapp.Fragments.ClassesCardFragment;
 import com.example.ezclassapp.Fragments.ReviewListFragment;
 import com.example.ezclassapp.Models.Course;
+import com.example.ezclassapp.Models.Utils;
 import com.example.ezclassapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -55,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     private static ArrayList<Course> SUGGESTIONS;
     private SimpleCursorAdapter mAdapter;
     private SearchView searchView;
+    private boolean Animate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
 
         mAuth = FirebaseAuth.getInstance();
         database= FirebaseDatabase.getInstance();
+        Animate = false;
 
 
         // Set up the toolbar
@@ -109,6 +116,28 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
 
     }
 
+    private static final int ANIM_DURATION_TOOLBAR = 300;
+
+    private void startIntroAnimation() {
+
+        int actionbarSize = Utils.dpToPx(56);
+        mToolbar.setTranslationY(-actionbarSize);
+        mToolbar.animate()
+                .translationY(0)
+                .setInterpolator(new DecelerateInterpolator())
+                .setStartDelay(300)
+                .setDuration(3000)
+                .start();
+    }
+    private void startContentAnimation() {
+        mDrawerLayout.animate()
+                .translationY(0)
+                .setInterpolator(new OvershootInterpolator(1.f))
+                .setStartDelay(300)
+                .setDuration(400)
+                .start();
+    }
+
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -129,6 +158,10 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         // this basically sets up the search view listeners
         setUpSearchView();
+        if(!Animate) {
+            startIntroAnimation();
+            Animate = !Animate;
+        }
 
         return true;
     }

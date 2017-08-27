@@ -60,15 +60,6 @@ public class ClassesCardFragment extends Fragment {
     FirebaseRecyclerAdapter<Course,MyViewHolder> courseMyViewHolderFirebaseRecyclerAdapter;
     public static FragmentActivity currentActivity;
 
-    /*
-        ANimation attributes
-     */
-    private static final DecelerateInterpolator DECCELERATE_INTERPOLATOR = new DecelerateInterpolator();
-    private static final AccelerateInterpolator ACCELERATE_INTERPOLATOR = new AccelerateInterpolator();
-    private static final OvershootInterpolator OVERSHOOT_INTERPOLATOR = new OvershootInterpolator(4);
-
-    private static final int ANIMATED_ITEMS_COUNT = 2;
-
 
     public void onNewQuery(String queryText) {
 
@@ -185,22 +176,6 @@ public class ClassesCardFragment extends Fragment {
 
         return view;
     }
-    private void runEnterAnimation(View view, int position) {
-        if (!animateItems || position >= ANIMATED_ITEMS_COUNT - 1) {
-            return;
-        }
-
-        if (position > lastAnimatedPosition) {
-            lastAnimatedPosition = position;
-            view.setTranslationY(Utils.getScreenHeight(context));
-            view.animate()
-                    .translationY(0)
-                    .setInterpolator(new DecelerateInterpolator(3.f))
-                    .setDuration(700)
-                    .start();
-        }
-    }
-
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
