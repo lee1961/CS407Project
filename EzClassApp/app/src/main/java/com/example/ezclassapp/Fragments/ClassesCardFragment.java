@@ -18,6 +18,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,7 +68,7 @@ public class ClassesCardFragment extends Fragment {
             }
             courseMyViewHolderFirebaseRecyclerAdapter.cleanup();
             attachRecyclerViewAdapter(); // reinitialize the recyclerviewAdatper
-            MyRecyclerView.setAdapter(courseMyViewHolderFirebaseRecyclerAdapter);
+            //MyRecyclerView.setAdapter(courseMyViewHolderFirebaseRecyclerAdapter);
 
         } else if(queryText.length() < 3 || courseMyViewHolderFirebaseRecyclerAdapter == null) {
             mQueryReference = mCourseDatabaseRef;
@@ -115,7 +117,7 @@ public class ClassesCardFragment extends Fragment {
         mQueryReference = mCourseDatabaseRef;
 
         attachRecyclerViewAdapter(); //initialise the adapter
-        MyRecyclerView.setAdapter(courseMyViewHolderFirebaseRecyclerAdapter);
+       // MyRecyclerView.setAdapter(courseMyViewHolderFirebaseRecyclerAdapter);
 
     }
 
@@ -133,7 +135,12 @@ public class ClassesCardFragment extends Fragment {
                         viewHolder.setTitleTextView(course.getCourseName());
                     }
                 };
+        final LayoutAnimationController controller =
+                AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_animation_fall_down);
+        MyRecyclerView.setLayoutAnimation(controller);
         MyRecyclerView.setAdapter(courseMyViewHolderFirebaseRecyclerAdapter);
+        MyRecyclerView.getAdapter().notifyDataSetChanged();
+        MyRecyclerView.scheduleLayoutAnimation();
     }
 
     @Override
@@ -169,38 +176,6 @@ public class ClassesCardFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
     }
-
-
-//    public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
-//        private ArrayList<WonderModel> list;
-//
-//        public MyAdapter(ArrayList<WonderModel> Data) {
-//            list = Data;
-//        }
-//
-//        @Override
-//        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//            // create a new view
-//            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_class, parent, false);
-//            MyViewHolder holder = new MyViewHolder(view);
-//            return holder;
-//        }
-//
-//        @Override
-//        public void onBindViewHolder(final MyViewHolder holder, int position) {
-//
-//            holder.titleTextView.setText(list.get(position).getCardName());
-//            holder.coverImageView.setImageResource(list.get(position).getImageResourceId());
-//            holder.coverImageView.setTag(list.get(position).getImageResourceId());
-//            holder.likeImageView.setTag(R.drawable.ic_like);
-//
-//        }
-//
-//        @Override
-//        public int getItemCount() {
-//            return list.size();
-//        }
-//    }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
