@@ -16,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,6 +108,10 @@ public class ClassesCardFragment extends Fragment {
         super.onCreate(savedInstanceState);
         /* TODO should listen to firebase data changed here*/
         //initializeList(); // initialise all this hardcoded list but should listen from firebase
+        if(savedInstanceState != null) {
+            String savedQuery = getArguments().getString(ARG_PARAM1);
+            onNewQuery(savedQuery);
+        }
         getActivity().setTitle("7 Wonders of the Modern World");
         currentActivity = getActivity();
     }
@@ -133,21 +138,21 @@ public class ClassesCardFragment extends Fragment {
                     @Override
                     protected void populateViewHolder(final CourseViewHolder viewHolder, Course course, int position) {
                         viewHolder.setTitleTextView(course.getCourseName());
-                        viewHolder.likeImageView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                int id = (int) viewHolder.likeImageView.getTag();
-                                if (id == R.drawable.ic_like) {
-                                    updateHeartButton(viewHolder,false);
-                                    viewHolder.likeImageView.setTag(R.drawable.ic_liked);
-                                    Toast.makeText(v.getContext(), viewHolder.titleTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    viewHolder.likeImageView.setTag(R.drawable.ic_like);
-                                    viewHolder.likeImageView.setImageResource(R.drawable.ic_like);
-                                    Toast.makeText(v.getContext(),viewHolder.titleTextView.getText() + " removed from favourites", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+//                        viewHolder.likeImageView.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                int id = (int) viewHolder.likeImageView.getTag();
+//                                if (id == R.drawable.ic_like) {
+//                                    updateHeartButton(viewHolder,false);
+//                                    viewHolder.likeImageView.setTag(R.drawable.ic_liked);
+//                                    Toast.makeText(v.getContext(), viewHolder.titleTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
+//                                } else {
+//                                    viewHolder.likeImageView.setTag(R.drawable.ic_like);
+//                                    viewHolder.likeImageView.setImageResource(R.drawable.ic_like);
+//                                    Toast.makeText(v.getContext(),viewHolder.titleTextView.getText() + " removed from favourites", Toast.LENGTH_SHORT).show();
+//                                }
+//                            }
+//                        });
                         Animation animation = AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left);
                         //make sure it is more than lolippop
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -220,16 +225,17 @@ public class ClassesCardFragment extends Fragment {
             shareImageView = (ImageView) v.findViewById(R.id.shareImageView);
             itemView.setOnClickListener(this);
             likeImageView.setTag(R.drawable.ic_like);
+            likeImageView.setImageResource(R.drawable.ic_like);
+            final CourseViewHolder viewHolder = this;
             likeImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int id = (int) likeImageView.getTag();
                     if (id == R.drawable.ic_like) {
-                        //updateHeartButton(this,false);
-                        //likeImageView.setTag(R.drawable.ic_liked);
-                        //likeImageView.setImageResource(R.drawable.ic_liked);
                         Toast.makeText(v.getContext(), titleTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
+                        updateHeartButton(viewHolder,false);
                     } else {
+                        Log.d("already liked","already liked");
                         likeImageView.setTag(R.drawable.ic_like);
                         likeImageView.setImageResource(R.drawable.ic_like);
                         Toast.makeText(v.getContext(), titleTextView.getText() + " removed from favourites", Toast.LENGTH_SHORT).show();
@@ -256,6 +262,9 @@ public class ClassesCardFragment extends Fragment {
 
 
         AnimatorSet animatorSet = new AnimatorSet();
+        // set this as already liked so that user cant click again
+        holder.likeImageView.setImageResource(R.drawable.ic_liked);
+        holder.likeImageView.setTag(R.drawable.ic_liked);
 
 
         ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(holder.likeImageView, "rotation", 0f, 360f);
@@ -283,7 +292,6 @@ public class ClassesCardFragment extends Fragment {
             @Override
             public void onAnimationEnd(Animator animation) {
                 //resetLikeAnimationState(holder);
-                resetLikeAnimationState(holder);
             }
         });
 
