@@ -78,6 +78,21 @@ public class RegisterActivity extends AppCompatActivity {
                         mRegProgress.setCanceledOnTouchOutside(false);
                         mRegProgress.show();
                         register_user(display_name,email,password);
+                        //FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
+                        //String uid = current_user.getUid();
+                        //mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
+                        //User newUser = new User(display_name,"Computer Science","default","default");
+                        //mDatabase.setValue(newUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        //    @Override
+                         //   public void onComplete(@NonNull Task<Void> task) {
+                         //       if (task.isSuccessful()) {
+                          //          mRegProgress.dismiss();
+                           //         Intent mainIntent = new Intent(RegisterActivity.this,LoginActivity.class);
+                            //        startActivity(mainIntent);
+                             //       finish();
+                              //  }
+                           // }
+                        // });
 
                     }
                 }
@@ -94,6 +109,21 @@ public class RegisterActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
                     String uid = current_user.getUid();
+                    //send email verification
+                    current_user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(RegisterActivity.this, "Email sent", Toast.LENGTH_LONG).show();
+                                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                                finish();
+                            } else {
+                                Toast.makeText(RegisterActivity.this, "Failed to sent the email, double check your email address", Toast.LENGTH_LONG).show();
+                                startActivity(new Intent(RegisterActivity.this, StartActivity.class));
+                                finish();
+                            }
+                        }
+                    });
                     mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
                     /*HashMap<String,String> userMap = new HashMap<String, String>();
                     userMap.put("name",display_name);
@@ -106,7 +136,7 @@ public class RegisterActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 mRegProgress.dismiss();
-                                Intent mainIntent = new Intent(RegisterActivity.this,MainActivity.class);
+                                Intent mainIntent = new Intent(RegisterActivity.this,LoginActivity.class);
                                 startActivity(mainIntent);
                                 finish();
                             }
