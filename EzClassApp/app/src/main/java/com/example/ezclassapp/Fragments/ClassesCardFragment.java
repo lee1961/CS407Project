@@ -8,6 +8,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,8 +19,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LayoutAnimationController;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,6 +59,15 @@ public class ClassesCardFragment extends Fragment {
     private DatabaseReference mCourseDatabaseRef;
     FirebaseRecyclerAdapter<Course,MyViewHolder> courseMyViewHolderFirebaseRecyclerAdapter;
     public static FragmentActivity currentActivity;
+
+    /*
+        ANimation attributes
+     */
+    private static final DecelerateInterpolator DECCELERATE_INTERPOLATOR = new DecelerateInterpolator();
+    private static final AccelerateInterpolator ACCELERATE_INTERPOLATOR = new AccelerateInterpolator();
+    private static final OvershootInterpolator OVERSHOOT_INTERPOLATOR = new OvershootInterpolator(4);
+
+    private static final int ANIMATED_ITEMS_COUNT = 2;
 
 
     public void onNewQuery(String queryText) {
@@ -133,11 +147,14 @@ public class ClassesCardFragment extends Fragment {
                     @Override
                     protected void populateViewHolder(MyViewHolder viewHolder, Course course, int position) {
                         viewHolder.setTitleTextView(course.getCourseName());
+                        Animation animation = AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left);
+                        //make sure it is more than lolippop
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            animation.setDuration(3000);
+                            viewHolder.itemView.startAnimation(animation);
+                        }
                     }
                 };
-        final LayoutAnimationController controller =
-                AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_animation_fall_down);
-        MyRecyclerView.setLayoutAnimation(controller);
         MyRecyclerView.setAdapter(courseMyViewHolderFirebaseRecyclerAdapter);
         MyRecyclerView.getAdapter().notifyDataSetChanged();
         MyRecyclerView.scheduleLayoutAnimation();
@@ -168,7 +185,21 @@ public class ClassesCardFragment extends Fragment {
 
         return view;
     }
+    private void runEnterAnimation(View view, int position) {
+        if (!animateItems || position >= ANIMATED_ITEMS_COUNT - 1) {
+            return;
+        }
 
+        if (position > lastAnimatedPosition) {
+            lastAnimatedPosition = position;
+            view.setTranslationY(Utils.getScreenHeight(context));
+            view.animate()
+                    .translationY(0)
+                    .setInterpolator(new DecelerateInterpolator(3.f))
+                    .setDuration(700)
+                    .start();
+        }
+    }
 
 
     @Override
