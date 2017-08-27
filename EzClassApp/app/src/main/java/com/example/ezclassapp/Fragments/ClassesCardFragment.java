@@ -226,8 +226,8 @@ public class ClassesCardFragment extends Fragment {
                     int id = (int) likeImageView.getTag();
                     if (id == R.drawable.ic_like) {
                         //updateHeartButton(this,false);
-//                        likeImageView.setTag(R.drawable.ic_liked);
-//                        likeImageView.setImageResource(R.drawable.ic_liked);
+                        //likeImageView.setTag(R.drawable.ic_liked);
+                        //likeImageView.setImageResource(R.drawable.ic_liked);
                         Toast.makeText(v.getContext(), titleTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
                     } else {
                         likeImageView.setTag(R.drawable.ic_like);
@@ -245,7 +245,9 @@ public class ClassesCardFragment extends Fragment {
 
 
     }
-
+    /*
+      IMPORTANT: this function/interface specifies what parameter must be passed in to go to the next Fragment(ReviewFragment)
+    */
     public interface onCardSelected {
         void onCardSelected(String name);
     }

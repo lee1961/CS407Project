@@ -312,15 +312,20 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     /*
         When the class is selected
         - Interface is from card Fragment
-        - when the user clicks on the class Card
+        - when the user clicks on the class Card should launch the classes ReviewFragment
     */
     @Override
     public void onCardSelected(String name) {
+//        final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name);
+//        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
+//                .addToBackStack(null)
+//                .commit();
+        //Log.d("interface"," received text is " + name);
         final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
+        getSupportFragmentManager().beginTransaction().setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out).
+                replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
                 .addToBackStack(null)
                 .commit();
-        //Log.d("interface"," received text is " + name);
 
     }
 
