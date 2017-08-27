@@ -177,7 +177,10 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         final MatrixCursor c = new MatrixCursor(new String[]{BaseColumns._ID, "className"});
         for (int i = 0; i < SUGGESTIONS.size(); i++) {
             if (queryIsRelevant(query,i)) {
-                c.addRow(new Object[]{i, SUGGESTIONS.get(i).getCourseName()});
+                StringBuilder sb = new StringBuilder();
+                sb.append(SUGGESTIONS.get(i).getCourseNumber() + " ");
+                sb.append(SUGGESTIONS.get(i).getCourseName());
+                c.addRow(new Object[]{i, sb.toString()});
             }
         }
         mAdapter.changeCursor(c);
