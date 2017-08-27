@@ -32,9 +32,9 @@ public class Course {
     public static List<Course> getDummyCourseList() {
         List<Course> classList = new ArrayList<Course>();
         classList.add(new Course("CS354", "Operating System"));
-        classList.add(new Course("CS448", "Operating System"));
-        classList.add(new Course("CS333", "Operating System"));
-        classList.add(new Course("CS354", "Operating System"));
+        classList.add(new Course("CS448", "Database System"));
+        classList.add(new Course("CS333", "Java Programming"));
+        classList.add(new Course("CS240", "C Programming"));
         return classList;
 //        butto.setonclicSiter {
 //
