@@ -7,6 +7,6 @@ package com.example.ezclassapp.Activities;
 public class Constants {
     public static String COURSE = "Course";
     public static String USER = "User";
-    public static String COURSENAME = "courseName";
+    public static String COURSENAME = "fullCourseName";
 
 }

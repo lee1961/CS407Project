@@ -45,31 +45,44 @@ public class ClassesCardFragment extends Fragment {
     RecyclerView MyRecyclerView;
     //private MyAdapter mAdapter;
     private onCardSelected mListener;
+    Query mQueryReference;
 
     private DatabaseReference mCourseDatabaseRef;
+    FirebaseRecyclerAdapter<Course,MyViewHolder> courseMyViewHolderFirebaseRecyclerAdapter;
 
     public void clearItems() {
         listitems.clear();
        // mAdapter.notifyDataSetChanged();
     }
-    public void onNewQuery(String text) {
-        Query query = mCourseDatabaseRef.orderByChild(Constants.COURSENAME).equalTo(text);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
+    public void onNewQuery(String queryText) {
 
-                    for (DataSnapshot issue : dataSnapshot.getChildren()) {
-                        // do with your result
-                    }
-                }
-            }
+        mQueryReference = mCourseDatabaseRef.orderByChild(Constants.COURSENAME).equalTo(queryText);
+//        mQueryReference.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                if (dataSnapshot.exists()) {
+//
+//                    for (DataSnapshot issue : dataSnapshot.getChildren()) {
+//                        // do with your result
+//                        Course course = issue.getValue(Course.class);
+//                        Log.i("query"," retrieved course: " + course.getCourseName());
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+        if (courseMyViewHolderFirebaseRecyclerAdapter != null) {
+            Log.d("here","im not null");
+            courseMyViewHolderFirebaseRecyclerAdapter.cleanup();
+            attachRecyclerViewAdapter();
+            courseMyViewHolderFirebaseRecyclerAdapter.notifyDataSetChanged();
+            MyRecyclerView.setAdapter(courseMyViewHolderFirebaseRecyclerAdapter);
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        }); 
+        }
        /* listitems.clear();
         text = text.trim();
         for (WonderModel wonderModel : permanentItems) {
@@ -120,13 +133,32 @@ public class ClassesCardFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        mQueryReference = mCourseDatabaseRef;
+//        courseMyViewHolderFirebaseRecyclerAdapter =
+//                new FirebaseRecyclerAdapter<Course, MyViewHolder>(
+//                        Course.class,
+//                        R.layout.cardview_class,
+//                        MyViewHolder.class,
+//                        mQueryReference
+//                ) {
+//                    @Override
+//                    protected void populateViewHolder(MyViewHolder viewHolder, Course course, int position) {
+//                        viewHolder.setTitleTextView(course.getCourseName());
+//                    }
+//                };
+        attachRecyclerViewAdapter();
+        MyRecyclerView.setAdapter(courseMyViewHolderFirebaseRecyclerAdapter);
 
-        FirebaseRecyclerAdapter<Course,MyViewHolder> courseMyViewHolderFirebaseRecyclerAdapter =
+    }
+
+    private void attachRecyclerViewAdapter() {
+
+        courseMyViewHolderFirebaseRecyclerAdapter =
                 new FirebaseRecyclerAdapter<Course, MyViewHolder>(
                         Course.class,
                         R.layout.cardview_class,
                         MyViewHolder.class,
-                        mCourseDatabaseRef
+                        mQueryReference
                 ) {
                     @Override
                     protected void populateViewHolder(MyViewHolder viewHolder, Course course, int position) {
@@ -134,7 +166,6 @@ public class ClassesCardFragment extends Fragment {
                     }
                 };
         MyRecyclerView.setAdapter(courseMyViewHolderFirebaseRecyclerAdapter);
-
     }
 
     @Override
@@ -170,6 +201,8 @@ public class ClassesCardFragment extends Fragment {
 
         return view;
     }
+
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
