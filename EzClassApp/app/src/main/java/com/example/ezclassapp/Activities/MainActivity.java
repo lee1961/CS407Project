@@ -167,20 +167,29 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         finish();
     }
 
-    // You must implements your logic to get data using firebase
+
     /*
             TODO: This populates the adapter for query suggestion
             need to use firebase Database to populate it!
+            TO filter classes based on Query
      */
     private void populateAdapter(String query) {
         final MatrixCursor c = new MatrixCursor(new String[]{BaseColumns._ID, "className"});
         for (int i = 0; i < SUGGESTIONS.size(); i++) {
-            if (SUGGESTIONS.get(i).getCourseName().toLowerCase().startsWith(query.toLowerCase())) {
+            if (queryIsRelevant(query,i)) {
                 c.addRow(new Object[]{i, SUGGESTIONS.get(i).getCourseName()});
             }
         }
         mAdapter.changeCursor(c);
 
+    }
+
+    private boolean queryIsRelevant(String query,int position) {
+        if (SUGGESTIONS.get(position).getCourseName().toLowerCase().startsWith(query.toLowerCase()) ||
+            SUGGESTIONS.get(position).getCourseNumber().toLowerCase().startsWith(query.toLowerCase())) {
+            return true;
+        }
+        return false;
     }
 
     private void updateCardFragment(String query) {
