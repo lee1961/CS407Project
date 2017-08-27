@@ -4,6 +4,10 @@ package com.example.ezclassapp.Fragments;
  * Created by victorlee95 on 8/23/2017.
  */
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -55,9 +59,10 @@ public class ClassesCardFragment extends Fragment {
     //private MyAdapter mAdapter;
     private static onCardSelected mListener;
     Query mQueryReference;
+    public static int delay = 300;
 
     private DatabaseReference mCourseDatabaseRef;
-    FirebaseRecyclerAdapter<Course,MyViewHolder> courseMyViewHolderFirebaseRecyclerAdapter;
+    FirebaseRecyclerAdapter<Course, MyViewHolder> courseMyViewHolderFirebaseRecyclerAdapter;
     public static FragmentActivity currentActivity;
 
 
@@ -68,14 +73,14 @@ public class ClassesCardFragment extends Fragment {
             /*
                 when the person closes the search or when the textfield is blank, show all the classes
             */
-            if(queryText.length() == 0) {
+            if (queryText.length() == 0) {
                 mQueryReference = mCourseDatabaseRef;
             }
             courseMyViewHolderFirebaseRecyclerAdapter.cleanup();
             attachRecyclerViewAdapter(); // reinitialize the recyclerviewAdatper
             //MyRecyclerView.setAdapter(courseMyViewHolderFirebaseRecyclerAdapter);
 
-        } else if(queryText.length() < 3 || courseMyViewHolderFirebaseRecyclerAdapter == null) {
+        } else if (queryText.length() < 3 || courseMyViewHolderFirebaseRecyclerAdapter == null) {
             mQueryReference = mCourseDatabaseRef;
         }
     }
@@ -90,7 +95,7 @@ public class ClassesCardFragment extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static ClassesCardFragment newInstance(String param1) {
         final Bundle args = new Bundle();
-        args.putString(ARG_PARAM1,param1);
+        args.putString(ARG_PARAM1, param1);
         ClassesCardFragment fragment = new ClassesCardFragment();
         fragment.setArguments(args);
         return fragment;
@@ -122,7 +127,7 @@ public class ClassesCardFragment extends Fragment {
         mQueryReference = mCourseDatabaseRef;
 
         attachRecyclerViewAdapter(); //initialise the adapter
-       // MyRecyclerView.setAdapter(courseMyViewHolderFirebaseRecyclerAdapter);
+        // MyRecyclerView.setAdapter(courseMyViewHolderFirebaseRecyclerAdapter);
 
     }
 
@@ -136,12 +141,27 @@ public class ClassesCardFragment extends Fragment {
                         mQueryReference
                 ) {
                     @Override
-                    protected void populateViewHolder(MyViewHolder viewHolder, Course course, int position) {
+                    protected void populateViewHolder(final MyViewHolder viewHolder, Course course, int position) {
                         viewHolder.setTitleTextView(course.getCourseName());
+                        viewHolder.likeImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                int id = (int) viewHolder.likeImageView.getTag();
+                                if (id == R.drawable.ic_like) {
+                                    updateHeartButton(viewHolder,false);
+                                    viewHolder.likeImageView.setTag(R.drawable.ic_liked);
+                                    Toast.makeText(v.getContext(), viewHolder.titleTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    viewHolder.likeImageView.setTag(R.drawable.ic_like);
+                                    viewHolder.likeImageView.setImageResource(R.drawable.ic_like);
+                                    Toast.makeText(v.getContext(),viewHolder.titleTextView.getText() + " removed from favourites", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
                         Animation animation = AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left);
                         //make sure it is more than lolippop
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            animation.setDuration(3000);
+                            animation.setDuration(delay);
                             viewHolder.itemView.startAnimation(animation);
                         }
                     }
@@ -170,7 +190,7 @@ public class ClassesCardFragment extends Fragment {
          */
         MyRecyclerView.setLayoutManager(MyLayoutManager);
 
-        if(getArguments() != null) {
+        if (getArguments() != null) {
             onNewQuery(getArguments().getString(ARG_PARAM1));
         }
 
@@ -196,8 +216,9 @@ public class ClassesCardFragment extends Fragment {
         */
         @Override
         public void onClick(View view) {
-            Toast.makeText(view.getContext(),"u clicked " + titleTextView.getText().toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(view.getContext(), "u clicked " + titleTextView.getText().toString(), Toast.LENGTH_SHORT).show();
             mListener.onCardSelected(titleTextView.getText().toString());
+            Bundle args = new Bundle();
         }
 
         public MyViewHolder(View v) {
@@ -214,8 +235,9 @@ public class ClassesCardFragment extends Fragment {
                 public void onClick(View v) {
                     int id = (int) likeImageView.getTag();
                     if (id == R.drawable.ic_like) {
-                        likeImageView.setTag(R.drawable.ic_liked);
-                        likeImageView.setImageResource(R.drawable.ic_liked);
+                        //updateHeartButton(this,false);
+//                        likeImageView.setTag(R.drawable.ic_liked);
+//                        likeImageView.setImageResource(R.drawable.ic_liked);
                         Toast.makeText(v.getContext(), titleTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
                     } else {
                         likeImageView.setTag(R.drawable.ic_like);
@@ -225,11 +247,11 @@ public class ClassesCardFragment extends Fragment {
                 }
             });
         }
+
         public void setTitleTextView(String textView) {
             titleTextView = (TextView) mView.findViewById(R.id.titleTextView);
             titleTextView.setText(textView);
         }
-
 
 
     }
@@ -238,21 +260,50 @@ public class ClassesCardFragment extends Fragment {
         void onCardSelected(String name);
     }
 
+    private static void updateHeartButton(final MyViewHolder holder, boolean animated) {
 
-    /*
-        TODO: to be removed, just for a dummy objects
-     */
-//    public void initializeList() {
-//        listitems.clear();
-//
-//        for (int i = 0; i < 7; i++) {
-//            WonderModel item = new WonderModel();
-//            item.setCardName(Wonders[i]);
-//            item.setImageResourceId(Images[i]);
-//            item.setIsfav(0);
-//            item.setIsturned(0);
-//            listitems.add(item);
-//            permanentItems.add(item);
-//        }
-//    }
+
+        AnimatorSet animatorSet = new AnimatorSet();
+
+
+        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(holder.likeImageView, "rotation", 0f, 360f);
+        rotationAnim.setDuration(300);
+        rotationAnim.setInterpolator(new AccelerateInterpolator());
+
+        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(holder.likeImageView, "scaleX", 0.2f, 1f);
+        bounceAnimX.setDuration(300);
+        bounceAnimX.setInterpolator(new OvershootInterpolator(4f));
+
+        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(holder.likeImageView, "scaleY", 0.2f, 1f);
+        bounceAnimY.setDuration(300);
+        bounceAnimY.setInterpolator(new OvershootInterpolator(4f));
+        bounceAnimY.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                holder.likeImageView.setImageResource(R.drawable.ic_liked);
+            }
+        });
+
+        animatorSet.play(rotationAnim);
+        animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                //resetLikeAnimationState(holder);
+            }
+        });
+
+        animatorSet.start();
+                        //        else {
+                //            if (likedPositions.contains(holder.getPosition())) {
+                //                holder.btnLike.setImageResource(R.drawable.ic_heart_red);
+                //            } else {
+                //                holder.btnLike.setImageResource(R.drawable.ic_heart_outline_grey);
+                //            }
+                //        }
+    }
+
+
 }
+
