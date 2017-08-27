@@ -28,8 +28,12 @@ import com.example.ezclassapp.Models.Course;
 import com.example.ezclassapp.Models.WonderModel;
 import com.example.ezclassapp.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 
 public class ClassesCardFragment extends Fragment {
@@ -44,14 +48,28 @@ public class ClassesCardFragment extends Fragment {
 
     private DatabaseReference mCourseDatabaseRef;
 
-    String Wonders[] = {"Chichen Itza", "Christ the Redeemer", "Great Wall of China", "Machu Picchu", "Petra", "Taj Mahal", "Colosseum"};
-    int Images[] = {R.drawable.chichen_itza, R.drawable.christ_the_redeemer, R.drawable.great_wall_of_china, R.drawable.machu_picchu, R.drawable.petra, R.drawable.taj_mahal, R.drawable.colosseum};
-
     public void clearItems() {
         listitems.clear();
        // mAdapter.notifyDataSetChanged();
     }
     public void onNewQuery(String text) {
+        Query query = mCourseDatabaseRef.orderByChild(Constants.COURSENAME).equalTo(text);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+
+                    for (DataSnapshot issue : dataSnapshot.getChildren()) {
+                        // do with your result
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        }); 
        /* listitems.clear();
         text = text.trim();
         for (WonderModel wonderModel : permanentItems) {
@@ -95,7 +113,7 @@ public class ClassesCardFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         /* TODO should listen to firebase data changed here*/
-        initializeList(); // initialise all this hardcoded list but should listen from firebase
+        //initializeList(); // initialise all this hardcoded list but should listen from firebase
         getActivity().setTitle("7 Wonders of the Modern World");
     }
 
@@ -233,17 +251,17 @@ public class ClassesCardFragment extends Fragment {
     /*
         TODO: to be removed, just for a dummy objects
      */
-    public void initializeList() {
-        listitems.clear();
-
-        for (int i = 0; i < 7; i++) {
-            WonderModel item = new WonderModel();
-            item.setCardName(Wonders[i]);
-            item.setImageResourceId(Images[i]);
-            item.setIsfav(0);
-            item.setIsturned(0);
-            listitems.add(item);
-            permanentItems.add(item);
-        }
-    }
+//    public void initializeList() {
+//        listitems.clear();
+//
+//        for (int i = 0; i < 7; i++) {
+//            WonderModel item = new WonderModel();
+//            item.setCardName(Wonders[i]);
+//            item.setImageResourceId(Images[i]);
+//            item.setIsfav(0);
+//            item.setIsturned(0);
+//            listitems.add(item);
+//            permanentItems.add(item);
+//        }
+//    }
 }

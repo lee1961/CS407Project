@@ -239,7 +239,6 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                 searchEditText.setText(suggestion);
                 searchEditText.setSelection(suggestion.length());
                 searchView.setQuery(suggestion, true);//setting suggestion
-                updateCardFragment(suggestion.trim());
                 return true;
             }
 
@@ -267,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                 }
 
                 // whenever the you type something into the search Bar
-                Log.d("clicked action search", "changing text");
+                Log.d("clicked action search", "text input is " + newText);
                 return true;
             }
         });
