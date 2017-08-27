@@ -85,6 +85,7 @@ public class SettingsActivity extends AppCompatActivity {
                 mClassDatabase = FirebaseDatabase.getInstance().getReference().child("Course");
                 for (Course currentCourse: classes) {
                     String key = mClassDatabase.push().getKey();
+                    currentCourse.setId(key);
                     mClassDatabase.child(key).setValue(currentCourse);
                     Toast.makeText(SettingsActivity.this, key, Toast.LENGTH_SHORT).show();
                 }

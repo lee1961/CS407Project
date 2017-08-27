@@ -23,8 +23,13 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import com.example.ezclassapp.Activities.Constants;
+import com.example.ezclassapp.Models.Course;
 import com.example.ezclassapp.Models.WonderModel;
 import com.example.ezclassapp.R;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 
 public class ClassesCardFragment extends Fragment {
@@ -34,18 +39,20 @@ public class ClassesCardFragment extends Fragment {
     ArrayList<WonderModel> listitems = new ArrayList<>();
 
     RecyclerView MyRecyclerView;
-    private MyAdapter mAdapter;
+    //private MyAdapter mAdapter;
     private onCardSelected mListener;
+
+    private DatabaseReference mCourseDatabaseRef;
 
     String Wonders[] = {"Chichen Itza", "Christ the Redeemer", "Great Wall of China", "Machu Picchu", "Petra", "Taj Mahal", "Colosseum"};
     int Images[] = {R.drawable.chichen_itza, R.drawable.christ_the_redeemer, R.drawable.great_wall_of_china, R.drawable.machu_picchu, R.drawable.petra, R.drawable.taj_mahal, R.drawable.colosseum};
 
     public void clearItems() {
         listitems.clear();
-        mAdapter.notifyDataSetChanged();
+       // mAdapter.notifyDataSetChanged();
     }
     public void onNewQuery(String text) {
-        listitems.clear();
+       /* listitems.clear();
         text = text.trim();
         for (WonderModel wonderModel : permanentItems) {
             if(wonderModel.getCardName().contains(text) || wonderModel.getCardName().toLowerCase().contains(text)) {
@@ -54,7 +61,7 @@ public class ClassesCardFragment extends Fragment {
             }
         }
         mAdapter.notifyDataSetChanged();
-
+    */
     }
 
     /**
@@ -93,8 +100,31 @@ public class ClassesCardFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        FirebaseRecyclerAdapter<Course,MyViewHolder> courseMyViewHolderFirebaseRecyclerAdapter =
+                new FirebaseRecyclerAdapter<Course, MyViewHolder>(
+                        Course.class,
+                        R.layout.cardview_class,
+                        MyViewHolder.class,
+                        mCourseDatabaseRef
+                ) {
+                    @Override
+                    protected void populateViewHolder(MyViewHolder viewHolder, Course course, int position) {
+                        viewHolder.setTitleTextView(course.getCourseName());
+                    }
+                };
+        MyRecyclerView.setAdapter(courseMyViewHolderFirebaseRecyclerAdapter);
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        mCourseDatabaseRef = FirebaseDatabase.getInstance().getReference().child(Constants.COURSE);
+
 
         View view = inflater.inflate(R.layout.fragment_recyclerview_class, container, false);
         MyRecyclerView = (RecyclerView) view.findViewById(R.id.cardView);
@@ -107,13 +137,13 @@ public class ClassesCardFragment extends Fragment {
             -- need to use firebase to retrieve all the class according to the text input into the query
          */
 
-        if (listitems.size() > 0 & MyRecyclerView != null) {
-            //MyRecyclerView.setAdapter(new MyAdapter(listitems));
-            MyAdapter adapter = new MyAdapter((listitems));
-            this.mAdapter = adapter;
-            MyRecyclerView.setAdapter(this.mAdapter);
-            this.mAdapter.notifyDataSetChanged();
-        }
+//        if (listitems.size() > 0 & MyRecyclerView != null) {
+//            //MyRecyclerView.setAdapter(new MyAdapter(listitems));
+//            MyAdapter adapter = new MyAdapter((listitems));
+//            this.mAdapter = adapter;
+//            MyRecyclerView.setAdapter(this.mAdapter);
+//            this.mAdapter.notifyDataSetChanged();
+//        }
         MyRecyclerView.setLayoutManager(MyLayoutManager);
 
         if(getArguments() != null) {
@@ -130,36 +160,36 @@ public class ClassesCardFragment extends Fragment {
     }
 
 
-    public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
-        private ArrayList<WonderModel> list;
-
-        public MyAdapter(ArrayList<WonderModel> Data) {
-            list = Data;
-        }
-
-        @Override
-        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            // create a new view
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_class, parent, false);
-            MyViewHolder holder = new MyViewHolder(view);
-            return holder;
-        }
-
-        @Override
-        public void onBindViewHolder(final MyViewHolder holder, int position) {
-
-            holder.titleTextView.setText(list.get(position).getCardName());
-            holder.coverImageView.setImageResource(list.get(position).getImageResourceId());
-            holder.coverImageView.setTag(list.get(position).getImageResourceId());
-            holder.likeImageView.setTag(R.drawable.ic_like);
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return list.size();
-        }
-    }
+//    public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
+//        private ArrayList<WonderModel> list;
+//
+//        public MyAdapter(ArrayList<WonderModel> Data) {
+//            list = Data;
+//        }
+//
+//        @Override
+//        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+//            // create a new view
+//            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_class, parent, false);
+//            MyViewHolder holder = new MyViewHolder(view);
+//            return holder;
+//        }
+//
+//        @Override
+//        public void onBindViewHolder(final MyViewHolder holder, int position) {
+//
+//            holder.titleTextView.setText(list.get(position).getCardName());
+//            holder.coverImageView.setImageResource(list.get(position).getImageResourceId());
+//            holder.coverImageView.setTag(list.get(position).getImageResourceId());
+//            holder.likeImageView.setTag(R.drawable.ic_like);
+//
+//        }
+//
+//        @Override
+//        public int getItemCount() {
+//            return list.size();
+//        }
+//    }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -167,9 +197,11 @@ public class ClassesCardFragment extends Fragment {
         public ImageView coverImageView;
         public ImageView likeImageView;
         public ImageView shareImageView;
+        View mView;
 
         public MyViewHolder(View v) {
             super(v);
+            mView = v;
             titleTextView = (TextView) v.findViewById(R.id.titleTextView);
             coverImageView = (ImageView) v.findViewById(R.id.coverImageView);
             likeImageView = (ImageView) v.findViewById(R.id.likeImageView);
@@ -210,6 +242,10 @@ public class ClassesCardFragment extends Fragment {
                 }
             });
             itemView.setOnClickListener(this);
+        }
+        public void setTitleTextView(String textView) {
+            titleTextView = (TextView) mView.findViewById(R.id.titleTextView);
+            titleTextView.setText(textView);
         }
 
         /*
