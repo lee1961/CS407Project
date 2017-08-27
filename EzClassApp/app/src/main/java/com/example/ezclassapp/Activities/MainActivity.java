@@ -104,6 +104,9 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
 
         populateClassName(); // retrieve all the coursename first
 
+        ClassesCardFragment classesCardFragment = ClassesCardFragment.newInstance("");
+        getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, classesCardFragment).commit();
+
     }
 
     public void onStart() {
@@ -222,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
             public boolean onClose() {
                 ClassesCardFragment fragment = (ClassesCardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
                 if (fragment != null && fragment.isVisible()) {
-                    fragment.clearItems();
+                    fragment.onNewQuery(""); // just insert blank stuff
                 }
                 Log.d("Debug", "closing the search");
                 return false;
@@ -280,10 +283,11 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     */
     @Override
     public void onCardSelected(String name) {
-        final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
-                .addToBackStack(null)
-                .commit();
+//        final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name);
+//        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
+//                .addToBackStack(null)
+//                .commit();
+        Log.d("interface"," received text is " + name);
 
     }
 
