@@ -14,6 +14,7 @@ public class Course {
     String courseNumber;
     String imageUrl;
     List<UUID> reviewID_list;
+    String fullCourseName;
 
     //    public Class(String ID, String courseName) {
 //        this.ID = ID;
@@ -27,6 +28,7 @@ public class Course {
     public Course(String courseNumber, String courseName) {
         this.courseName = courseName;
         this.courseNumber = courseNumber;
+        setFullCourseName(courseNumber + " " + courseName);
     }
 
     public static List<Course> getDummyCourseList() {
@@ -86,5 +88,13 @@ public class Course {
 
     public void setReviewID_list(List<UUID> reviewID_list) {
         this.reviewID_list = reviewID_list;
+    }
+
+    public String getFullCourseName() {
+        return fullCourseName;
+    }
+
+    public void setFullCourseName(String fullCourseName) {
+        this.fullCourseName = fullCourseName;
     }
 }
