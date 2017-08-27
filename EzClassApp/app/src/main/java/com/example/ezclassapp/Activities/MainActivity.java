@@ -60,7 +60,8 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     private static ArrayList<Course> SUGGESTIONS;
     private SimpleCursorAdapter mAdapter;
     private SearchView searchView;
-    private boolean Animate;
+    private boolean Animate; // boolean to determine whether it is the first time being animatedi
+    final String[] from = new String[]{"className"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,13 +98,12 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("EZclass");
 
-        final String[] from = new String[]{"className"};
         SUGGESTIONS = new ArrayList<Course>();
 
 
         final int[] to = new int[]{android.R.id.text1};
         mAdapter = new SimpleCursorAdapter(getApplicationContext(),
-                android.R.layout.simple_list_item_1,
+                R.layout.cursor_layout,
                 null,
                 from,
                 to,
@@ -316,11 +316,11 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     */
     @Override
     public void onCardSelected(String name) {
-//        final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name);
-//        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
-//                .addToBackStack(null)
-//                .commit();
-        Log.d("interface"," received text is " + name);
+        final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
+                .addToBackStack(null)
+                .commit();
+        //Log.d("interface"," received text is " + name);
 
     }
 
