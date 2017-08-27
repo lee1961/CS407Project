@@ -191,13 +191,18 @@ public class ClassesCardFragment extends Fragment {
 //        }
 //    }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public TextView titleTextView;
         public ImageView coverImageView;
         public ImageView likeImageView;
         public ImageView shareImageView;
         View mView;
+
+        @Override
+        public void onClick(View view) {
+
+        }
 
         public MyViewHolder(View v) {
             super(v);
@@ -206,41 +211,7 @@ public class ClassesCardFragment extends Fragment {
             coverImageView = (ImageView) v.findViewById(R.id.coverImageView);
             likeImageView = (ImageView) v.findViewById(R.id.likeImageView);
             shareImageView = (ImageView) v.findViewById(R.id.shareImageView);
-            likeImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int id = (int) likeImageView.getTag();
-                    if (id == R.drawable.ic_like) {
-                        likeImageView.setTag(R.drawable.ic_liked);
-                        likeImageView.setImageResource(R.drawable.ic_liked);
-                        Toast.makeText(getActivity(), titleTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
-                    } else {
-                        likeImageView.setTag(R.drawable.ic_like);
-                        likeImageView.setImageResource(R.drawable.ic_like);
-                        Toast.makeText(getActivity(), titleTextView.getText() + " removed from favourites", Toast.LENGTH_SHORT).show();
-                    }
 
-                }
-            });
-
-
-            shareImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
-                            "://" + getResources().getResourcePackageName(coverImageView.getId())
-                            + '/' + "drawable" + '/' + getResources().getResourceEntryName((int) coverImageView.getTag()));
-
-
-                    Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-                    shareIntent.setType("image/jpeg");
-                    startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));
-
-
-                }
-            });
             itemView.setOnClickListener(this);
         }
         public void setTitleTextView(String textView) {
@@ -251,15 +222,7 @@ public class ClassesCardFragment extends Fragment {
         /*
                 TODO should launch to a more specific activity LOL
          */
-        @Override
-        public void onClick(View v) {
 
-            Toast.makeText(getActivity(),"u click " + titleTextView.getText().toString(),Toast.LENGTH_SHORT).show();
-            Log.d("manage to click","yes u are clicking for the title " +  titleTextView.getText().toString());
-            mListener.onCardSelected(titleTextView.getText().toString());
-//            Intent intent = CrimePagerActivity.newIntent(getActivity(),mCrime.getId());
-//            startActivity(intent);
-        }
     }
 
     public interface onCardSelected {
