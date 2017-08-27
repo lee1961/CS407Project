@@ -316,11 +316,6 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     */
     @Override
     public void onCardSelected(String name) {
-//        final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name);
-//        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
-//                .addToBackStack(null)
-//                .commit();
-        //Log.d("interface"," received text is " + name);
         final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name);
         getSupportFragmentManager().beginTransaction().setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out).
                 replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
