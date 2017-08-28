@@ -69,7 +69,7 @@ public class ReviewListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_recyclerview_review, container, false);
+        final View view = inflater.inflate(R.layout.fragment_recyclerview_review, container, false);
         ReviewRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_review);
         ReviewRecyclerView.setHasFixedSize(true);
         LinearLayoutManager MyLayoutManager = new LinearLayoutManager(getActivity());
@@ -117,8 +117,23 @@ public class ReviewListFragment extends Fragment {
             }
         });
         startIntroAnimation();
+        /*
+            this is just to make sure the floating action button is diplayed properly
+        */
+        view.post(new Runnable() {
+            @Override
+            public void run() {
+                view.requestLayout();
+            }
+        });
         return view;
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
