@@ -4,19 +4,26 @@ package com.example.ezclassapp.Fragments;
  * Created by victorlee95 on 8/23/2017.
  */
 
-import android.content.ContentResolver;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +37,7 @@ import com.example.ezclassapp.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 
 public class ClassesCardFragment extends Fragment {
@@ -40,28 +48,32 @@ public class ClassesCardFragment extends Fragment {
 
     RecyclerView MyRecyclerView;
     //private MyAdapter mAdapter;
-    private onCardSelected mListener;
+    private static onCardSelected mListener;
+    Query mQueryReference;
+    public static int delay = 300;
 
     private DatabaseReference mCourseDatabaseRef;
+    FirebaseRecyclerAdapter<Course, CourseViewHolder> mCourseCourseViewHolderFirebaseRecyclerAdapter;
+    public static FragmentActivity currentActivity;
 
-    String Wonders[] = {"Chichen Itza", "Christ the Redeemer", "Great Wall of China", "Machu Picchu", "Petra", "Taj Mahal", "Colosseum"};
-    int Images[] = {R.drawable.chichen_itza, R.drawable.christ_the_redeemer, R.drawable.great_wall_of_china, R.drawable.machu_picchu, R.drawable.petra, R.drawable.taj_mahal, R.drawable.colosseum};
 
-    public void clearItems() {
-        listitems.clear();
-       // mAdapter.notifyDataSetChanged();
-    }
-    public void onNewQuery(String text) {
-       /* listitems.clear();
-        text = text.trim();
-        for (WonderModel wonderModel : permanentItems) {
-            if(wonderModel.getCardName().contains(text) || wonderModel.getCardName().toLowerCase().contains(text)) {
-                listitems.add(wonderModel);
-                Log.d("matched stuff","the matching wonder name is " + wonderModel.getCardName());
+    public void onNewQuery(String queryText) {
+
+        mQueryReference = mCourseDatabaseRef.orderByChild(Constants.COURSENAME).equalTo(queryText);
+        if (mCourseCourseViewHolderFirebaseRecyclerAdapter != null) {
+            /*
+                when the person closes the search or when the textfield is blank, show all the classes
+            */
+            if (queryText.length() == 0) {
+                mQueryReference = mCourseDatabaseRef;
             }
+            mCourseCourseViewHolderFirebaseRecyclerAdapter.cleanup();
+            attachRecyclerViewAdapter(); // reinitialize the recyclerviewAdatper
+            //MyRecyclerView.setAdapter(mCourseCourseViewHolderFirebaseRecyclerAdapter);
+
+        } else if (queryText.length() < 3 || mCourseCourseViewHolderFirebaseRecyclerAdapter == null) {
+            mQueryReference = mCourseDatabaseRef;
         }
-        mAdapter.notifyDataSetChanged();
-    */
     }
 
     /**
@@ -74,7 +86,7 @@ public class ClassesCardFragment extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static ClassesCardFragment newInstance(String param1) {
         final Bundle args = new Bundle();
-        args.putString(ARG_PARAM1,param1);
+        args.putString(ARG_PARAM1, param1);
         ClassesCardFragment fragment = new ClassesCardFragment();
         fragment.setArguments(args);
         return fragment;
@@ -95,28 +107,63 @@ public class ClassesCardFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         /* TODO should listen to firebase data changed here*/
-        initializeList(); // initialise all this hardcoded list but should listen from firebase
+        //initializeList(); // initialise all this hardcoded list but should listen from firebase
+        if(savedInstanceState != null) {
+            String savedQuery = getArguments().getString(ARG_PARAM1);
+            onNewQuery(savedQuery);
+        }
         getActivity().setTitle("7 Wonders of the Modern World");
+        currentActivity = getActivity();
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        mQueryReference = mCourseDatabaseRef;
 
-        FirebaseRecyclerAdapter<Course,MyViewHolder> courseMyViewHolderFirebaseRecyclerAdapter =
-                new FirebaseRecyclerAdapter<Course, MyViewHolder>(
+        attachRecyclerViewAdapter(); //initialise the adapter
+        // MyRecyclerView.setAdapter(mCourseCourseViewHolderFirebaseRecyclerAdapter);
+
+    }
+
+    private void attachRecyclerViewAdapter() {
+
+        mCourseCourseViewHolderFirebaseRecyclerAdapter =
+                new FirebaseRecyclerAdapter<Course, CourseViewHolder>(
                         Course.class,
                         R.layout.cardview_class,
-                        MyViewHolder.class,
-                        mCourseDatabaseRef
+                        CourseViewHolder.class,
+                        mQueryReference
                 ) {
                     @Override
-                    protected void populateViewHolder(MyViewHolder viewHolder, Course course, int position) {
+                    protected void populateViewHolder(final CourseViewHolder viewHolder, Course course, int position) {
                         viewHolder.setTitleTextView(course.getCourseName());
+//                        viewHolder.likeImageView.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                int id = (int) viewHolder.likeImageView.getTag();
+//                                if (id == R.drawable.ic_like) {
+//                                    updateHeartButton(viewHolder,false);
+//                                    viewHolder.likeImageView.setTag(R.drawable.ic_liked);
+//                                    Toast.makeText(v.getContext(), viewHolder.titleTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
+//                                } else {
+//                                    viewHolder.likeImageView.setTag(R.drawable.ic_like);
+//                                    viewHolder.likeImageView.setImageResource(R.drawable.ic_like);
+//                                    Toast.makeText(v.getContext(),viewHolder.titleTextView.getText() + " removed from favourites", Toast.LENGTH_SHORT).show();
+//                                }
+//                            }
+//                        });
+                        Animation animation = AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left);
+                        //make sure it is more than lolippop
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            animation.setDuration(delay);
+                            viewHolder.itemView.startAnimation(animation);
+                        }
                     }
                 };
-        MyRecyclerView.setAdapter(courseMyViewHolderFirebaseRecyclerAdapter);
-
+        MyRecyclerView.setAdapter(mCourseCourseViewHolderFirebaseRecyclerAdapter);
+        MyRecyclerView.getAdapter().notifyDataSetChanged();
+        MyRecyclerView.scheduleLayoutAnimation();
     }
 
     @Override
@@ -136,17 +183,9 @@ public class ClassesCardFragment extends Fragment {
             TODO: need to initialise firebase database here
             -- need to use firebase to retrieve all the class according to the text input into the query
          */
-
-//        if (listitems.size() > 0 & MyRecyclerView != null) {
-//            //MyRecyclerView.setAdapter(new MyAdapter(listitems));
-//            MyAdapter adapter = new MyAdapter((listitems));
-//            this.mAdapter = adapter;
-//            MyRecyclerView.setAdapter(this.mAdapter);
-//            this.mAdapter.notifyDataSetChanged();
-//        }
         MyRecyclerView.setLayoutManager(MyLayoutManager);
 
-        if(getArguments() != null) {
+        if (getArguments() != null) {
             onNewQuery(getArguments().getString(ARG_PARAM1));
         }
 
@@ -159,39 +198,7 @@ public class ClassesCardFragment extends Fragment {
 
     }
 
-
-//    public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
-//        private ArrayList<WonderModel> list;
-//
-//        public MyAdapter(ArrayList<WonderModel> Data) {
-//            list = Data;
-//        }
-//
-//        @Override
-//        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//            // create a new view
-//            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_class, parent, false);
-//            MyViewHolder holder = new MyViewHolder(view);
-//            return holder;
-//        }
-//
-//        @Override
-//        public void onBindViewHolder(final MyViewHolder holder, int position) {
-//
-//            holder.titleTextView.setText(list.get(position).getCardName());
-//            holder.coverImageView.setImageResource(list.get(position).getImageResourceId());
-//            holder.coverImageView.setTag(list.get(position).getImageResourceId());
-//            holder.likeImageView.setTag(R.drawable.ic_like);
-//
-//        }
-//
-//        @Override
-//        public int getItemCount() {
-//            return list.size();
-//        }
-//    }
-
-    public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class CourseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public TextView titleTextView;
         public ImageView coverImageView;
@@ -199,51 +206,109 @@ public class ClassesCardFragment extends Fragment {
         public ImageView shareImageView;
         View mView;
 
+        /*
+               TODO: send either the the classID or the list of reviewsID associated with it
+        */
         @Override
         public void onClick(View view) {
-
+            Toast.makeText(view.getContext(), "u clicked " + titleTextView.getText().toString(), Toast.LENGTH_SHORT).show();
+            mListener.onCardSelected(titleTextView.getText().toString());
+            Bundle args = new Bundle();
         }
 
-        public MyViewHolder(View v) {
+        public CourseViewHolder(View v) {
             super(v);
             mView = v;
             titleTextView = (TextView) v.findViewById(R.id.titleTextView);
             coverImageView = (ImageView) v.findViewById(R.id.coverImageView);
             likeImageView = (ImageView) v.findViewById(R.id.likeImageView);
             shareImageView = (ImageView) v.findViewById(R.id.shareImageView);
-
             itemView.setOnClickListener(this);
+            likeImageView.setTag(R.drawable.ic_like);
+            likeImageView.setImageResource(R.drawable.ic_like);
+            final CourseViewHolder viewHolder = this;
+            likeImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int id = (int) likeImageView.getTag();
+                    if (id == R.drawable.ic_like) {
+                        Toast.makeText(v.getContext(), titleTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
+                        updateHeartButton(viewHolder,false);
+                    } else {
+                        Log.d("already liked","already liked");
+                        likeImageView.setTag(R.drawable.ic_like);
+                        likeImageView.setImageResource(R.drawable.ic_like);
+                        Toast.makeText(v.getContext(), titleTextView.getText() + " removed from favourites", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
+
         public void setTitleTextView(String textView) {
             titleTextView = (TextView) mView.findViewById(R.id.titleTextView);
             titleTextView.setText(textView);
         }
 
-        /*
-                TODO should launch to a more specific activity LOL
-         */
 
     }
-
+    /*
+      IMPORTANT: this function/interface specifies what parameter must be passed in to go to the next Fragment(ReviewFragment)
+    */
     public interface onCardSelected {
         void onCardSelected(String name);
     }
 
+    private static void updateHeartButton(final CourseViewHolder holder, boolean animated) {
 
-    /*
-        TODO: to be removed, just for a dummy objects
-     */
-    public void initializeList() {
-        listitems.clear();
 
-        for (int i = 0; i < 7; i++) {
-            WonderModel item = new WonderModel();
-            item.setCardName(Wonders[i]);
-            item.setImageResourceId(Images[i]);
-            item.setIsfav(0);
-            item.setIsturned(0);
-            listitems.add(item);
-            permanentItems.add(item);
-        }
+        AnimatorSet animatorSet = new AnimatorSet();
+        // set this as already liked so that user cant click again
+        holder.likeImageView.setImageResource(R.drawable.ic_liked);
+        holder.likeImageView.setTag(R.drawable.ic_liked);
+
+
+        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(holder.likeImageView, "rotation", 0f, 360f);
+        rotationAnim.setDuration(300);
+        rotationAnim.setInterpolator(new AccelerateInterpolator());
+
+        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(holder.likeImageView, "scaleX", 0.2f, 1f);
+        bounceAnimX.setDuration(300);
+        bounceAnimX.setInterpolator(new OvershootInterpolator(4f));
+
+        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(holder.likeImageView, "scaleY", 0.2f, 1f);
+        bounceAnimY.setDuration(300);
+        bounceAnimY.setInterpolator(new OvershootInterpolator(4f));
+        bounceAnimY.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                holder.likeImageView.setImageResource(R.drawable.ic_liked);
+            }
+        });
+
+        animatorSet.play(rotationAnim);
+        animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                //resetLikeAnimationState(holder);
+            }
+        });
+
+        animatorSet.start();
+                        //        else {
+                //            if (likedPositions.contains(holder.getPosition())) {
+                //                holder.btnLike.setImageResource(R.drawable.ic_heart_red);
+                //            } else {
+                //                holder.btnLike.setImageResource(R.drawable.ic_heart_outline_grey);
+                //            }
+                //        }
     }
+
+    private static void resetLikeAnimationState(CourseViewHolder holder) {
+        holder.likeImageView.setVisibility(View.GONE);
+    }
+
+
 }
+

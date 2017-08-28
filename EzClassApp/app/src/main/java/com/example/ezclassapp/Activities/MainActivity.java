@@ -1,5 +1,7 @@
 package com.example.ezclassapp.Activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -22,11 +24,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
 
 import com.example.ezclassapp.Fragments.ClassesCardFragment;
 import com.example.ezclassapp.Fragments.ReviewListFragment;
 import com.example.ezclassapp.Models.Course;
+import com.example.ezclassapp.Models.Utils;
 import com.example.ezclassapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -55,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     private static ArrayList<Course> SUGGESTIONS;
     private SimpleCursorAdapter mAdapter;
     private SearchView searchView;
+    private boolean Animate; // boolean to determine whether it is the first time being animatedi
+    final String[] from = new String[]{"className"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
 
         mAuth = FirebaseAuth.getInstance();
         database= FirebaseDatabase.getInstance();
+        Animate = false;
 
 
         // Set up the toolbar
@@ -90,13 +98,12 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("EZclass");
 
-        final String[] from = new String[]{"className"};
         SUGGESTIONS = new ArrayList<Course>();
 
 
         final int[] to = new int[]{android.R.id.text1};
         mAdapter = new SimpleCursorAdapter(getApplicationContext(),
-                android.R.layout.simple_list_item_1,
+                R.layout.cursor_layout,
                 null,
                 from,
                 to,
@@ -104,6 +111,31 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
 
         populateClassName(); // retrieve all the coursename first
 
+        ClassesCardFragment classesCardFragment = ClassesCardFragment.newInstance("");
+        getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, classesCardFragment).commit();
+
+    }
+
+    private static final int ANIM_DURATION_TOOLBAR = 300;
+
+    private void startIntroAnimation() {
+
+        int actionbarSize = Utils.dpToPx(56);
+        mToolbar.setTranslationY(-actionbarSize);
+        mToolbar.animate()
+                .translationY(0)
+                .setInterpolator(new DecelerateInterpolator())
+                .setStartDelay(300)
+                .setDuration(3000)
+                .start();
+    }
+    private void startContentAnimation() {
+        mDrawerLayout.animate()
+                .translationY(0)
+                .setInterpolator(new OvershootInterpolator(1.f))
+                .setStartDelay(300)
+                .setDuration(400)
+                .start();
     }
 
     public void onStart() {
@@ -126,6 +158,10 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         // this basically sets up the search view listeners
         setUpSearchView();
+        if(!Animate) {
+            startIntroAnimation();
+            Animate = !Animate;
+        }
 
         return true;
     }
@@ -222,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
             public boolean onClose() {
                 ClassesCardFragment fragment = (ClassesCardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
                 if (fragment != null && fragment.isVisible()) {
-                    fragment.clearItems();
+                    fragment.onNewQuery(""); // just insert blank stuff
                 }
                 Log.d("Debug", "closing the search");
                 return false;
@@ -239,7 +275,6 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                 searchEditText.setText(suggestion);
                 searchEditText.setSelection(suggestion.length());
                 searchView.setQuery(suggestion, true);//setting suggestion
-                updateCardFragment(suggestion.trim());
                 return true;
             }
 
@@ -267,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                 }
 
                 // whenever the you type something into the search Bar
-                Log.d("clicked action search", "changing text");
+                Log.d("clicked action search", "text input is " + newText);
                 return true;
             }
         });
@@ -277,12 +312,13 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     /*
         When the class is selected
         - Interface is from card Fragment
-        - when the user clicks on the class Card
+        - when the user clicks on the class Card should launch the classes ReviewFragment
     */
     @Override
     public void onCardSelected(String name) {
         final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
+        getSupportFragmentManager().beginTransaction().setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out).
+                replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
                 .addToBackStack(null)
                 .commit();
 

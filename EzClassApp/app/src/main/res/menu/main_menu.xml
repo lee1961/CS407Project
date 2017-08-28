@@ -6,5 +6,6 @@
         android:title="Search....."
         app:actionViewClass="android.support.v7.widget.SearchView"
         android:icon="@drawable/ic_search_black_24dp"
+        android:background="@drawable/btn_default_light2"
         app:showAsAction="always" />
 </menu>
