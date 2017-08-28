@@ -23,12 +23,13 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         android:background="@drawable/btn_fab_default"
-        android:backgroundTint="#ff1da1f2"
         android:src="@android:drawable/ic_input_add"
         android:layout_alignParentStart="true"
         app:layout_anchor="@id/recyclerView_review"
         app:layout_anchorGravity="bottom|right|end"
         android:layout_marginBottom="@dimen/btn_fab_margins"
         android:layout_marginRight="@dimen/btn_fab_margins"
+        app:backgroundTint="#ff1da1f2"
         />
+    <!--android:backgroundTint="#ff1da1f2"-->
 </android.support.design.widget.CoordinatorLayout>
