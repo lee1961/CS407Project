@@ -138,21 +138,6 @@ public class ClassesCardFragment extends Fragment {
                     @Override
                     protected void populateViewHolder(final CourseViewHolder viewHolder, Course course, int position) {
                         viewHolder.setTitleTextView(course.getCourseName());
-//                        viewHolder.likeImageView.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
-//                                int id = (int) viewHolder.likeImageView.getTag();
-//                                if (id == R.drawable.ic_like) {
-//                                    updateHeartButton(viewHolder,false);
-//                                    viewHolder.likeImageView.setTag(R.drawable.ic_liked);
-//                                    Toast.makeText(v.getContext(), viewHolder.titleTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
-//                                } else {
-//                                    viewHolder.likeImageView.setTag(R.drawable.ic_like);
-//                                    viewHolder.likeImageView.setImageResource(R.drawable.ic_like);
-//                                    Toast.makeText(v.getContext(),viewHolder.titleTextView.getText() + " removed from favourites", Toast.LENGTH_SHORT).show();
-//                                }
-//                            }
-//                        });
                         Animation animation = AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left);
                         //make sure it is more than lolippop
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -291,7 +276,6 @@ public class ClassesCardFragment extends Fragment {
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                //resetLikeAnimationState(holder);
             }
         });
 

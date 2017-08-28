@@ -2,6 +2,7 @@ package com.example.ezclassapp.Fragments;
 
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +37,7 @@ public class ReviewListFragment extends Fragment {
     RecyclerView ReviewRecyclerView;
     private MyAdapter mAdapter;
     ArrayList<String> listitems = new ArrayList<>();
+    FloatingActionButton mFloatingActionButton;
 
 
     /**
@@ -92,7 +95,28 @@ public class ReviewListFragment extends Fragment {
             listitems.add(args.getString(ARG_PARAM1));
             this.mAdapter.notifyDataSetChanged();
         }
-        ReviewRecyclerView.setLayoutManager(MyLayoutManager );
+        ReviewRecyclerView.setLayoutManager(MyLayoutManager);
+        mFloatingActionButton = (FloatingActionButton)  view.findViewById(R.id.floating_actionBtn);
+
+        // when you are scrolling the recyclerView
+        ReviewRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int scrollState) {
+                super.onScrollStateChanged(recyclerView, scrollState);
+
+                if(scrollState == RecyclerView.SCROLL_STATE_IDLE) {
+                    mFloatingActionButton.setVisibility(View.VISIBLE);
+                } else {
+                    mFloatingActionButton.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
+        startIntroAnimation();
         return view;
     }
     @Override
@@ -178,5 +202,17 @@ public class ReviewListFragment extends Fragment {
         ((MainActivity)getActivity()).getSupportActionBar().show();
     }
 
+
+
+    private void startIntroAnimation() {
+        mFloatingActionButton.setTranslationY(2 * getResources().getDimensionPixelOffset(R.dimen.btn_fab_size));
+        mFloatingActionButton.animate()
+                .translationY(0)
+                .setInterpolator(new OvershootInterpolator(1.f))
+                .setStartDelay(300)
+                .setDuration(500)
+                .start();
+
+    }
 
 }
