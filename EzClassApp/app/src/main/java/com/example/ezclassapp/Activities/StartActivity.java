@@ -1,18 +1,25 @@
 package com.example.ezclassapp.Activities;
 
+import android.animation.Animator;
 import android.animation.AnimatorSet;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -36,6 +43,8 @@ public class StartActivity extends AppCompatActivity {
     private Button mRegBtn;
     private Button mLoginBtn;
     private TextView mTextView;
+    float mScreenHeight;
+    float mScreenWidth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
@@ -43,7 +52,10 @@ public class StartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_start);
 
 
-
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        mScreenHeight = metrics.heightPixels;
+        mScreenWidth = metrics.widthPixels;
 
         mTextView = (TextView) findViewById(R.id.textView);
         mRegBtn = (Button)findViewById(R.id.start_reg_button);
@@ -97,13 +109,40 @@ public class StartActivity extends AppCompatActivity {
                 .setStartDelay(500)
                 .setDuration(400)
                 .start();
-
-        mTextView.animate()
-                .translationX(0)
-                .setInterpolator(new OvershootInterpolator(1.f))
+        ViewPropertyAnimator propertyAnimator = mTextView.animate();
+        propertyAnimator.translationX(0).setInterpolator(new OvershootInterpolator(1.f))
                 .setStartDelay(700)
                 .setDuration(400)
                 .start();
+        propertyAnimator.setListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                Log.d("animation","end animation");
+                ObjectAnimator objectAnimator = ObjectAnimator.ofObject(mTextView, "textColor",
+                        new ArgbEvaluator(),
+                        ContextCompat.getColor(getApplicationContext(), R.color.colorAccent),
+                        ContextCompat.getColor(getApplicationContext(), R.color.material_white));
+                objectAnimator.start();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+
+
+
 
     }
 

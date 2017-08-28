@@ -248,7 +248,7 @@ public class ClassesCardFragment extends Fragment {
 
         AnimatorSet animatorSet = new AnimatorSet();
         // set this as already liked so that user cant click again
-        holder.likeImageView.setImageResource(R.drawable.ic_liked);
+        //holder.likeImageView.setImageResource(R.drawable.ic_liked);
         holder.likeImageView.setTag(R.drawable.ic_liked);
 
 
