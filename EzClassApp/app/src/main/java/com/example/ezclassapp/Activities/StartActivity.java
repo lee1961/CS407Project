@@ -45,7 +45,7 @@ public class StartActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent reg_intent = new Intent(StartActivity.this,RegisterActivity.class);
                 startActivity(reg_intent);
-                
+
             }
         });
 
