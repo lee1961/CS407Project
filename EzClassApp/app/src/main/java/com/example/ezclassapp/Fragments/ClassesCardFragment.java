@@ -51,6 +51,7 @@ public class ClassesCardFragment extends Fragment {
     private static onCardSelected mListener;
     Query mQueryReference;
     public static int delay = 300;
+    private String mQueryString;
 
     private DatabaseReference mCourseDatabaseRef;
     FirebaseRecyclerAdapter<Course, CourseViewHolder> mCourseCourseViewHolderFirebaseRecyclerAdapter;
@@ -58,7 +59,7 @@ public class ClassesCardFragment extends Fragment {
 
 
     public void onNewQuery(String queryText) {
-
+        mQueryString = queryText;
         mQueryReference = mCourseDatabaseRef.orderByChild(Constants.COURSENAME).equalTo(queryText);
         if (mCourseCourseViewHolderFirebaseRecyclerAdapter != null) {
             /*
@@ -108,10 +109,6 @@ public class ClassesCardFragment extends Fragment {
         super.onCreate(savedInstanceState);
         /* TODO should listen to firebase data changed here*/
         //initializeList(); // initialise all this hardcoded list but should listen from firebase
-        if(savedInstanceState != null) {
-            String savedQuery = getArguments().getString(ARG_PARAM1);
-            onNewQuery(savedQuery);
-        }
         getActivity().setTitle("7 Wonders of the Modern World");
         currentActivity = getActivity();
     }
@@ -119,7 +116,12 @@ public class ClassesCardFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        mQueryReference = mCourseDatabaseRef;
+
+        if(mQueryString != null) {
+            mQueryReference = mCourseDatabaseRef.orderByChild(Constants.COURSENAME).equalTo(mQueryString);
+        } else {
+            mQueryReference = mCourseDatabaseRef;
+        }
 
         attachRecyclerViewAdapter(); //initialise the adapter
         // MyRecyclerView.setAdapter(mCourseCourseViewHolderFirebaseRecyclerAdapter);
@@ -164,15 +166,7 @@ public class ClassesCardFragment extends Fragment {
         LinearLayoutManager MyLayoutManager = new LinearLayoutManager(getActivity());
         MyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
-         /*
-            TODO: need to initialise firebase database here
-            -- need to use firebase to retrieve all the class according to the text input into the query
-         */
         MyRecyclerView.setLayoutManager(MyLayoutManager);
-
-        if (getArguments() != null) {
-            onNewQuery(getArguments().getString(ARG_PARAM1));
-        }
 
         return view;
     }
