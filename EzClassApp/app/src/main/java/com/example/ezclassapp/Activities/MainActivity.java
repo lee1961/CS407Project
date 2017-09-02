@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
@@ -53,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavmenu;
+    private MenuItem searchItem;
+
     private String mActivityTitle;
     FirebaseDatabase database;
     DatabaseReference classDatabaseReference;
@@ -121,12 +124,19 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     private void startIntroAnimation() {
 
         int actionbarSize = Utils.dpToPx(56);
-        mToolbar.setTranslationY(-actionbarSize);
-        mToolbar.animate()
+        //mToolbar.setTranslationY(-actionbarSize);
+        searchView.setTranslationY(-actionbarSize);
+        mDrawerLayout.setTranslationY(-actionbarSize);
+        mDrawerLayout.animate()
                 .translationY(0)
-                .setInterpolator(new DecelerateInterpolator())
+                .setInterpolator(new AccelerateInterpolator())
                 .setStartDelay(300)
-                .setDuration(3000)
+                .setDuration(500)
+                .start();
+        searchView.animate()
+                .translationY(0)
+                .setStartDelay(700)
+                .setDuration(500)
                 .start();
     }
     private void startContentAnimation() {
@@ -154,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         getMenuInflater().inflate(R.menu.main_menu, menu);
 
         // the search bar for searching classes, this will be very important
-        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        searchItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         // this basically sets up the search view listeners
         setUpSearchView();
@@ -325,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     }
 
     private void setupDrawer() {
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open,
+            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open,
                 R.string.drawer_close) {
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {

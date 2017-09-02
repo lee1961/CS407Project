@@ -54,13 +54,26 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Toast.makeText(SettingsActivity.this, dataSnapshot.toString(), Toast.LENGTH_SHORT).show();
-                String name = dataSnapshot.child("name").getValue().toString();
-                String major = dataSnapshot.child("major").getValue().toString();
-                String image = dataSnapshot.child("image").getValue().toString();
-                String thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
+                String name = "";
+                String thumb_image = "";
+                String major ="";
+                String image = "";
+                if(dataSnapshot.child("name").getValue() != null) {
+                    name = dataSnapshot.child("name").getValue().toString();
+                }
+                if(dataSnapshot.child("major").getValue() != null) {
+                    major = dataSnapshot.child("major").getValue().toString();
+                }if(dataSnapshot.child("image").getValue() != null) {
+                    image = dataSnapshot.child("image").getValue().toString();
+                }
+                if( dataSnapshot.child("thumb_image").getValue() != null) {
+                    thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
+                }
+
 
                 mName.setText(name);
-                mMajor.setText(major);
+                if(major != null)
+                    mMajor.setText(major);
 
             }
 
