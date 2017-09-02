@@ -105,10 +105,8 @@ public class ReviewListFragment extends Fragment {
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Toast.makeText(getActivity(), "hello", Toast.LENGTH_SHORT).show();
                 Intent SubmitReviewIntent = new Intent(getActivity(), SubmitReview.class);
                 startActivity(SubmitReviewIntent);
-
             }
         });
 
