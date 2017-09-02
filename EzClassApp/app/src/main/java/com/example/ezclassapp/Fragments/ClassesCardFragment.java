@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.example.ezclassapp.Activities.Constants;
 import com.example.ezclassapp.Models.Course;
@@ -139,7 +140,10 @@ public class ClassesCardFragment extends Fragment {
                 ) {
                     @Override
                     protected void populateViewHolder(final CourseViewHolder viewHolder, Course course, int position) {
-                        viewHolder.setTitleTextView(course.getCourseName());
+                        viewHolder.setFullCourseNameTextView(course.getFullCourseName());
+                        viewHolder.setViewHolderCourseId(course.getId());
+                        List<String> list = course.getReviewID_list();
+                        viewHolder.setReviewListOfId(course.getReviewID_list());
                         Animation animation = AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left);
                         //make sure it is more than lolippop
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -178,8 +182,9 @@ public class ClassesCardFragment extends Fragment {
     }
 
     public static class CourseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        public TextView titleTextView;
+        public String courseId;
+        public List<String> reviewListOfId;
+        public TextView fullCourseNameTextView;
         public ImageView coverImageView;
         public ImageView likeImageView;
         public ImageView shareImageView;
@@ -190,51 +195,57 @@ public class ClassesCardFragment extends Fragment {
         */
         @Override
         public void onClick(View view) {
-            Toast.makeText(view.getContext(), "u clicked " + titleTextView.getText().toString(), Toast.LENGTH_SHORT).show();
-            mListener.onCardSelected(titleTextView.getText().toString());
-            Bundle args = new Bundle();
+            Toast.makeText(view.getContext(), "u clicked " + fullCourseNameTextView.getText().toString(), Toast.LENGTH_SHORT).show();
+            mListener.onCardSelected(fullCourseNameTextView.getText().toString(),courseId,reviewListOfId);
         }
 
         public CourseViewHolder(View v) {
             super(v);
             mView = v;
-            titleTextView = (TextView) v.findViewById(R.id.titleTextView);
+            final CourseViewHolder viewHolder = this;
+            fullCourseNameTextView = (TextView) v.findViewById(R.id.titleTextView);
             coverImageView = (ImageView) v.findViewById(R.id.coverImageView);
-            likeImageView = (ImageView) v.findViewById(R.id.likeImageView);
-            shareImageView = (ImageView) v.findViewById(R.id.shareImageView);
             itemView.setOnClickListener(this);
+            likeImageView = (ImageView) v.findViewById(R.id.likeImageView);
             likeImageView.setTag(R.drawable.ic_like);
             likeImageView.setImageResource(R.drawable.ic_like);
-            final CourseViewHolder viewHolder = this;
+            shareImageView = (ImageView) v.findViewById(R.id.shareImageView);
             likeImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int id = (int) likeImageView.getTag();
                     if (id == R.drawable.ic_like) {
-                        Toast.makeText(v.getContext(), titleTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(v.getContext(), fullCourseNameTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
                         updateHeartButton(viewHolder,false);
                     } else {
                         Log.d("already liked","already liked");
                         likeImageView.setTag(R.drawable.ic_like);
                         likeImageView.setImageResource(R.drawable.ic_like);
-                        Toast.makeText(v.getContext(), titleTextView.getText() + " removed from favourites", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(v.getContext(), fullCourseNameTextView.getText() + " removed from favourites", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
         }
 
-        public void setTitleTextView(String textView) {
-            titleTextView = (TextView) mView.findViewById(R.id.titleTextView);
-            titleTextView.setText(textView);
+        public void setFullCourseNameTextView(String textView) {
+            fullCourseNameTextView = (TextView) mView.findViewById(R.id.titleTextView);
+            fullCourseNameTextView.setText(textView);
+        }
+        public void setViewHolderCourseId(String courseId) {
+            this.courseId = courseId;
+        }
+
+        public void setReviewListOfId(List<String> reviewListOfId) {
+            this.reviewListOfId = reviewListOfId;
         }
 
 
     }
     /*
-      IMPORTANT: this function/interface specifies what parameter must be passed in to go to the next Fragment(ReviewFragment)
+      IMPORTANT: this function/interface specifies what parameter must be passed in to go to the next Fragment(ReviewListFragment)
     */
     public interface onCardSelected {
-        void onCardSelected(String name);
+        void onCardSelected(String name,String id,List<String> reviewListOfId);
     }
 
     private static void updateHeartButton(final CourseViewHolder holder, boolean animated) {

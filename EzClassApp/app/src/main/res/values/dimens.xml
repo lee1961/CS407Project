@@ -16,4 +16,8 @@
     <dimen name="btn_fab_margins">16dp</dimen>
     <dimen name="default_elevation">8dp</dimen>
 
+    <dimen name="icon_width2">30dip</dimen>
+    <dimen name="icon_height2">30dip</dimen>
+    <dimen name="icon_padding2">8dp</dimen>
+
 </resources>

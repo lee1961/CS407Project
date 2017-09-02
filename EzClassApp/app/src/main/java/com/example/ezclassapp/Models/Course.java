@@ -12,25 +12,27 @@ public class Course {
     String id;
     String courseName;
     String courseNumber;
+    String fullCourseName;
     String imageUrl;
-    List<UUID> reviewID_list;
-
-    //    public Class(String ID, String courseName) {
-//        this.ID = ID;
-//        this.courseName = courseName;
-//    }
-
+    List<String> reviewID_list;
     public Course() {
 
     }
 
     public Course(String courseNumber, String courseName) {
         this.courseName = courseName;
+        setReviewID_list(new ArrayList<String>());
         this.courseNumber = courseNumber;
+        this.fullCourseName = courseNumber + " " + courseName;
     }
 
-    public static List<Course> getDummyCourseList() {
-        List<Course> classList = new ArrayList<Course>();
+    public String getFullCourseName() {
+        return fullCourseName;
+    }
+
+
+    public static ArrayList<Course> getDummyCourseList() {
+        ArrayList<Course> classList = new ArrayList<Course>();
         classList.add(new Course("CS354", "Operating System"));
         classList.add(new Course("CS448", "Database System"));
         classList.add(new Course("CS333", "Java Programming"));
@@ -80,11 +82,11 @@ public class Course {
         this.imageUrl = imageUrl;
     }
 
-    public List<UUID> getReviewID_list() {
+    public List<String> getReviewID_list() {
         return reviewID_list;
     }
 
-    public void setReviewID_list(List<UUID> reviewID_list) {
+    public void setReviewID_list(List<String> reviewID_list) {
         this.reviewID_list = reviewID_list;
     }
 }

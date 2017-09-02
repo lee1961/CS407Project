@@ -1,6 +1,7 @@
 package com.example.ezclassapp.Fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -16,9 +17,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ezclassapp.Activities.MainActivity;
+import com.example.ezclassapp.Activities.SubmitReview;
 import com.example.ezclassapp.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,27 +33,38 @@ public class ReviewListFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    private static final String ARG_PARAM3 = "param3";
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private List<String> mParam3;
     RecyclerView ReviewRecyclerView;
     private MyAdapter mAdapter;
     ArrayList<String> listitems = new ArrayList<>();
     FloatingActionButton mFloatingActionButton;
+    private String mCourseId;
+    private ArrayList<String> reviewListId;
 
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
+     * @param1 fullCourseName .
+     * @param2 courseID
+     *  @param3 ReviewListCourseID
      * @return A new instance of fragment ReviewListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ReviewListFragment newInstance(String param1) {
+    public static ReviewListFragment newInstance(String fullCourseName,String courseID,List<String> reviewListId) {
         final Bundle args = new Bundle();
-        args.putString(ARG_PARAM1,param1);
+        args.putString(ARG_PARAM1,fullCourseName);
+        args.putString(ARG_PARAM2,courseID);
+        if(reviewListId == null) {
+            args.putStringArrayList(ARG_PARAM3,new ArrayList<String>());
+        } else {
+            args.putStringArrayList(ARG_PARAM3,new ArrayList<String>(reviewListId));
+        }
         ReviewListFragment fragment = new ReviewListFragment();
         fragment.setArguments(args);
         return fragment;
@@ -61,6 +75,7 @@ public class ReviewListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
     }
@@ -93,10 +108,21 @@ public class ReviewListFragment extends Fragment {
         if(getArguments() != null) {
             final Bundle args = getArguments();
             listitems.add(args.getString(ARG_PARAM1));
+            mCourseId = args.getString(ARG_PARAM2);
             this.mAdapter.notifyDataSetChanged();
         }
         ReviewRecyclerView.setLayoutManager(MyLayoutManager);
         mFloatingActionButton = (FloatingActionButton)  view.findViewById(R.id.floating_actionBtn);
+
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent SubmitReviewIntent = new Intent(getActivity(), SubmitReview.class);
+                SubmitReviewIntent.putExtra(SubmitReview.ARG_PARAM1,mCourseId);
+                SubmitReviewIntent.putExtra(SubmitReview.ARG_PARAM2,reviewListId);
+                startActivity(SubmitReviewIntent);
+            }
+        });
 
         // when you are scrolling the recyclerView
         ReviewRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -163,11 +189,9 @@ public class ReviewListFragment extends Fragment {
         @Override
         public void onBindViewHolder(final MyViewHolder holder, int position) {
 
-            holder.reviewtitleTextView.setText(list.get(position));
-            /*
-                TODO: currently gonna hardcode the image
-             */
-            holder.reviewImage.setImageResource(R.drawable.chichen_itza);
+            holder.mReviewtitleTextView.setText(mParam1);
+            holder.mReviewerName.setText(mParam2);
+
 
         }
 
@@ -180,14 +204,14 @@ public class ReviewListFragment extends Fragment {
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public TextView reviewtitleTextView;
-        public ImageView reviewImage;
+        public TextView mReviewtitleTextView;
+        public TextView mReviewerName;
 
 
         public MyViewHolder(View v) {
             super(v);
-            reviewtitleTextView = (TextView) v.findViewById(R.id.review_title);
-            reviewImage = (ImageView) v.findViewById(R.id.review_thumbnail);
+            mReviewtitleTextView = (TextView) v.findViewById(R.id.opinion_textView);
+            mReviewerName = (TextView) v.findViewById(R.id.reviewer_textView);
             itemView.setOnClickListener(this);
         }
 
@@ -196,12 +220,7 @@ public class ReviewListFragment extends Fragment {
          */
         @Override
         public void onClick(View v) {
-
-            Toast.makeText(getActivity(),"u click " + reviewtitleTextView.getText().toString(),Toast.LENGTH_SHORT).show();
-            Log.d("manage to click","yes u are clicking for the title " +  reviewtitleTextView.getText().toString());
-
-//            Intent intent = CrimePagerActivity.newIntent(getActivity(),mCrime.getId());
-//            startActivity(intent);
+            Toast.makeText(getActivity(),"u click " + mReviewtitleTextView.getText().toString(),Toast.LENGTH_SHORT).show();
         }
     }
 
