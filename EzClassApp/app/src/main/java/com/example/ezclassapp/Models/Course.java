@@ -14,7 +14,7 @@ public class Course {
     String courseNumber;
     String fullCourseName;
     String imageUrl;
-    List<UUID> reviewID_list;
+    List<String> reviewID_list;
 
 
     public Course() {
@@ -26,7 +26,7 @@ public class Course {
         this.courseName = courseName;
 
         this.courseNumber = courseNumber;
-        this.fullCourseName = courseNumber + courseName;
+        this.fullCourseName = courseNumber + " " + courseName;
     }
 
     public String getFullCourseName() {
