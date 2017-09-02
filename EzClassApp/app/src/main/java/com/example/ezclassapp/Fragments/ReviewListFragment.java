@@ -1,6 +1,7 @@
 package com.example.ezclassapp.Fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ezclassapp.Activities.MainActivity;
+import com.example.ezclassapp.Activities.SubmitReview;
 import com.example.ezclassapp.R;
 
 import java.util.ArrayList;
@@ -99,6 +101,16 @@ public class ReviewListFragment extends Fragment {
         }
         ReviewRecyclerView.setLayoutManager(MyLayoutManager);
         mFloatingActionButton = (FloatingActionButton)  view.findViewById(R.id.floating_actionBtn);
+
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Toast.makeText(getActivity(), "hello", Toast.LENGTH_SHORT).show();
+                Intent SubmitReviewIntent = new Intent(getActivity(), SubmitReview.class);
+                startActivity(SubmitReviewIntent);
+
+            }
+        });
 
         // when you are scrolling the recyclerView
         ReviewRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
