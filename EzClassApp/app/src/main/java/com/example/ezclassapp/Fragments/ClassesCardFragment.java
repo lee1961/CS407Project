@@ -142,6 +142,9 @@ public class ClassesCardFragment extends Fragment {
                     protected void populateViewHolder(final CourseViewHolder viewHolder, Course course, int position) {
                         viewHolder.setFullCourseNameTextView(course.getFullCourseName());
                         viewHolder.setViewHolderCourseId(course.getId());
+                        if(course.getReviewID_list() == null) {
+                            Log.d("reviewList"," the reviewList of IDs are null");
+                        }
                         viewHolder.setReviewListOfId(course.getReviewID_list());
                         Animation animation = AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left);
                         //make sure it is more than lolippop
@@ -201,14 +204,14 @@ public class ClassesCardFragment extends Fragment {
         public CourseViewHolder(View v) {
             super(v);
             mView = v;
+            final CourseViewHolder viewHolder = this;
             fullCourseNameTextView = (TextView) v.findViewById(R.id.titleTextView);
             coverImageView = (ImageView) v.findViewById(R.id.coverImageView);
-            likeImageView = (ImageView) v.findViewById(R.id.likeImageView);
-            shareImageView = (ImageView) v.findViewById(R.id.shareImageView);
             itemView.setOnClickListener(this);
+            likeImageView = (ImageView) v.findViewById(R.id.likeImageView);
             likeImageView.setTag(R.drawable.ic_like);
             likeImageView.setImageResource(R.drawable.ic_like);
-            final CourseViewHolder viewHolder = this;
+            shareImageView = (ImageView) v.findViewById(R.id.shareImageView);
             likeImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
