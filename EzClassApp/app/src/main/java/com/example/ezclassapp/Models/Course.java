@@ -12,22 +12,27 @@ public class Course {
     String id;
     String courseName;
     String courseNumber;
+    String fullCourseName;
     String imageUrl;
     List<UUID> reviewID_list;
 
-    //    public Class(String ID, String courseName) {
-//        this.ID = ID;
-//        this.courseName = courseName;
-//    }
 
     public Course() {
 
     }
 
+
     public Course(String courseNumber, String courseName) {
         this.courseName = courseName;
+
         this.courseNumber = courseNumber;
+        this.fullCourseName = courseNumber + courseName;
     }
+
+    public String getFullCourseName() {
+        return fullCourseName;
+    }
+
 
     public static List<Course> getDummyCourseList() {
         List<Course> classList = new ArrayList<Course>();

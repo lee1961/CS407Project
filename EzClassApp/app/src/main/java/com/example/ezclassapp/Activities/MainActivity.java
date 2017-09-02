@@ -325,7 +325,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         - when the user clicks on the class Card should launch the classes ReviewFragment
     */
     @Override
-    public void onCardSelected(String name) {
+    public void onCardSelected(String name,String courseId) {
         final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name);
         getSupportFragmentManager().beginTransaction().setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out).
                 replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")

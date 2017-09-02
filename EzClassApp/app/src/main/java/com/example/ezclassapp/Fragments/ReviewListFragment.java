@@ -44,13 +44,15 @@ public class ReviewListFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
+     * @param param1 FullCourseName.
+     * @param param2 CourseID.
      * @return A new instance of fragment ReviewListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ReviewListFragment newInstance(String param1) {
+    public static ReviewListFragment newInstance(String fullCourseName,String courseID) {
         final Bundle args = new Bundle();
-        args.putString(ARG_PARAM1,param1);
+        args.putString(ARG_PARAM1,fullCourseName);
+        args.putString(ARG_PARAM2,courseID);
         ReviewListFragment fragment = new ReviewListFragment();
         fragment.setArguments(args);
         return fragment;
