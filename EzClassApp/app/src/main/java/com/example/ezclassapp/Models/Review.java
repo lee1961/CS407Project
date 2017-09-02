@@ -25,6 +25,12 @@ public class Review {
 
     }
 
+    public Review(String ID, String foreignID_classID,String opinion) {
+        this.ID = ID;
+        this.foreignID_classID = foreignID_classID;
+        this.opinion = opinion;
+    }
+
     public String getId() {
         return ID;
     }
