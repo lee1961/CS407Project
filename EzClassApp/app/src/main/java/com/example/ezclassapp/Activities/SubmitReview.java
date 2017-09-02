@@ -13,10 +13,14 @@ import com.example.ezclassapp.Models.Review;
 import com.example.ezclassapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SubmitReview extends AppCompatActivity {
 
@@ -48,24 +52,27 @@ public class SubmitReview extends AppCompatActivity {
         mSubmit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String key = reviewReference.push().getKey();
+                final String key = reviewReference.push().getKey();
                 Review review = new Review(key,courseid,mReviewText.getEditText().getText().toString());
-                reviewReference.child(key).setValue(review).addOnCompleteListener(new OnCompleteListener<Void>() {
+                reviewReference.child(key).setValue(review);
+                particularCourseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        //finish();
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        List<String> newList = (List<String>) dataSnapshot.getValue();
+                        if(newList == null) {
+                            newList.add(key);
+                        } else {
+                            newList.add(key);
+                        }
+                        particularCourseReference.setValue(newList);
+                        finish();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
                     }
                 });
-                if (reviewListId == null || reviewListId.isEmpty()) {
-                    ArrayList<String> newReviewListId = new ArrayList<String>();
-                    newReviewListId.add(key);
-                    particularCourseReference.setValue(newReviewListId);
-                } else {
-                    reviewListId.add(key);
-                    particularCourseReference.setValue(reviewListId);
-
-                }
-                finish();
 
 
             }

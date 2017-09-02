@@ -14,15 +14,14 @@ public class Course {
     String courseNumber;
     String fullCourseName;
     String imageUrl;
-    ArrayList<String> reviewID_list;
+    List<String> reviewID_list;
     public Course() {
 
     }
 
-
     public Course(String courseNumber, String courseName) {
         this.courseName = courseName;
-        reviewID_list = new ArrayList<String>();
+        setReviewID_list(new ArrayList<String>());
         this.courseNumber = courseNumber;
         this.fullCourseName = courseNumber + " " + courseName;
     }
@@ -83,11 +82,11 @@ public class Course {
         this.imageUrl = imageUrl;
     }
 
-    public ArrayList<String> getReviewID_list() {
+    public List<String> getReviewID_list() {
         return reviewID_list;
     }
 
-    public void setReviewID_list(ArrayList<String> reviewID_list) {
+    public void setReviewID_list(List<String> reviewID_list) {
         this.reviewID_list = reviewID_list;
     }
 }

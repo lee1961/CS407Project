@@ -56,11 +56,15 @@ public class ReviewListFragment extends Fragment {
      * @return A new instance of fragment ReviewListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ReviewListFragment newInstance(String fullCourseName,String courseID,ArrayList<String> reviewListId) {
+    public static ReviewListFragment newInstance(String fullCourseName,String courseID,List<String> reviewListId) {
         final Bundle args = new Bundle();
         args.putString(ARG_PARAM1,fullCourseName);
         args.putString(ARG_PARAM2,courseID);
-        args.putStringArrayList(ARG_PARAM3,reviewListId);
+        if(reviewListId == null) {
+            args.putStringArrayList(ARG_PARAM3,new ArrayList<String>());
+        } else {
+            args.putStringArrayList(ARG_PARAM3,new ArrayList<String>(reviewListId));
+        }
         ReviewListFragment fragment = new ReviewListFragment();
         fragment.setArguments(args);
         return fragment;
