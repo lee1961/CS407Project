@@ -16,12 +16,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
+
 public class SubmitReview extends AppCompatActivity {
 
     private Toolbar mToolbar;
     private Button mSubmit_btn;
     private TextInputLayout mReviewText;
     public static final String ARG_PARAM1 = "courseName";
+    public static final String ARG_PARAM2 = "reviewListId";
     private DatabaseReference mDatabase;
     private DatabaseReference reviewReference;
     private DatabaseReference particularCourseReference;
@@ -35,6 +38,7 @@ public class SubmitReview extends AppCompatActivity {
         mSubmit_btn = (Button) findViewById(R.id.submit_btn);
         Bundle currentBundle = getIntent().getExtras();
         final String courseid = currentBundle.getString(ARG_PARAM1);
+        final ArrayList<String> reviewListId = currentBundle.getStringArrayList(ARG_PARAM2);
         Toast.makeText(getApplicationContext(), courseid, Toast.LENGTH_SHORT).show();
         reviewReference = mDatabase.child(Constants.REVIEW);
         particularCourseReference = mDatabase.child(Constants.COURSE).child(courseid).child(Constants.REVIEWLIST);
@@ -49,9 +53,21 @@ public class SubmitReview extends AppCompatActivity {
                 reviewReference.child(key).setValue(review).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        finish();
+                        //finish();
                     }
                 });
+                if (reviewListId == null || reviewListId.isEmpty()) {
+                    ArrayList<String> newReviewListId = new ArrayList<String>();
+                    newReviewListId.add(key);
+                    particularCourseReference.setValue(newReviewListId);
+                } else {
+                    reviewListId.add(key);
+                    particularCourseReference.setValue(reviewListId);
+
+                }
+                finish();
+
+
             }
         });
 

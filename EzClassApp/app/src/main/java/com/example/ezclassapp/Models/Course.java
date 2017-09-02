@@ -14,7 +14,7 @@ public class Course {
     String courseNumber;
     String fullCourseName;
     String imageUrl;
-    List<String> reviewID_list;
+    ArrayList<String> reviewID_list;
 
 
     public Course() {
@@ -34,8 +34,8 @@ public class Course {
     }
 
 
-    public static List<Course> getDummyCourseList() {
-        List<Course> classList = new ArrayList<Course>();
+    public static ArrayList<Course> getDummyCourseList() {
+        ArrayList<Course> classList = new ArrayList<Course>();
         classList.add(new Course("CS354", "Operating System"));
         classList.add(new Course("CS448", "Database System"));
         classList.add(new Course("CS333", "Java Programming"));
@@ -85,11 +85,11 @@ public class Course {
         this.imageUrl = imageUrl;
     }
 
-    public List<String> getReviewID_list() {
+    public ArrayList<String> getReviewID_list() {
         return reviewID_list;
     }
 
-    public void setReviewID_list(List<String> reviewID_list) {
+    public void setReviewID_list(ArrayList<String> reviewID_list) {
         this.reviewID_list = reviewID_list;
     }
 }

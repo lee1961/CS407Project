@@ -43,6 +43,7 @@ public class ReviewListFragment extends Fragment {
     ArrayList<String> listitems = new ArrayList<>();
     FloatingActionButton mFloatingActionButton;
     private String mCourseId;
+    private ArrayList<String> reviewListId;
 
 
     /**
@@ -114,6 +115,7 @@ public class ReviewListFragment extends Fragment {
             public void onClick(View view) {
                 Intent SubmitReviewIntent = new Intent(getActivity(), SubmitReview.class);
                 SubmitReviewIntent.putExtra(SubmitReview.ARG_PARAM1,mCourseId);
+                SubmitReviewIntent.putExtra(SubmitReview.ARG_PARAM2,reviewListId);
                 startActivity(SubmitReviewIntent);
             }
         });
