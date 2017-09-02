@@ -85,11 +85,11 @@ public class Course {
         this.imageUrl = imageUrl;
     }
 
-    public List<UUID> getReviewID_list() {
+    public List<String> getReviewID_list() {
         return reviewID_list;
     }
 
-    public void setReviewID_list(List<UUID> reviewID_list) {
+    public void setReviewID_list(List<String> reviewID_list) {
         this.reviewID_list = reviewID_list;
     }
 }
