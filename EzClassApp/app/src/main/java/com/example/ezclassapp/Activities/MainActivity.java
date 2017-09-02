@@ -326,7 +326,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     */
     @Override
     public void onCardSelected(String name,String courseId) {
-        final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name);
+        final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name,courseId);
         getSupportFragmentManager().beginTransaction().setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out).
                 replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
                 .addToBackStack(null)
