@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.example.ezclassapp.Activities.Constants;
 import com.example.ezclassapp.Models.Course;
@@ -141,6 +142,7 @@ public class ClassesCardFragment extends Fragment {
                     protected void populateViewHolder(final CourseViewHolder viewHolder, Course course, int position) {
                         viewHolder.setFullCourseNameTextView(course.getFullCourseName());
                         viewHolder.setViewHolderCourseId(course.getId());
+                        viewHolder.setReviewListOfId(course.getReviewID_list());
                         Animation animation = AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left);
                         //make sure it is more than lolippop
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -180,6 +182,7 @@ public class ClassesCardFragment extends Fragment {
 
     public static class CourseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public String courseId;
+        public List<String> reviewListOfId;
         public TextView fullCourseNameTextView;
         public ImageView coverImageView;
         public ImageView likeImageView;
@@ -192,7 +195,7 @@ public class ClassesCardFragment extends Fragment {
         @Override
         public void onClick(View view) {
             Toast.makeText(view.getContext(), "u clicked " + fullCourseNameTextView.getText().toString(), Toast.LENGTH_SHORT).show();
-            mListener.onCardSelected(fullCourseNameTextView.getText().toString(),courseId);
+            mListener.onCardSelected(fullCourseNameTextView.getText().toString(),courseId,reviewListOfId);
         }
 
         public CourseViewHolder(View v) {
@@ -231,13 +234,17 @@ public class ClassesCardFragment extends Fragment {
             this.courseId = courseId;
         }
 
+        public void setReviewListOfId(List<String> reviewListOfId) {
+            this.reviewListOfId = reviewListOfId;
+        }
+
 
     }
     /*
       IMPORTANT: this function/interface specifies what parameter must be passed in to go to the next Fragment(ReviewListFragment)
     */
     public interface onCardSelected {
-        void onCardSelected(String name,String id);
+        void onCardSelected(String name,String id,List<String> reviewListOfId);
     }
 
     private static void updateHeartButton(final CourseViewHolder holder, boolean animated) {

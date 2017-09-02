@@ -21,6 +21,7 @@ import com.example.ezclassapp.Activities.SubmitReview;
 import com.example.ezclassapp.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,10 +33,11 @@ public class ReviewListFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    private static final String ARG_PARAM3 = "param3";
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private List<String> mParam3;
     RecyclerView ReviewRecyclerView;
     private MyAdapter mAdapter;
     ArrayList<String> listitems = new ArrayList<>();
@@ -48,13 +50,15 @@ public class ReviewListFragment extends Fragment {
      *
      * @param param1 FullCourseName.
      * @param param2 CourseID.
+     * @param param3 ReviewListCourseID
      * @return A new instance of fragment ReviewListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ReviewListFragment newInstance(String fullCourseName,String courseID) {
+    public static ReviewListFragment newInstance(String fullCourseName,String courseID,ArrayList<String> reviewListId) {
         final Bundle args = new Bundle();
         args.putString(ARG_PARAM1,fullCourseName);
         args.putString(ARG_PARAM2,courseID);
+        args.putStringArrayList(ARG_PARAM3,reviewListId);
         ReviewListFragment fragment = new ReviewListFragment();
         fragment.setArguments(args);
         return fragment;
@@ -175,11 +179,9 @@ public class ReviewListFragment extends Fragment {
         @Override
         public void onBindViewHolder(final MyViewHolder holder, int position) {
 
-            holder.reviewtitleTextView.setText(list.get(position));
-            /*
-                TODO: currently gonna hardcode the image
-             */
-            holder.reviewImage.setImageResource(R.drawable.chichen_itza);
+            holder.mReviewtitleTextView.setText(mParam1);
+            holder.mReviewerName.setText(mParam2);
+
 
         }
 
@@ -192,14 +194,14 @@ public class ReviewListFragment extends Fragment {
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public TextView reviewtitleTextView;
-        public ImageView reviewImage;
+        public TextView mReviewtitleTextView;
+        public TextView mReviewerName;
 
 
         public MyViewHolder(View v) {
             super(v);
-            reviewtitleTextView = (TextView) v.findViewById(R.id.review_title);
-            reviewImage = (ImageView) v.findViewById(R.id.review_thumbnail);
+            mReviewtitleTextView = (TextView) v.findViewById(R.id.opinion_textView);
+            mReviewerName = (TextView) v.findViewById(R.id.reviewer_textView);
             itemView.setOnClickListener(this);
         }
 
@@ -208,12 +210,7 @@ public class ReviewListFragment extends Fragment {
          */
         @Override
         public void onClick(View v) {
-
-            Toast.makeText(getActivity(),"u click " + reviewtitleTextView.getText().toString(),Toast.LENGTH_SHORT).show();
-            Log.d("manage to click","yes u are clicking for the title " +  reviewtitleTextView.getText().toString());
-
-//            Intent intent = CrimePagerActivity.newIntent(getActivity(),mCrime.getId());
-//            startActivity(intent);
+            Toast.makeText(getActivity(),"u click " + mReviewtitleTextView.getText().toString(),Toast.LENGTH_SHORT).show();
         }
     }
 
