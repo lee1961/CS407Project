@@ -24,7 +24,7 @@ public class Course {
 
     public Course(String courseNumber, String courseName) {
         this.courseName = courseName;
-
+        reviewID_list = new ArrayList<String>();
         this.courseNumber = courseNumber;
         this.fullCourseName = courseNumber + " " + courseName;
     }
