@@ -60,6 +60,7 @@ public class SubmitReview extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         List<String> newList = (List<String>) dataSnapshot.getValue();
                         if(newList == null) {
+                            newList = new ArrayList<String>();
                             newList.add(key);
                         } else {
                             newList.add(key);
