@@ -10,7 +10,7 @@
                 tools:context=".Activities.MainActivity">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/cardView"
+        android:id="@+id/courseCardsView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layoutAnimation="@anim/layout_animation_fall_down"

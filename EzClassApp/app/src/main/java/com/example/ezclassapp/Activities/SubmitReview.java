@@ -67,13 +67,11 @@ public class SubmitReview extends AppCompatActivity {
                         particularCourseReference.setValue(newList);
                         finish();
                     }
-
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
 
                     }
                 });
-
 
             }
         });

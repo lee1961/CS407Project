@@ -142,8 +142,6 @@ public class ClassesCardFragment extends Fragment {
                     protected void populateViewHolder(final CourseViewHolder viewHolder, Course course, int position) {
                         viewHolder.setFullCourseNameTextView(course.getFullCourseName());
                         viewHolder.setViewHolderCourseId(course.getId());
-                        List<String> list = course.getReviewID_list();
-                        viewHolder.setReviewListOfId(course.getReviewID_list());
                         Animation animation = AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left);
                         //make sure it is more than lolippop
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -165,7 +163,7 @@ public class ClassesCardFragment extends Fragment {
 
 
         View view = inflater.inflate(R.layout.fragment_recyclerview_class, container, false);
-        MyRecyclerView = (RecyclerView) view.findViewById(R.id.cardView);
+        MyRecyclerView = (RecyclerView) view.findViewById(R.id.courseCardsView);
         MyRecyclerView.setHasFixedSize(true);
         LinearLayoutManager MyLayoutManager = new LinearLayoutManager(getActivity());
         MyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
