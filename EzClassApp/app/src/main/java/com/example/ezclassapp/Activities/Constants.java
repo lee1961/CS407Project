@@ -8,5 +8,7 @@ public class Constants {
     public static String COURSE = "Course";
     public static String USER = "User";
     public static String COURSENAME = "fullCourseName";
+    public static String REVIEW = "Review";
+    public static String REVIEWLIST = "reviewID_list";
 
 }

@@ -42,15 +42,16 @@ public class ReviewListFragment extends Fragment {
     private MyAdapter mAdapter;
     ArrayList<String> listitems = new ArrayList<>();
     FloatingActionButton mFloatingActionButton;
+    private String mCourseId;
 
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 FullCourseName.
-     * @param param2 CourseID.
-     * @param param3 ReviewListCourseID
+     * @param1 fullCourseName .
+     * @param2 courseID
+     *  @param3 ReviewListCourseID
      * @return A new instance of fragment ReviewListFragment.
      */
     // TODO: Rename and change types and number of parameters
@@ -69,6 +70,7 @@ public class ReviewListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
     }
@@ -101,6 +103,7 @@ public class ReviewListFragment extends Fragment {
         if(getArguments() != null) {
             final Bundle args = getArguments();
             listitems.add(args.getString(ARG_PARAM1));
+            mCourseId = args.getString(ARG_PARAM2);
             this.mAdapter.notifyDataSetChanged();
         }
         ReviewRecyclerView.setLayoutManager(MyLayoutManager);
@@ -110,6 +113,7 @@ public class ReviewListFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent SubmitReviewIntent = new Intent(getActivity(), SubmitReview.class);
+                SubmitReviewIntent.putExtra(SubmitReview.ARG_PARAM1,mCourseId);
                 startActivity(SubmitReviewIntent);
             }
         });
