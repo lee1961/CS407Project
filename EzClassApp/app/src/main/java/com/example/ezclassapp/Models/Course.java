@@ -15,8 +15,6 @@ public class Course {
     String fullCourseName;
     String imageUrl;
     ArrayList<String> reviewID_list;
-
-
     public Course() {
 
     }
