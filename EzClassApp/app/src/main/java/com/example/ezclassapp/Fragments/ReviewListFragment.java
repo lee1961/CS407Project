@@ -27,11 +27,13 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.example.ezclassapp.Activities.MainActivity;
 import com.example.ezclassapp.Activities.SubmitReview;
 import com.example.ezclassapp.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -186,23 +188,7 @@ public class ReviewListFragment extends Fragment {
             itemView.setOnClickListener(this);
 
             mUpVoteImageView = (ImageView) v.findViewById(R.id.upVoteImageView);
-            mUpVoteImageView.setTag(R.drawable.neutral_like);
-            mUpVoteImageView.setImageResource(R.drawable.neutral_like);
-            mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int id = (int) mUpVoteImageView.getTag();
-                    Log.d("tag","upvoting it");
-                    if(id == R.drawable.neutral_like) {
-                        updateUpvoteButton(viewHolder);
-                        Log.d("tag","upvoting it");
 
-                    } else {
-
-                    }
-
-                }
-            });
             mDownVoteImageView = (ImageView) v.findViewById(R.id.downVoteImageView);
             mDownVoteImageView.setImageResource(R.drawable.neutral_dislike);
             mDownVoteImageView.setTag(R.drawable.neutral_dislike);
@@ -247,9 +233,37 @@ public class ReviewListFragment extends Fragment {
                         viewHolder.mReviewerName.setText(review.getReviewerName());
                         viewHolder.mUpVoteTextViewCounter.setText(String.valueOf(review.getUpvote()));
                         viewHolder.mDownVoteTextViewCounter.setText(String.valueOf(review.getDownvote()));
+
+
+                        viewHolder.mUpVoteImageView.setTag(R.drawable.neutral_like);
+                        viewHolder.mUpVoteImageView.setImageResource(R.drawable.neutral_like);
+                        /* WHEN THE PERSON UPVOTE THE POST */
+                        viewHolder.mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                int id = (int) viewHolder.mUpVoteImageView.getTag();
+                                Log.d("tag","upvoting it");
+                                if(id == R.drawable.neutral_like) {
+                                    updateUpvoteButton(viewHolder);
+                                    Log.d("tag","upvoting it");
+                                    String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child()
+                                } else {
+
+                                }
+
+                            }
+                        });
+
+                        viewHolder.mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                            }
+                        });
+
                     }
                 };
-
         ReviewRecyclerView.setAdapter(mReviewViewHolderFirebaseRecyclerAdapter);
         ReviewRecyclerView.getAdapter().notifyDataSetChanged();
     }

@@ -277,6 +277,7 @@ public class ClassesCardFragment extends Fragment {
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+
             }
         });
 
