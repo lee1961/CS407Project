@@ -209,7 +209,7 @@ public class ReviewListFragment extends Fragment {
                     protected void populateViewHolder(final ReviewViewHolder viewHolder, Review review, int position) {
                         Log.e("sda","the review name is " + review.getOpinion());
                         viewHolder.mReviewtitleTextView.setText(review.getOpinion());
-                        viewHolder.mReviewerName.setText(review.getId());
+                        viewHolder.mReviewerName.setText(review.getReviewerName());
                     }
                 };
 

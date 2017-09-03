@@ -248,7 +248,9 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         if (classesCardFragment != null && classesCardFragment.isVisible() && query.length() > 2) {
             Log.d("yeah yeah", "someone has input some text into the query");
             RecyclerView myRecyclerView = (RecyclerView) findViewById(R.id.cardView);
-            myRecyclerView.scrollToPosition(0);
+            if(myRecyclerView != null) {
+                myRecyclerView.scrollToPosition(0);
+            }
             classesCardFragment.onNewQuery(query);
         } else if (classesCardFragment == null && query.length() > 2) {
             FragmentManager fm = getSupportFragmentManager();

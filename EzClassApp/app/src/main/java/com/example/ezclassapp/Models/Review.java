@@ -11,6 +11,7 @@ import java.util.UUID;
 
 public class Review {
     String ID;
+    String reviewerName;
     String foreignID_classID;
     UUID foreignID_userID;
     String opinion;
@@ -25,8 +26,17 @@ public class Review {
 
     }
 
-    public Review(String ID, String foreignID_classID,String opinion) {
+    public String getReviewerName() {
+        return reviewerName;
+    }
+
+    public void setReviewerName(String reviewerName) {
+        this.reviewerName = reviewerName;
+    }
+
+    public Review(String ID,String reviewerName, String foreignID_classID, String opinion) {
         this.ID = ID;
+        this.reviewerName = reviewerName;
         this.foreignID_classID = foreignID_classID;
         this.opinion = opinion;
     }

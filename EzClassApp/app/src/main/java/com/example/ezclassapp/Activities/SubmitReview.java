@@ -5,6 +5,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -13,6 +14,7 @@ import com.example.ezclassapp.Models.Review;
 import com.example.ezclassapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,6 +34,7 @@ public class SubmitReview extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private DatabaseReference reviewReference;
     private DatabaseReference particularCourseReference;
+    private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +51,27 @@ public class SubmitReview extends AppCompatActivity {
         particularCourseReference = mDatabase.child(Constants.COURSE).child(courseid).child(Constants.REVIEWLIST);
 
 
+        DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child(Constants.USER).child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("name");
+        mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String name = dataSnapshot.getValue().toString();
+                userName = name;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
 
         mSubmit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final String key = reviewReference.push().getKey();
-                Review review = new Review(key,courseid,mReviewText.getEditText().getText().toString());
+                Review review = new Review(key,userName,courseid,mReviewText.getEditText().getText().toString());
                 reviewReference.child(key).setValue(review);
                 particularCourseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
