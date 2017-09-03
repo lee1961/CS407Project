@@ -28,6 +28,7 @@ import com.example.ezclassapp.Activities.SubmitReview;
 import com.example.ezclassapp.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +54,7 @@ public class ReviewListFragment extends Fragment {
     FloatingActionButton mFloatingActionButton;
     private String mCourseId;
     private ArrayList<String> reviewListId;
-    DatabaseReference mQueryReference;
+    Query mQueryReference;
 
     /**
      * Use this factory method to create a new instance of
@@ -107,7 +108,8 @@ public class ReviewListFragment extends Fragment {
             final Bundle args = getArguments();
             mCourseId = args.getString(ARG_PARAM2);
         }
-        mQueryReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW);
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW);
+        mQueryReference = reference.orderByChild(Constants.FOREIGNCLASSKEY).equalTo(mCourseId);
 
         ReviewRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_review);
         ReviewRecyclerView.setHasFixedSize(true);

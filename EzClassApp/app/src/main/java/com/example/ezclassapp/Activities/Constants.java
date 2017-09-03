@@ -10,5 +10,6 @@ public class Constants {
     public static String COURSENAME = "fullCourseName";
     public static String REVIEW = "Review";
     public static String REVIEWLIST = "reviewID_list";
+    public static String FOREIGNCLASSKEY = "foreignID_classID";
 
 }
