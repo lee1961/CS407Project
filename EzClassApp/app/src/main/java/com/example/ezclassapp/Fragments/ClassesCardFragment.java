@@ -169,7 +169,6 @@ public class ClassesCardFragment extends Fragment {
         MyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
         MyRecyclerView.setLayoutManager(MyLayoutManager);
-
         return view;
     }
 

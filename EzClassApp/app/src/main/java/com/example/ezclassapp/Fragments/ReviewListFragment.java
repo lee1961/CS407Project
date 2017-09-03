@@ -125,6 +125,7 @@ public class ReviewListFragment extends Fragment {
                 startActivity(SubmitReviewIntent);
             }
         });
+        attachRecyclerViewAdapter();
         // when you are scrolling the recyclerView
         ReviewRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -204,6 +205,7 @@ public class ReviewListFragment extends Fragment {
                 ) {
                     @Override
                     protected void populateViewHolder(final ReviewViewHolder viewHolder, Review review, int position) {
+                        Log.e("sda","the review name is " + review.getOpinion());
                         viewHolder.mReviewtitleTextView.setText(review.getOpinion());
                         viewHolder.mReviewerName.setText(review.getId());
                     }
