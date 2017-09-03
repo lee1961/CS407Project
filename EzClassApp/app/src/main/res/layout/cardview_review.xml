@@ -51,7 +51,7 @@
                         android:src="@drawable/neutral_dislike"/>
 
                     <TextView
-                        android:id="@+id/textView"
+                        android:id="@+id/downVoteCounterTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="123 likes"
@@ -64,7 +64,7 @@
                     android:layout_weight="0.5"
                     android:layout_width="0dip"
                     android:layout_height="wrap_content"
-                    android:gravity="center|start"
+                    android:gravity="center|right"
                     android:orientation="horizontal">
 
                     <ImageView
@@ -75,8 +75,10 @@
                         android:src="@drawable/neutral_like"/>
 
                     <TextView
+                        android:id="@+id/upVoteCounterTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:padding="@dimen/icon_padding"
                         android:text="123 likes">
 
                     </TextView>

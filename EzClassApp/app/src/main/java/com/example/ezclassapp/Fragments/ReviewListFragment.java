@@ -6,7 +6,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -17,15 +16,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ezclassapp.Activities.Constants;
-import com.example.ezclassapp.Models.Course;
 import com.example.ezclassapp.Models.Review;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.example.ezclassapp.Activities.MainActivity;
@@ -36,7 +32,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -101,21 +96,12 @@ public class ReviewListFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_recyclerview_review, container, false);
-
-        /*
-
-            TODO: need to initialise firebase database here
-            -- assuming it gets the classID/key here
-            -- need to use firebase to retrieve all the reviews associated with the classID
-         */
-
-
         if(getArguments() != null) {
             final Bundle args = getArguments();
             mCourseId = args.getString(ARG_PARAM2);
         }
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW);
-        mQueryReference = reference.orderByChild(Constants.FOREIGNCLASSKEY).equalTo(mCourseId);
+        DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW);
+        mQueryReference = reviewReference.orderByChild(Constants.FOREIGNCLASSKEY).equalTo(mCourseId);
 
         ReviewRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_review);
         ReviewRecyclerView.setHasFixedSize(true);
@@ -186,15 +172,18 @@ public class ReviewListFragment extends Fragment {
         public TextView mReviewerName;
         public ImageView mUpVoteImageView;
         public ImageView mDownVoteImageView;
-
+        public TextView mUpVoteTextViewCounter;
+        public TextView mDownVoteTextViewCounter;
 
         public ReviewViewHolder(View v) {
             super(v);
             final ReviewViewHolder viewHolder = this;
+            mUpVoteTextViewCounter = (TextView) v.findViewById(R.id.upVoteCounterTextView);
+            mDownVoteTextViewCounter = (TextView) v.findViewById(R.id.downVoteCounterTextView);
             mReviewtitleTextView = (TextView) v.findViewById(R.id.opinion_textView);
             mReviewerName = (TextView) v.findViewById(R.id.reviewer_textView);
 
-            //itemView.setOnClickListener(this);
+            itemView.setOnClickListener(this);
 
             mUpVoteImageView = (ImageView) v.findViewById(R.id.upVoteImageView);
             mUpVoteImageView.setTag(R.drawable.neutral_like);
@@ -256,6 +245,8 @@ public class ReviewListFragment extends Fragment {
                     protected void populateViewHolder(final ReviewViewHolder viewHolder, Review review, int position) {
                         viewHolder.mReviewtitleTextView.setText(review.getOpinion());
                         viewHolder.mReviewerName.setText(review.getReviewerName());
+                        viewHolder.mUpVoteTextViewCounter.setText(String.valueOf(review.getUpvote()));
+                        viewHolder.mDownVoteTextViewCounter.setText(String.valueOf(review.getDownvote()));
                     }
                 };
 
@@ -292,8 +283,6 @@ public class ReviewListFragment extends Fragment {
 
 
         AnimatorSet animatorSet = new AnimatorSet();
-        // set this as already liked so that user cant click again
-        //holder.mUpVoteImageView.setImageResource(R.drawable.like);
         holder.mUpVoteImageView.setTag(R.drawable.like);
 
         ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(holder.mUpVoteImageView, "rotation", 0f, 360f);

@@ -13,7 +13,7 @@ public class Review {
     String ID;
     String reviewerName;
     String foreignID_classID;
-    UUID foreignID_userID;
+    String foreignID_userID;
     String opinion;
     String tips;
     int difficulty;
@@ -57,11 +57,11 @@ public class Review {
         this.foreignID_classID = foreignID_classID;
     }
 
-    public UUID getForeignID_userID() {
+    public String getForeignID_userID() {
         return foreignID_userID;
     }
 
-    public void setForeignID_userID(UUID foreignID_userID) {
+    public void setForeignID_userID(String foreignID_userID) {
         this.foreignID_userID = foreignID_userID;
     }
 

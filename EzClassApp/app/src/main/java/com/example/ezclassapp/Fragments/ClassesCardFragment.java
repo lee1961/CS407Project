@@ -55,25 +55,25 @@ public class ClassesCardFragment extends Fragment {
     private String mQueryString;
 
     private DatabaseReference mCourseDatabaseRef;
-    FirebaseRecyclerAdapter<Course, CourseViewHolder> mCourseCourseViewHolderFirebaseRecyclerAdapter;
+    FirebaseRecyclerAdapter<Course, CourseViewHolder> mCourseViewHolderFirebaseRecyclerAdapter;
     public static FragmentActivity currentActivity;
 
 
     public void onNewQuery(String queryText) {
         mQueryString = queryText;
         mQueryReference = mCourseDatabaseRef.orderByChild(Constants.COURSENAME).equalTo(queryText);
-        if (mCourseCourseViewHolderFirebaseRecyclerAdapter != null) {
+        if (mCourseViewHolderFirebaseRecyclerAdapter != null) {
             /*
                 when the person closes the search or when the textfield is blank, show all the classes
             */
             if (queryText.length() == 0) {
                 mQueryReference = mCourseDatabaseRef;
             }
-            mCourseCourseViewHolderFirebaseRecyclerAdapter.cleanup();
+            mCourseViewHolderFirebaseRecyclerAdapter.cleanup();
             attachRecyclerViewAdapter(); // reinitialize the recyclerviewAdatper
-            //MyRecyclerView.setAdapter(mCourseCourseViewHolderFirebaseRecyclerAdapter);
+            //MyRecyclerView.setAdapter(mCourseViewHolderFirebaseRecyclerAdapter);
 
-        } else if (queryText.length() < 3 || mCourseCourseViewHolderFirebaseRecyclerAdapter == null) {
+        } else if (queryText.length() < 3 || mCourseViewHolderFirebaseRecyclerAdapter == null) {
             mQueryReference = mCourseDatabaseRef;
         }
     }
@@ -125,13 +125,13 @@ public class ClassesCardFragment extends Fragment {
         }
 
         attachRecyclerViewAdapter(); //initialise the adapter
-        // MyRecyclerView.setAdapter(mCourseCourseViewHolderFirebaseRecyclerAdapter);
+        // MyRecyclerView.setAdapter(mCourseViewHolderFirebaseRecyclerAdapter);
 
     }
 
     private void attachRecyclerViewAdapter() {
 
-        mCourseCourseViewHolderFirebaseRecyclerAdapter =
+        mCourseViewHolderFirebaseRecyclerAdapter =
                 new FirebaseRecyclerAdapter<Course, CourseViewHolder>(
                         Course.class,
                         R.layout.cardview_class,
@@ -150,7 +150,7 @@ public class ClassesCardFragment extends Fragment {
                         }
                     }
                 };
-        MyRecyclerView.setAdapter(mCourseCourseViewHolderFirebaseRecyclerAdapter);
+        MyRecyclerView.setAdapter(mCourseViewHolderFirebaseRecyclerAdapter);
         MyRecyclerView.getAdapter().notifyDataSetChanged();
         MyRecyclerView.scheduleLayoutAnimation();
     }
@@ -160,7 +160,6 @@ public class ClassesCardFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         mCourseDatabaseRef = FirebaseDatabase.getInstance().getReference().child(Constants.COURSE);
-
 
         View view = inflater.inflate(R.layout.fragment_recyclerview_class, container, false);
         MyRecyclerView = (RecyclerView) view.findViewById(R.id.courseCardsView);
@@ -282,13 +281,7 @@ public class ClassesCardFragment extends Fragment {
         });
 
         animatorSet.start();
-                        //        else {
-                //            if (likedPositions.contains(holder.getPosition())) {
-                //                holder.btnLike.setImageResource(R.drawable.ic_heart_red);
-                //            } else {
-                //                holder.btnLike.setImageResource(R.drawable.ic_heart_outline_grey);
-                //            }
-                //        }
+
     }
 
     private static void resetLikeAnimationState(CourseViewHolder holder) {
