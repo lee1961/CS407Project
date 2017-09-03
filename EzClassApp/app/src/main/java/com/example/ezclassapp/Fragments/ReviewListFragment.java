@@ -247,7 +247,7 @@ public class ReviewListFragment extends Fragment {
                                     updateUpvoteButton(viewHolder);
                                     Log.d("tag","upvoting it");
                                     String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child()
+                                    
                                 } else {
 
                                 }
