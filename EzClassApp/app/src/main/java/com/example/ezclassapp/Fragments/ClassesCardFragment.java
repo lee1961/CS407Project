@@ -127,7 +127,6 @@ public class ClassesCardFragment extends Fragment {
         // MyRecyclerView.setAdapter(mCourseViewHolderFirebaseRecyclerAdapter);
 
     }
-
     private void attachRecyclerViewAdapter() {
         if(mQueryReference == null || mQueryString == null||mQueryString.length() <= 0) {
             mQueryReference = FirebaseDatabase.getInstance().getReference().child(Constants.COURSE);

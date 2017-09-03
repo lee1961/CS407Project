@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
@@ -20,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -146,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                 .start();
     }
 
+    @Override
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -154,6 +157,15 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         } else {
             //mUserRef.child("online").setValue("true");
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+       Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        if(frag instanceof ReviewListFragment) {
+            searchView.setVisibility(View.VISIBLE);
+        }
+        super.onBackPressed();
     }
 
     @Override
@@ -330,6 +342,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                 replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
                 .addToBackStack(null)
                 .commit();
+        searchView.setVisibility(View.GONE);
 
     }
 
