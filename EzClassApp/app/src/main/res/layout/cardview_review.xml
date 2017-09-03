@@ -73,6 +73,7 @@
                         android:id="@+id/upVoteImageView"
                         android:layout_width="@dimen/icon_width2"
                         android:layout_height="@dimen/icon_height2"
+                        android:layout_marginEnd="@dimen/icon_padding"
                         android:padding="@dimen/icon_padding"
                         android:src="@drawable/neutral_like"/>
 

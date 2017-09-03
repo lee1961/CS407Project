@@ -19,6 +19,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -76,27 +78,47 @@ public class SubmitReview extends AppCompatActivity {
         mSubmit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String key = reviewReference.push().getKey();
-                Review review = new Review(key,userName,courseid,mReviewText.getEditText().getText().toString());
-                reviewReference.child(key).setValue(review);
-                particularCourseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                // listen at the review --> ForeignKey
+                final DatabaseReference foreignKeyReference = mDatabase.child(Constants.REVIEW).child(courseid);
+                foreignKeyReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        List<String> newList = (List<String>) dataSnapshot.getValue();
-                        if(newList == null) {
-                            newList = new ArrayList<String>();
-                            newList.add(key);
-                        } else {
-                            newList.add(key);
-                        }
-                        particularCourseReference.setValue(newList);
+
+                        DatabaseReference reviewReference = foreignKeyReference;
+                        final String key = reviewReference.push().getKey();
+                        Review review = new Review(key,userName,courseid,mReviewText.getEditText().getText().toString());
+                        reviewReference.child(key).setValue(review);
                         finish();
                     }
+
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
+                        finish();
                     }
                 });
+
+//                final String key = reviewReference.push().getKey();
+//                Review review = new Review(key,userName,courseid,mReviewText.getEditText().getText().toString());
+//                reviewReference.child(key).setValue(review);
+//                particularCourseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(DataSnapshot dataSnapshot) {
+//                        List<String> newList = (List<String>) dataSnapshot.getValue();
+//                        if(newList == null) {
+//                            newList = new ArrayList<String>();
+//                            newList.add(key);
+//                        } else {
+//                            newList.add(key);
+//                        }
+//                        particularCourseReference.setValue(newList);
+//                        finish();
+//                    }
+//                    @Override
+//                    public void onCancelled(DatabaseError databaseError) {
+//
+//                    }
+//                });
 
             }
         });

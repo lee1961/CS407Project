@@ -102,12 +102,19 @@ public class ReviewListFragment extends Fragment {
             final Bundle args = getArguments();
             mCourseId = args.getString(ARG_PARAM2);
         }
-        DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW);
-        mQueryReference = reviewReference.orderByChild(Constants.FOREIGNCLASSKEY).equalTo(mCourseId);
+        DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(mCourseId) ;
+        // sort by the number of upvotes
+        mQueryReference = reviewReference.orderByChild("upvote");
+        // sort by the the date posted
+        //mQueryReference = reviewReference.orderByKey();
+
         ReviewRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_review);
         ReviewRecyclerView.setHasFixedSize(true);
         LinearLayoutManager MyLayoutManager = new LinearLayoutManager(getActivity());
         MyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        //if u want it sort by order
+        MyLayoutManager.setReverseLayout(true);
+        MyLayoutManager.setStackFromEnd(true);
         ReviewRecyclerView.setLayoutManager(MyLayoutManager);
 
         mFloatingActionButton = (FloatingActionButton)  view.findViewById(R.id.floating_actionBtn);
@@ -257,7 +264,7 @@ public class ReviewListFragment extends Fragment {
                 };
         ReviewRecyclerView.setAdapter(mReviewViewHolderFirebaseRecyclerAdapter);
         ReviewRecyclerView.getAdapter().notifyDataSetChanged();
-        mQueryReference.keepSynced(true);
+        //mQueryReference.keepSynced(true);
     }
     @Override
     public void onResume() {
