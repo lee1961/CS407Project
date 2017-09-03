@@ -1,6 +1,10 @@
 package com.example.ezclassapp.Fragments;
 
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
@@ -31,6 +36,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -178,13 +184,54 @@ public class ReviewListFragment extends Fragment {
 
         public TextView mReviewtitleTextView;
         public TextView mReviewerName;
+        public ImageView mUpVoteImageView;
+        public ImageView mDownVoteImageView;
 
 
         public ReviewViewHolder(View v) {
             super(v);
+            final ReviewViewHolder viewHolder = this;
             mReviewtitleTextView = (TextView) v.findViewById(R.id.opinion_textView);
             mReviewerName = (TextView) v.findViewById(R.id.reviewer_textView);
-            itemView.setOnClickListener(this);
+
+            //itemView.setOnClickListener(this);
+
+            mUpVoteImageView = (ImageView) v.findViewById(R.id.upVoteImageView);
+            mUpVoteImageView.setTag(R.drawable.neutral_like);
+            mUpVoteImageView.setImageResource(R.drawable.neutral_like);
+            mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int id = (int) mUpVoteImageView.getTag();
+                    Log.d("tag","upvoting it");
+                    if(id == R.drawable.neutral_like) {
+                        updateUpvoteButton(viewHolder);
+                        Log.d("tag","upvoting it");
+
+                    } else {
+
+                    }
+
+                }
+            });
+            mDownVoteImageView = (ImageView) v.findViewById(R.id.downVoteImageView);
+            mDownVoteImageView.setImageResource(R.drawable.neutral_dislike);
+            mDownVoteImageView.setTag(R.drawable.neutral_dislike);
+            mDownVoteImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int id = (int) mDownVoteImageView.getTag();
+                    Log.d("tag","downvoting it");
+                    if(id == R.drawable.neutral_dislike) {
+                        updateDownvoteButton(viewHolder);
+                        Log.d("tag","DOWNVOTING it");
+
+                    } else {
+
+                    }
+                }
+            });
+
         }
 
         /*
@@ -207,7 +254,6 @@ public class ReviewListFragment extends Fragment {
                 ) {
                     @Override
                     protected void populateViewHolder(final ReviewViewHolder viewHolder, Review review, int position) {
-                        Log.e("sda","the review name is " + review.getOpinion());
                         viewHolder.mReviewtitleTextView.setText(review.getOpinion());
                         viewHolder.mReviewerName.setText(review.getReviewerName());
                     }
@@ -241,5 +287,82 @@ public class ReviewListFragment extends Fragment {
 
     }
 
+    // animation for upvoting the review
+    private static void updateUpvoteButton(final ReviewViewHolder holder) {
+
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        // set this as already liked so that user cant click again
+        //holder.mUpVoteImageView.setImageResource(R.drawable.like);
+        holder.mUpVoteImageView.setTag(R.drawable.like);
+
+        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(holder.mUpVoteImageView, "rotation", 0f, 360f);
+        rotationAnim.setDuration(300);
+        rotationAnim.setInterpolator(new AccelerateInterpolator());
+
+        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(holder.mUpVoteImageView, "scaleX", 0.2f, 1f);
+        bounceAnimX.setDuration(300);
+        bounceAnimX.setInterpolator(new OvershootInterpolator(4f));
+
+        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(holder.mUpVoteImageView, "scaleY", 0.2f, 1f);
+        bounceAnimY.setDuration(300);
+        bounceAnimY.setInterpolator(new OvershootInterpolator(4f));
+        bounceAnimY.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                holder.mUpVoteImageView.setImageResource(R.drawable.like);
+            }
+        });
+
+        animatorSet.play(rotationAnim);
+        animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+            }
+        });
+
+        animatorSet.start();
+    }
+
+
+    // animation for downvoting the review
+    private static void updateDownvoteButton(final ReviewViewHolder holder) {
+
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        // set this as already liked so that user cant click again
+        holder.mDownVoteImageView.setTag(R.drawable.dislike);
+
+        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(holder.mDownVoteImageView, "rotation", 0f, 360f);
+        rotationAnim.setDuration(300);
+        rotationAnim.setInterpolator(new AccelerateInterpolator());
+
+        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(holder.mDownVoteImageView, "scaleX", 0.2f, 1f);
+        bounceAnimX.setDuration(300);
+        bounceAnimX.setInterpolator(new OvershootInterpolator(4f));
+
+        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(holder.mDownVoteImageView, "scaleY", 0.2f, 1f);
+        bounceAnimY.setDuration(300);
+        bounceAnimY.setInterpolator(new OvershootInterpolator(4f));
+        bounceAnimY.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                holder.mDownVoteImageView.setImageResource(R.drawable.dislike);
+            }
+        });
+
+        animatorSet.play(rotationAnim);
+        animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+            }
+        });
+
+        animatorSet.start();
+    }
 
 }

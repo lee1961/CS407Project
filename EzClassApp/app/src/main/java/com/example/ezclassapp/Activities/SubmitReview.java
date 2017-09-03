@@ -55,8 +55,14 @@ public class SubmitReview extends AppCompatActivity {
         mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String name = dataSnapshot.getValue().toString();
-                userName = name;
+                if(dataSnapshot.getValue() != null) {
+                    String name = dataSnapshot.getValue().toString();
+                    userName = name;
+                } else {
+                    userName = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+                }
+
+
             }
 
             @Override

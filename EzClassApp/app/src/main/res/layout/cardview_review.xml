@@ -44,11 +44,11 @@
                     >
 
                     <ImageView
-                        android:id="@+id/likeImageView"
+                        android:id="@+id/downVoteImageView"
                         android:layout_width="@dimen/icon_width2"
                         android:layout_height="@dimen/icon_height2"
                         android:padding="@dimen/icon_padding"
-                        android:src="@drawable/dislike"/>
+                        android:src="@drawable/neutral_dislike"/>
 
                     <TextView
                         android:id="@+id/textView"
@@ -68,11 +68,11 @@
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:id="@+id/dislikeImageView"
+                        android:id="@+id/upVoteImageView"
                         android:layout_width="@dimen/icon_width2"
                         android:layout_height="@dimen/icon_height2"
                         android:padding="@dimen/icon_padding"
-                        android:src="@drawable/like"/>
+                        android:src="@drawable/neutral_like"/>
 
                     <TextView
                         android:layout_width="wrap_content"
