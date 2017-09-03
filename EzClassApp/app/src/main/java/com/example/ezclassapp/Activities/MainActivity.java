@@ -91,9 +91,6 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
 
         setupDrawer();
         setupNavigationMenu();
-//        FragmentManager fm = getSupportFragmentManager();
-//        Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
-
         /*
               this database points at the class
         */
