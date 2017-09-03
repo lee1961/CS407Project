@@ -3,6 +3,7 @@ package com.example.ezclassapp.Models;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -20,7 +21,7 @@ public class Review {
     int usefulness;
     int upvote;
     int downvote;
-    HashMap<String,Boolean> checkUserVoted;
+    Map<String,Boolean> checkUserVoted;
 
     public Review() {
 
@@ -113,11 +114,11 @@ public class Review {
         this.downvote = downvote;
     }
 
-    public HashMap<String, Boolean> getCheckUserVoted() {
+    public Map<String, Boolean> getCheckUserVoted() {
         return checkUserVoted;
     }
 
-    public void setCheckUserVoted(HashMap<String, Boolean> checkUserVoted) {
+    public void setCheckUserVoted(Map<String, Boolean> checkUserVoted) {
         this.checkUserVoted = checkUserVoted;
     }
 }
