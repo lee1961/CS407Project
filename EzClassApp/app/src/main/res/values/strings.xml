@@ -13,4 +13,5 @@
     <string name="course_name">Course name</string>
     <string name="course_number">Course number</string>
     <string name="create">Create</string>
+    <string name="dummy_detailed_review">dummy_detailed_reviews</string>
 </resources>

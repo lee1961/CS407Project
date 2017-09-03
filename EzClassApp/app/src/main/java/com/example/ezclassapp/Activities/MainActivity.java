@@ -370,9 +370,14 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                         sendToStart();
                         return true;
                     case R.id.menu_create_class:
-                        Log.d("menu_create_class", "nav bar create class clicked");
+                        Log.d("navbar", "Create class clicked");
                         Intent createClass = new Intent(MainActivity.this, CreateClassActivity.class);
                         startActivity(createClass);
+                        return true;
+                    case R.id.menu_detailed_review:
+                        Log.d("navbar", "Detailed reviews clicked");
+                        Intent detailedReviews = new Intent(MainActivity.this, DetailedReviewActivity.class);
+                        startActivity(detailedReviews);
                         return true;
                     default:
                         return true;

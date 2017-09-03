@@ -50,6 +50,7 @@
         <activity
             android:name=".Activities.CreateClassActivity"
             android:parentActivityName=".Activities.MainActivity" />
+        <activity android:name=".Activities.DetailedReviewActivity" />
     </application>
 
 </manifest>
