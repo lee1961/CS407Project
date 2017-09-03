@@ -104,7 +104,6 @@ public class ReviewListFragment extends Fragment {
         }
         DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW);
         mQueryReference = reviewReference.orderByChild(Constants.FOREIGNCLASSKEY).equalTo(mCourseId);
-
         ReviewRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_review);
         ReviewRecyclerView.setHasFixedSize(true);
         LinearLayoutManager MyLayoutManager = new LinearLayoutManager(getActivity());
@@ -254,18 +253,11 @@ public class ReviewListFragment extends Fragment {
 
                             }
                         });
-
-                        viewHolder.mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-                            }
-                        });
-
                     }
                 };
         ReviewRecyclerView.setAdapter(mReviewViewHolderFirebaseRecyclerAdapter);
         ReviewRecyclerView.getAdapter().notifyDataSetChanged();
+        mQueryReference.keepSynced(true);
     }
     @Override
     public void onResume() {

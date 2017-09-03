@@ -124,13 +124,14 @@ public class ClassesCardFragment extends Fragment {
             mQueryReference = mCourseDatabaseRef;
         }
 
-        attachRecyclerViewAdapter(); //initialise the adapter
         // MyRecyclerView.setAdapter(mCourseViewHolderFirebaseRecyclerAdapter);
 
     }
 
     private void attachRecyclerViewAdapter() {
-
+        if(mQueryReference == null || mQueryString == null||mQueryString.length() <= 0) {
+            mQueryReference = FirebaseDatabase.getInstance().getReference().child(Constants.COURSE);
+        }
         mCourseViewHolderFirebaseRecyclerAdapter =
                 new FirebaseRecyclerAdapter<Course, CourseViewHolder>(
                         Course.class,
@@ -168,6 +169,8 @@ public class ClassesCardFragment extends Fragment {
         MyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
         MyRecyclerView.setLayoutManager(MyLayoutManager);
+        attachRecyclerViewAdapter();
+        Log.d("debugging","start again");
         return view;
     }
 
