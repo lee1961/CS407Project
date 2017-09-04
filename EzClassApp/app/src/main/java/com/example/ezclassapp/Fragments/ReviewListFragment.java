@@ -61,6 +61,7 @@ public class ReviewListFragment extends Fragment {
     private String mCourseId;
     private ArrayList<String> reviewListId;
     Query mQueryReference;
+    private static DatabaseReference reviewReference;
 
     /**
      * Use this factory method to create a new instance of
@@ -105,7 +106,7 @@ public class ReviewListFragment extends Fragment {
             final Bundle args = getArguments();
             mCourseId = args.getString(ARG_PARAM2);
         }
-        DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(mCourseId);
+        reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(mCourseId);
         // sort by the number of upvotes
         mQueryReference = reviewReference.orderByChild("upvote");
         // sort by the the date posted
@@ -248,14 +249,8 @@ public class ReviewListFragment extends Fragment {
                                 @Override
                                 public void onClick(View v) {
                                     Log.d("tag", "upvoting it");
-                                    updateUpvoteButton(viewHolder);
-                                    int count = Integer.parseInt(viewHolder.mUpVoteTextViewCounter.getText().toString());
-                                    count++;
-                                    DatabaseReference upVoteReference = reviewReference.child(reviewID);
-                                    upVoteReference.child(Constants.UPVOTE).setValue(count);
-                                    map.put(userID, true);
-                                    DatabaseReference mapReference = reviewReference.child(reviewID).child(Constants.MAPCHECK);
-                                    mapReference.setValue(map);
+                                    updateUpvoteButton(viewHolder,reviewID,map,userID);
+
                                 }
                             });
                             viewHolder.mDownVoteImageView.setOnClickListener(new View.OnClickListener() {
@@ -305,7 +300,8 @@ public class ReviewListFragment extends Fragment {
     }
 
     // animation for upvoting the review
-    private static void updateUpvoteButton(final ReviewViewHolder holder) {
+    private static void updateUpvoteButton(final ReviewViewHolder holder,final String reviewID,final Map<String,Boolean> map,final String userID) {
+
 
         int duration = 300;
         AnimatorSet animatorSet = new AnimatorSet();
@@ -335,6 +331,14 @@ public class ReviewListFragment extends Fragment {
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+
+                int count = Integer.parseInt(holder.mUpVoteTextViewCounter.getText().toString());
+                count++;
+                DatabaseReference upVoteReference = reviewReference.child(reviewID);
+                upVoteReference.child(Constants.UPVOTE).setValue(count);
+                map.put(userID, true);
+                DatabaseReference mapReference = reviewReference.child(reviewID).child(Constants.MAPCHECK);
+                mapReference.setValue(map);
             }
         });
 
