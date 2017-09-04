@@ -257,14 +257,7 @@ public class ReviewListFragment extends Fragment {
                                 @Override
                                 public void onClick(View v) {
                                     Log.d("tag", "downvoting it");
-                                    updateDownvoteButton(viewHolder);
-                                    int count = Integer.parseInt(viewHolder.mDownVoteTextViewCounter.getText().toString());
-                                    count++;
-                                    DatabaseReference downVoteReference = reviewReference.child(reviewID);
-                                    downVoteReference.child(Constants.DOWNVOTE).setValue(count);
-                                    map.put(userID, false);
-                                    DatabaseReference mapReference = reviewReference.child(reviewID).child(Constants.MAPCHECK);
-                                    mapReference.setValue(map);
+                                    updateDownvoteButton(viewHolder,reviewID,map,userID);
                                 }
                             });
                         }
@@ -347,7 +340,7 @@ public class ReviewListFragment extends Fragment {
 
 
     // animation for downvoting the review
-    private static void updateDownvoteButton(final ReviewViewHolder holder) {
+    private static void updateDownvoteButton(final ReviewViewHolder holder,final String reviewID,final Map<String,Boolean> map,final String userID) {
 
         int duration = 500;
         AnimatorSet animatorSet = new AnimatorSet();
@@ -378,6 +371,13 @@ public class ReviewListFragment extends Fragment {
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                int count = Integer.parseInt(holder.mDownVoteTextViewCounter.getText().toString());
+                count++;
+                DatabaseReference downVoteReference = reviewReference.child(reviewID);
+                downVoteReference.child(Constants.DOWNVOTE).setValue(count);
+                map.put(userID, false);
+                DatabaseReference mapReference = reviewReference.child(reviewID).child(Constants.MAPCHECK);
+                mapReference.setValue(map);
             }
         });
 
