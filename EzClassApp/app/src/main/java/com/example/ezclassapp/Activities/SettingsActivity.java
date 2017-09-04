@@ -47,7 +47,6 @@ public class SettingsActivity extends AppCompatActivity {
     private TextView mMajor;
 
     private Button mStatusBtn;
-    private Button mImageBtn;
     private Button mAddClassBtn;
 
     private static final int GALLERY_PICK = 1;
@@ -65,7 +64,6 @@ public class SettingsActivity extends AppCompatActivity {
         mMajor = (TextView)findViewById(R.id.settings_status);
         mStatusBtn = (Button)findViewById(R.id.settings_status_btn);
         mAddClassBtn = (Button)findViewById(R.id.add_class_btn);
-        mImageBtn = (Button)findViewById(R.id.settings_image_btn);
 
         mImageStorage = FirebaseStorage.getInstance().getReference();
 
@@ -131,7 +129,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        mImageBtn.setOnClickListener(new View.OnClickListener() {
+        mDisplayImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //Toast.makeText(SettingsActivity.this, "works", Toast.LENGTH_SHORT).show();

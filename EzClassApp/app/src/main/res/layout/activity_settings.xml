@@ -39,29 +39,18 @@
         android:textSize="15sp"
         android:text="Hi there, I'm using Lapit Chat App" />
 
-    <Button
-        android:id="@+id/settings_image_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/settings_status_btn"
-        android:layout_alignStart="@+id/settings_status_btn"
-        android:layout_below="@+id/settings_status"
-        android:layout_marginTop="80dp"
-        android:text="CHANGE IMAGE"
-        android:textColor="@color/colorPrimary"
-        tools:text="CHANGE IMAGE" />
 
     <Button
         android:id="@+id/settings_status_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/settings_image_btn"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="30dp"
         android:text="CHANGE STATUS"
         android:textColor="@android:color/white"
         app:backgroundTint="@color/colorAccent"
-        tools:text="CHANGE STATUS" />
+        tools:text="CHANGE STATUS"
+        android:layout_below="@+id/add_class_btn"
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:id="@+id/add_class_btn"
