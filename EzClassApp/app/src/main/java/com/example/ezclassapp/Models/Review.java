@@ -40,6 +40,8 @@ public class Review {
         this.reviewerName = reviewerName;
         this.foreignID_classID = foreignID_classID;
         this.opinion = opinion;
+        checkUserVoted = new HashMap<>();
+        checkUserVoted.put(ID,true);
     }
 
     public String getId() {

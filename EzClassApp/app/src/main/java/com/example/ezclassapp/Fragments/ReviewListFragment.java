@@ -35,6 +35,7 @@ import com.google.firebase.database.Query;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -102,7 +103,7 @@ public class ReviewListFragment extends Fragment {
             final Bundle args = getArguments();
             mCourseId = args.getString(ARG_PARAM2);
         }
-        DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(mCourseId) ;
+        DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(mCourseId);
         // sort by the number of upvotes
         mQueryReference = reviewReference.orderByChild("upvote");
         // sort by the the date posted
@@ -182,7 +183,7 @@ public class ReviewListFragment extends Fragment {
         public ImageView mDownVoteImageView;
         public TextView mUpVoteTextViewCounter;
         public TextView mDownVoteTextViewCounter;
-
+        public TextView mReviewId;
         public ReviewViewHolder(View v) {
             super(v);
             final ReviewViewHolder viewHolder = this;
@@ -235,31 +236,48 @@ public class ReviewListFragment extends Fragment {
                 ) {
                     @Override
                     protected void populateViewHolder(final ReviewViewHolder viewHolder, Review review, int position) {
+                        final DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(mCourseId);
                         viewHolder.mReviewtitleTextView.setText(review.getOpinion());
                         viewHolder.mReviewerName.setText(review.getReviewerName());
                         viewHolder.mUpVoteTextViewCounter.setText(String.valueOf(review.getUpvote()));
                         viewHolder.mDownVoteTextViewCounter.setText(String.valueOf(review.getDownvote()));
-
-
-                        viewHolder.mUpVoteImageView.setTag(R.drawable.neutral_like);
-                        viewHolder.mUpVoteImageView.setImageResource(R.drawable.neutral_like);
-                        /* WHEN THE PERSON UPVOTE THE POST */
-                        viewHolder.mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                int id = (int) viewHolder.mUpVoteImageView.getTag();
-                                Log.d("tag","upvoting it");
-                                if(id == R.drawable.neutral_like) {
-                                    updateUpvoteButton(viewHolder);
+                        final String reviewID = review.getId();
+                        final Map<String,Boolean> map = review.getCheckUserVoted();
+                        final String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        // in Progress
+                        if (map.containsKey(userID)) {
+                            viewHolder.mUpVoteImageView.setTag(R.drawable.like);
+                            viewHolder.mUpVoteImageView.setImageResource(R.drawable.like);
+                        } else {
+                            viewHolder.mUpVoteImageView.setTag(R.drawable.neutral_like);
+                            viewHolder.mUpVoteImageView.setImageResource(R.drawable.neutral_like);
+                            //REACHES HERE means he hasnt upvote the post yet
+                            /* WHEN THE PERSON UPVOTE THE POST */
+                            viewHolder.mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    int id = (int) viewHolder.mUpVoteImageView.getTag();
                                     Log.d("tag","upvoting it");
-                                    String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                                    
-                                } else {
+                                    if(id == R.drawable.neutral_like) {
+                                        updateUpvoteButton(viewHolder);
+                                        viewHolder.mUpVoteImageView.setImageResource(R.drawable.like);
+                                        Log.d("tag","upvoting it");
+
+                                        int count = Integer.parseInt(viewHolder.mUpVoteTextViewCounter.getText().toString());
+                                        count++;
+                                        DatabaseReference upVoteReference = reviewReference.child(reviewID);
+                                        upVoteReference.child(Constants.UPVOTE).setValue(count);
+                                        map.put(userID,true);
+                                        DatabaseReference mapReference = reviewReference.child(reviewID).child(Constants.MAP);
+                                        mapReference.setValue(map);
+
+                                    } else {
+
+                                    }
 
                                 }
-
-                            }
-                        });
+                            });
+                        }
                     }
                 };
         ReviewRecyclerView.setAdapter(mReviewViewHolderFirebaseRecyclerAdapter);
