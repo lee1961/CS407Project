@@ -97,28 +97,6 @@ public class SubmitReview extends AppCompatActivity {
                     }
                 });
 
-//                final String key = reviewReference.push().getKey();
-//                Review review = new Review(key,userName,courseid,mReviewText.getEditText().getText().toString());
-//                reviewReference.child(key).setValue(review);
-//                particularCourseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                        List<String> newList = (List<String>) dataSnapshot.getValue();
-//                        if(newList == null) {
-//                            newList = new ArrayList<String>();
-//                            newList.add(key);
-//                        } else {
-//                            newList.add(key);
-//                        }
-//                        particularCourseReference.setValue(newList);
-//                        finish();
-//                    }
-//                    @Override
-//                    public void onCancelled(DatabaseError databaseError) {
-//
-//                    }
-//                });
-
             }
         });
 
