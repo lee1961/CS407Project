@@ -12,5 +12,6 @@ public class Constants {
     public static String REVIEWLIST = "reviewID_list";
     public static String FOREIGNCLASSKEY = "foreignID_classID";
     public static String UPVOTE = "upvote";
-    public static String MAP = "checkUserVoted";
+    public static String DOWNVOTE = "downvote";
+    public static String MAPCHECK = "checkUserVoted";
 }

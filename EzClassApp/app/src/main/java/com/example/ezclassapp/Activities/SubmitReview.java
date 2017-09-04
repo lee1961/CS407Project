@@ -48,7 +48,6 @@ public class SubmitReview extends AppCompatActivity {
         Bundle currentBundle = getIntent().getExtras();
         final String courseid = currentBundle.getString(ARG_PARAM1);
         final ArrayList<String> reviewListId = currentBundle.getStringArrayList(ARG_PARAM2);
-        Toast.makeText(getApplicationContext(), courseid, Toast.LENGTH_SHORT).show();
         reviewReference = mDatabase.child(Constants.REVIEW);
         particularCourseReference = mDatabase.child(Constants.COURSE).child(courseid).child(Constants.REVIEWLIST);
 
