@@ -5,6 +5,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -13,10 +14,13 @@ import com.example.ezclassapp.Models.Review;
 import com.example.ezclassapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -32,6 +36,7 @@ public class SubmitReview extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private DatabaseReference reviewReference;
     private DatabaseReference particularCourseReference;
+    private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,37 +48,54 @@ public class SubmitReview extends AppCompatActivity {
         Bundle currentBundle = getIntent().getExtras();
         final String courseid = currentBundle.getString(ARG_PARAM1);
         final ArrayList<String> reviewListId = currentBundle.getStringArrayList(ARG_PARAM2);
-        Toast.makeText(getApplicationContext(), courseid, Toast.LENGTH_SHORT).show();
         reviewReference = mDatabase.child(Constants.REVIEW);
         particularCourseReference = mDatabase.child(Constants.COURSE).child(courseid).child(Constants.REVIEWLIST);
+
+
+        DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference().child(Constants.USER).child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("name");
+        mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue() != null) {
+                    String name = dataSnapshot.getValue().toString();
+                    userName = name;
+                } else {
+                    userName = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
 
         mSubmit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String key = reviewReference.push().getKey();
-                Review review = new Review(key,courseid,mReviewText.getEditText().getText().toString());
-                reviewReference.child(key).setValue(review);
-                particularCourseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                // listen at the review --> ForeignKey
+                final DatabaseReference foreignKeyReference = mDatabase.child(Constants.REVIEW).child(courseid);
+                foreignKeyReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        List<String> newList = (List<String>) dataSnapshot.getValue();
-                        if(newList == null) {
-                            newList.add(key);
-                        } else {
-                            newList.add(key);
-                        }
-                        particularCourseReference.setValue(newList);
+
+                        DatabaseReference reviewReference = foreignKeyReference;
+                        final String key = reviewReference.push().getKey();
+                        Review review = new Review(key,userName,courseid,mReviewText.getEditText().getText().toString());
+                        reviewReference.child(key).setValue(review);
                         finish();
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
+                        finish();
                     }
                 });
-
 
             }
         });

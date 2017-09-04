@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
@@ -20,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -91,9 +93,6 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
 
         setupDrawer();
         setupNavigationMenu();
-//        FragmentManager fm = getSupportFragmentManager();
-//        Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
-
         /*
               this database points at the class
         */
@@ -149,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                 .start();
     }
 
+    @Override
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -157,6 +157,15 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         } else {
             //mUserRef.child("online").setValue("true");
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+       Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        if(frag instanceof ReviewListFragment) {
+            searchView.setVisibility(View.VISIBLE);
+        }
+        super.onBackPressed();
     }
 
     @Override
@@ -246,9 +255,10 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         ClassesCardFragment classesCardFragment = (ClassesCardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         Log.d("debug", "query is " + query);
         if (classesCardFragment != null && classesCardFragment.isVisible() && query.length() > 2) {
-            Log.d("yeah yeah", "someone has input some text into the query");
             RecyclerView myRecyclerView = (RecyclerView) findViewById(R.id.cardView);
-            myRecyclerView.scrollToPosition(0);
+            if(myRecyclerView != null) {
+                myRecyclerView.scrollToPosition(0);
+            }
             classesCardFragment.onNewQuery(query);
         } else if (classesCardFragment == null && query.length() > 2) {
             FragmentManager fm = getSupportFragmentManager();
@@ -332,6 +342,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                 replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
                 .addToBackStack(null)
                 .commit();
+        searchView.setVisibility(View.GONE);
 
     }
 
