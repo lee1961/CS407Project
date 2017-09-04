@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1008132214020-1g56ohs164td8ogrd86405erguajak08.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ezclassapp",
+            "certificate_hash": "c5aaa84a48e94052ca29f1870076428ba9bd2e42"
+          }
+        },
+        {
           "client_id": "1008132214020-mhliptin9pljegf71v0f88arj4v530en.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

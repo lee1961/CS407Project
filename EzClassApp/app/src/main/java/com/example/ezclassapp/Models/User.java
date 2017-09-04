@@ -10,9 +10,13 @@ import java.util.List;
 public class User {
     String name;
     String major;
-
     String image;
     String thumb_image;
+    int karmaPoints;
+
+    public User() {
+
+    }
 
     public String getName() {
         return name;
@@ -31,6 +35,7 @@ public class User {
     }
 
     public void setName(String name) {
+        this.name = name;
     }
 
     int age;

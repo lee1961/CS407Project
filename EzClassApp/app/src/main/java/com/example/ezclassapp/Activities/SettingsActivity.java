@@ -3,6 +3,7 @@ package com.example.ezclassapp.Activities;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,12 +17,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.example.ezclassapp.Models.Course;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SettingsActivity extends AppCompatActivity {
 
     private DatabaseReference mUserDatabase;
+    private DatabaseReference mClassDatabase;
     private FirebaseUser mCurrentUser;
 
     private CircleImageView mDisplayImage;
@@ -30,6 +36,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private Button mStatusBtn;
     private Button mImageBtn;
+    private Button mAddClassBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,21 +47,35 @@ public class SettingsActivity extends AppCompatActivity {
         mName = (TextView)findViewById(R.id.settings_display_name);
         mMajor = (TextView)findViewById(R.id.settings_status);
         mStatusBtn = (Button)findViewById(R.id.settings_status_btn);
+        mAddClassBtn = (Button)findViewById(R.id.add_class_btn);
 
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
-        String current_uid = mCurrentUser.getUid();
+        final String current_uid = mCurrentUser.getUid();
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(current_uid);
         mUserDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Toast.makeText(SettingsActivity.this, dataSnapshot.toString(), Toast.LENGTH_SHORT).show();
-                String name = dataSnapshot.child("name").getValue().toString();
-                String major = dataSnapshot.child("major").getValue().toString();
-                String image = dataSnapshot.child("image").getValue().toString();
-                String thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
+                String name = "";
+                String thumb_image = "";
+                String major ="";
+                String image = "";
+                if(dataSnapshot.child("name").getValue() != null) {
+                    name = dataSnapshot.child("name").getValue().toString();
+                }
+                if(dataSnapshot.child("major").getValue() != null) {
+                    major = dataSnapshot.child("major").getValue().toString();
+                }if(dataSnapshot.child("image").getValue() != null) {
+                    image = dataSnapshot.child("image").getValue().toString();
+                }
+                if( dataSnapshot.child("thumb_image").getValue() != null) {
+                    thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
+                }
+
 
                 mName.setText(name);
-                mMajor.setText(major);
+                if(major != null)
+                    mMajor.setText(major);
 
             }
 
@@ -69,6 +90,20 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent status_intent = new Intent(SettingsActivity.this,StatusActivity.class);
                 startActivity(status_intent);
+            }
+        });
+
+        mAddClassBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                List<Course> classes = Course.getDummyCourseList();
+                mClassDatabase = FirebaseDatabase.getInstance().getReference().child("Course");
+                for (Course currentCourse: classes) {
+                    String key = mClassDatabase.push().getKey();
+                    currentCourse.setId(key);
+                    mClassDatabase.child(key).setValue(currentCourse);
+                    Toast.makeText(SettingsActivity.this, key, Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

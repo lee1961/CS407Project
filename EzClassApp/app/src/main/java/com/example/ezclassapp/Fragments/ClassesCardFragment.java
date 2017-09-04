@@ -4,27 +4,41 @@ package com.example.ezclassapp.Fragments;
  * Created by victorlee95 on 8/23/2017.
  */
 
-import android.content.ContentResolver;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import com.example.ezclassapp.Activities.Constants;
+import com.example.ezclassapp.Models.Course;
 import com.example.ezclassapp.Models.WonderModel;
 import com.example.ezclassapp.R;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 
 public class ClassesCardFragment extends Fragment {
@@ -34,27 +48,34 @@ public class ClassesCardFragment extends Fragment {
     ArrayList<WonderModel> listitems = new ArrayList<>();
 
     RecyclerView MyRecyclerView;
-    private MyAdapter mAdapter;
-    private onCardSelected mListener;
+    //private MyAdapter mAdapter;
+    private static onCardSelected mListener;
+    Query mQueryReference;
+    public static int delay = 300;
+    private String mQueryString;
 
-    String Wonders[] = {"Chichen Itza", "Christ the Redeemer", "Great Wall of China", "Machu Picchu", "Petra", "Taj Mahal", "Colosseum"};
-    int Images[] = {R.drawable.chichen_itza, R.drawable.christ_the_redeemer, R.drawable.great_wall_of_china, R.drawable.machu_picchu, R.drawable.petra, R.drawable.taj_mahal, R.drawable.colosseum};
+    private DatabaseReference mCourseDatabaseRef;
+    FirebaseRecyclerAdapter<Course, CourseViewHolder> mCourseCourseViewHolderFirebaseRecyclerAdapter;
+    public static FragmentActivity currentActivity;
 
-    public void clearItems() {
-        listitems.clear();
-        mAdapter.notifyDataSetChanged();
-    }
-    public void onNewQuery(String text) {
-        listitems.clear();
-        text = text.trim();
-        for (WonderModel wonderModel : permanentItems) {
-            if(wonderModel.getCardName().contains(text) || wonderModel.getCardName().toLowerCase().contains(text)) {
-                listitems.add(wonderModel);
-                Log.d("matched stuff","the matching wonder name is " + wonderModel.getCardName());
+
+    public void onNewQuery(String queryText) {
+        mQueryString = queryText;
+        mQueryReference = mCourseDatabaseRef.orderByChild(Constants.COURSENAME).equalTo(queryText);
+        if (mCourseCourseViewHolderFirebaseRecyclerAdapter != null) {
+            /*
+                when the person closes the search or when the textfield is blank, show all the classes
+            */
+            if (queryText.length() == 0) {
+                mQueryReference = mCourseDatabaseRef;
             }
-        }
-        mAdapter.notifyDataSetChanged();
+            mCourseCourseViewHolderFirebaseRecyclerAdapter.cleanup();
+            attachRecyclerViewAdapter(); // reinitialize the recyclerviewAdatper
+            //MyRecyclerView.setAdapter(mCourseCourseViewHolderFirebaseRecyclerAdapter);
 
+        } else if (queryText.length() < 3 || mCourseCourseViewHolderFirebaseRecyclerAdapter == null) {
+            mQueryReference = mCourseDatabaseRef;
+        }
     }
 
     /**
@@ -67,7 +88,7 @@ public class ClassesCardFragment extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static ClassesCardFragment newInstance(String param1) {
         final Bundle args = new Bundle();
-        args.putString(ARG_PARAM1,param1);
+        args.putString(ARG_PARAM1, param1);
         ClassesCardFragment fragment = new ClassesCardFragment();
         fragment.setArguments(args);
         return fragment;
@@ -88,13 +109,60 @@ public class ClassesCardFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         /* TODO should listen to firebase data changed here*/
-        initializeList(); // initialise all this hardcoded list but should listen from firebase
+        //initializeList(); // initialise all this hardcoded list but should listen from firebase
         getActivity().setTitle("7 Wonders of the Modern World");
+        currentActivity = getActivity();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if(mQueryString != null) {
+            mQueryReference = mCourseDatabaseRef.orderByChild(Constants.COURSENAME).equalTo(mQueryString);
+        } else {
+            mQueryReference = mCourseDatabaseRef;
+        }
+
+        attachRecyclerViewAdapter(); //initialise the adapter
+        // MyRecyclerView.setAdapter(mCourseCourseViewHolderFirebaseRecyclerAdapter);
+
+    }
+
+    private void attachRecyclerViewAdapter() {
+
+        mCourseCourseViewHolderFirebaseRecyclerAdapter =
+                new FirebaseRecyclerAdapter<Course, CourseViewHolder>(
+                        Course.class,
+                        R.layout.cardview_class,
+                        CourseViewHolder.class,
+                        mQueryReference
+                ) {
+                    @Override
+                    protected void populateViewHolder(final CourseViewHolder viewHolder, Course course, int position) {
+                        viewHolder.setFullCourseNameTextView(course.getFullCourseName());
+                        viewHolder.setViewHolderCourseId(course.getId());
+                        List<String> list = course.getReviewID_list();
+                        viewHolder.setReviewListOfId(course.getReviewID_list());
+                        Animation animation = AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left);
+                        //make sure it is more than lolippop
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            animation.setDuration(delay);
+                            viewHolder.itemView.startAnimation(animation);
+                        }
+                    }
+                };
+        MyRecyclerView.setAdapter(mCourseCourseViewHolderFirebaseRecyclerAdapter);
+        MyRecyclerView.getAdapter().notifyDataSetChanged();
+        MyRecyclerView.scheduleLayoutAnimation();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        mCourseDatabaseRef = FirebaseDatabase.getInstance().getReference().child(Constants.COURSE);
+
 
         View view = inflater.inflate(R.layout.fragment_recyclerview_class, container, false);
         MyRecyclerView = (RecyclerView) view.findViewById(R.id.cardView);
@@ -102,23 +170,7 @@ public class ClassesCardFragment extends Fragment {
         LinearLayoutManager MyLayoutManager = new LinearLayoutManager(getActivity());
         MyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
-         /*
-            TODO: need to initialise firebase database here
-            -- need to use firebase to retrieve all the class according to the text input into the query
-         */
-
-        if (listitems.size() > 0 & MyRecyclerView != null) {
-            //MyRecyclerView.setAdapter(new MyAdapter(listitems));
-            MyAdapter adapter = new MyAdapter((listitems));
-            this.mAdapter = adapter;
-            MyRecyclerView.setAdapter(this.mAdapter);
-            this.mAdapter.notifyDataSetChanged();
-        }
         MyRecyclerView.setLayoutManager(MyLayoutManager);
-
-        if(getArguments() != null) {
-            onNewQuery(getArguments().getString(ARG_PARAM1));
-        }
 
         return view;
     }
@@ -129,122 +181,123 @@ public class ClassesCardFragment extends Fragment {
 
     }
 
-
-    public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
-        private ArrayList<WonderModel> list;
-
-        public MyAdapter(ArrayList<WonderModel> Data) {
-            list = Data;
-        }
-
-        @Override
-        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            // create a new view
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_class, parent, false);
-            MyViewHolder holder = new MyViewHolder(view);
-            return holder;
-        }
-
-        @Override
-        public void onBindViewHolder(final MyViewHolder holder, int position) {
-
-            holder.titleTextView.setText(list.get(position).getCardName());
-            holder.coverImageView.setImageResource(list.get(position).getImageResourceId());
-            holder.coverImageView.setTag(list.get(position).getImageResourceId());
-            holder.likeImageView.setTag(R.drawable.ic_like);
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return list.size();
-        }
-    }
-
-    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        public TextView titleTextView;
+    public static class CourseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public String courseId;
+        public List<String> reviewListOfId;
+        public TextView fullCourseNameTextView;
         public ImageView coverImageView;
         public ImageView likeImageView;
         public ImageView shareImageView;
+        View mView;
 
-        public MyViewHolder(View v) {
+        /*
+               TODO: send either the the classID or the list of reviewsID associated with it
+        */
+        @Override
+        public void onClick(View view) {
+            Toast.makeText(view.getContext(), "u clicked " + fullCourseNameTextView.getText().toString(), Toast.LENGTH_SHORT).show();
+            mListener.onCardSelected(fullCourseNameTextView.getText().toString(),courseId,reviewListOfId);
+        }
+
+        public CourseViewHolder(View v) {
             super(v);
-            titleTextView = (TextView) v.findViewById(R.id.titleTextView);
+            mView = v;
+            final CourseViewHolder viewHolder = this;
+            fullCourseNameTextView = (TextView) v.findViewById(R.id.titleTextView);
             coverImageView = (ImageView) v.findViewById(R.id.coverImageView);
+            itemView.setOnClickListener(this);
             likeImageView = (ImageView) v.findViewById(R.id.likeImageView);
+            likeImageView.setTag(R.drawable.ic_like);
+            likeImageView.setImageResource(R.drawable.ic_like);
             shareImageView = (ImageView) v.findViewById(R.id.shareImageView);
             likeImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int id = (int) likeImageView.getTag();
                     if (id == R.drawable.ic_like) {
-                        likeImageView.setTag(R.drawable.ic_liked);
-                        likeImageView.setImageResource(R.drawable.ic_liked);
-                        Toast.makeText(getActivity(), titleTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(v.getContext(), fullCourseNameTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
+                        updateHeartButton(viewHolder,false);
                     } else {
+                        Log.d("already liked","already liked");
                         likeImageView.setTag(R.drawable.ic_like);
                         likeImageView.setImageResource(R.drawable.ic_like);
-                        Toast.makeText(getActivity(), titleTextView.getText() + " removed from favourites", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(v.getContext(), fullCourseNameTextView.getText() + " removed from favourites", Toast.LENGTH_SHORT).show();
                     }
-
                 }
             });
-
-
-            shareImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
-                            "://" + getResources().getResourcePackageName(coverImageView.getId())
-                            + '/' + "drawable" + '/' + getResources().getResourceEntryName((int) coverImageView.getTag()));
-
-
-                    Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-                    shareIntent.setType("image/jpeg");
-                    startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.send_to)));
-
-
-                }
-            });
-            itemView.setOnClickListener(this);
         }
 
-        /*
-                TODO should launch to a more specific activity LOL
-         */
-        @Override
-        public void onClick(View v) {
-
-            Toast.makeText(getActivity(),"u click " + titleTextView.getText().toString(),Toast.LENGTH_SHORT).show();
-            Log.d("manage to click","yes u are clicking for the title " +  titleTextView.getText().toString());
-            mListener.onCardSelected(titleTextView.getText().toString());
-//            Intent intent = CrimePagerActivity.newIntent(getActivity(),mCrime.getId());
-//            startActivity(intent);
+        public void setFullCourseNameTextView(String textView) {
+            fullCourseNameTextView = (TextView) mView.findViewById(R.id.titleTextView);
+            fullCourseNameTextView.setText(textView);
         }
+        public void setViewHolderCourseId(String courseId) {
+            this.courseId = courseId;
+        }
+
+        public void setReviewListOfId(List<String> reviewListOfId) {
+            this.reviewListOfId = reviewListOfId;
+        }
+
+
     }
-
-    public interface onCardSelected {
-        void onCardSelected(String name);
-    }
-
-
     /*
-        TODO: to be removed, just for a dummy objects
-     */
-    public void initializeList() {
-        listitems.clear();
-
-        for (int i = 0; i < 7; i++) {
-            WonderModel item = new WonderModel();
-            item.setCardName(Wonders[i]);
-            item.setImageResourceId(Images[i]);
-            item.setIsfav(0);
-            item.setIsturned(0);
-            listitems.add(item);
-            permanentItems.add(item);
-        }
+      IMPORTANT: this function/interface specifies what parameter must be passed in to go to the next Fragment(ReviewListFragment)
+    */
+    public interface onCardSelected {
+        void onCardSelected(String name,String id,List<String> reviewListOfId);
     }
+
+    private static void updateHeartButton(final CourseViewHolder holder, boolean animated) {
+
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        // set this as already liked so that user cant click again
+        //holder.likeImageView.setImageResource(R.drawable.ic_liked);
+        holder.likeImageView.setTag(R.drawable.ic_liked);
+
+
+        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(holder.likeImageView, "rotation", 0f, 360f);
+        rotationAnim.setDuration(300);
+        rotationAnim.setInterpolator(new AccelerateInterpolator());
+
+        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(holder.likeImageView, "scaleX", 0.2f, 1f);
+        bounceAnimX.setDuration(300);
+        bounceAnimX.setInterpolator(new OvershootInterpolator(4f));
+
+        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(holder.likeImageView, "scaleY", 0.2f, 1f);
+        bounceAnimY.setDuration(300);
+        bounceAnimY.setInterpolator(new OvershootInterpolator(4f));
+        bounceAnimY.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                holder.likeImageView.setImageResource(R.drawable.ic_liked);
+            }
+        });
+
+        animatorSet.play(rotationAnim);
+        animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+            }
+        });
+
+        animatorSet.start();
+                        //        else {
+                //            if (likedPositions.contains(holder.getPosition())) {
+                //                holder.btnLike.setImageResource(R.drawable.ic_heart_red);
+                //            } else {
+                //                holder.btnLike.setImageResource(R.drawable.ic_heart_outline_grey);
+                //            }
+                //        }
+    }
+
+    private static void resetLikeAnimationState(CourseViewHolder holder) {
+        holder.likeImageView.setVisibility(View.GONE);
+    }
+
+
 }
+
