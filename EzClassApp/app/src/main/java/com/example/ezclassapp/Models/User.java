@@ -8,11 +8,11 @@ import java.util.List;
  */
 
 public class User {
-    String name;
-    String major;
-    String image;
-    String thumb_image;
-    int karmaPoints;
+    private String name;
+    private String major;
+    private String image;
+    private String thumb_image;
+    private int karmaPoints;
 
     public User() {
 

@@ -9,12 +9,12 @@ import java.util.UUID;
  */
 
 public class Course {
-    String id;
-    String courseName;
-    String courseNumber;
-    String fullCourseName;
-    String imageUrl;
-    List<String> reviewID_list;
+    private String id;
+    private String courseName;
+    private String courseNumber;
+    private String fullCourseName;
+    private String imageUrl;
+    private List<String> reviewID_list;
     public Course() {
 
     }

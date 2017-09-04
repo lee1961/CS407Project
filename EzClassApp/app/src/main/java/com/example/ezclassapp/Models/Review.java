@@ -11,17 +11,17 @@ import java.util.UUID;
  */
 
 public class Review {
-    String ID;
-    String reviewerName;
-    String foreignID_classID;
-    String foreignID_userID;
-    String opinion;
-    String tips;
-    int difficulty;
-    int usefulness;
-    int upvote;
-    int downvote;
-    Map<String,Boolean> checkUserVoted;
+    private String ID;
+    private String reviewerName;
+    private String foreignID_classID;
+    private String foreignID_userID;
+    private String opinion;
+    private String tips;
+    private int difficulty;
+    private int usefulness;
+    private int upvote;
+    private int downvote;
+    private Map<String,Boolean> checkUserVoted;
 
     public Review() {
 
