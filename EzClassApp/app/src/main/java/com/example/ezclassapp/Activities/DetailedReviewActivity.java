@@ -1,23 +1,29 @@
 package com.example.ezclassapp.Activities;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.example.ezclassapp.Adapters.DetailedCommentsAdapter;
+import com.example.ezclassapp.Fragments.CreateCommentDialogFragment;
 import com.example.ezclassapp.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DetailedReviewActivity extends AppCompatActivity {
+public class DetailedReviewActivity extends AppCompatActivity implements CreateCommentDialogFragment.CreateCommentListener{
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private final String TAG="CREATECOMMENT";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +49,9 @@ public class DetailedReviewActivity extends AppCompatActivity {
         Log.d("dummy", comment.toString());
         mAdapter = new DetailedCommentsAdapter(this, name, comment);
         mRecyclerView.setAdapter(mAdapter);
+
+        // Initialize FAB
+        initializeFABAction();
     }
 
     @Override
@@ -54,5 +63,29 @@ public class DetailedReviewActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    // Initialize the FAB to create comments
+    public void initializeFABAction() {
+        FloatingActionButton createComment = (FloatingActionButton) findViewById(R.id.detailed_create_comment);
+        createComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create a dialog box
+                createAlertDialog();
+            }
+        });
+    }
+
+    // Creates the comment using a alertDialogBox by calling CreateCommentDialogFragment
+    public void createAlertDialog() {
+        DialogFragment fragment = new CreateCommentDialogFragment();
+        fragment.show(getSupportFragmentManager(), TAG);
+    }
+
+    // Method implement from CreateCommentListener in CreateCommentDialogFragment
+    @Override
+    public void onDialogPositiveClick(DialogFragment fragment, String comment) {
+
     }
 }

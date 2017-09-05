@@ -14,4 +14,7 @@
     <string name="course_number">Course number</string>
     <string name="create">Create</string>
     <string name="dummy_detailed_review">dummy_detailed_reviews</string>
+    <string name="alert_box_comment">Enter comment here...</string>
+    <string name="alert_box_submit_btn">Submit</string>
+    <string name="alert_box_cancel">Cancel</string>
 </resources>
