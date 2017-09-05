@@ -6,6 +6,7 @@
                 android:layout_height="match_parent"
                 android:background="@color/colorPrimary"
                 android:id="@+id/startActivity_viewGroupLayout"
+                android:windowExitTransition="@transition/activity_slide"
                 tools:context="com.example.ezclassapp.Activities.StartActivity">
 
     <TextView
