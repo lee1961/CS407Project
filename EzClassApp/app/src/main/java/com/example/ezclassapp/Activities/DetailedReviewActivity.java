@@ -87,7 +87,7 @@ public class DetailedReviewActivity extends AppCompatActivity implements CreateC
     // Method implement from CreateCommentListener in CreateCommentDialogFragment
     @Override
     public void onDialogPositiveClick(DialogFragment fragment, String comment) {
-        // TODO:Add new comment to RecyclerView
+        // TODO:Add username and picture
         mAdapter.add(FIRST_POS,  null, comment);
         mRecyclerView.scrollToPosition(FIRST_POS);
     }

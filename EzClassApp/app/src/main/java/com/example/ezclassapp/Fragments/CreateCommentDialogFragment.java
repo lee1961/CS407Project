@@ -16,7 +16,8 @@ import android.widget.EditText;
 
 import com.example.ezclassapp.R;
 
-/**n
+/**
+ * n
  * Created by tychan on 9/4/17.
  */
 
@@ -55,23 +56,24 @@ public class CreateCommentDialogFragment extends DialogFragment {
         // Inflate and set the layout for the dialog
         // Pass null for parent view because it's going in the dialog layout
         builder.setView(inflater.inflate(R.layout.alert_dialog_create_comment, null))
-        // Add action buttons
-            .setPositiveButton(R.string.alert_box_submit_btn, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    EditText comment = (EditText) getDialog().findViewById(R.id.alert_comment);
-                    String input = comment.getText().toString().trim();
-                    Log.d("create_comment", input);
-                    // If input string is empty, then close the dialog box
-                    if (checkInput(input)) {
-                        dismiss();
-                    } else {
-                        // TODO: Write comment to Firebase
-                        // TODO: Send comment string back to detailed review page
-                        mListener.onDialogPositiveClick(CreateCommentDialogFragment.this, input);
+                .setTitle("Write a comment")
+                // Add action buttons
+                .setPositiveButton(R.string.alert_box_submit_btn, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EditText comment = (EditText) getDialog().findViewById(R.id.alert_comment);
+                        String input = comment.getText().toString().trim();
+                        Log.d("create_comment", input);
+                        // If input string is empty, then close the dialog box
+                        if (checkInput(input)) {
+                            dismiss();
+                        } else {
+                            // TODO: Write comment to Firebase
+                            // TODO: Send comment string back to detailed review page
+                            mListener.onDialogPositiveClick(CreateCommentDialogFragment.this, input);
+                        }
                     }
-                }
-            }).setNeutralButton(R.string.alert_box_cancel, new DialogInterface.OnClickListener() {
+                }).setNeutralButton(R.string.alert_box_cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dismiss();
