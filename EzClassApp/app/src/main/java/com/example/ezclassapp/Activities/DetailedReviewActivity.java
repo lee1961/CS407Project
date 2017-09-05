@@ -21,9 +21,10 @@ import java.util.List;
 
 public class DetailedReviewActivity extends AppCompatActivity implements CreateCommentDialogFragment.CreateCommentListener{
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private DetailedCommentsAdapter mAdapter;
+    private LinearLayoutManager mLayoutManager;
     private final String TAG="CREATECOMMENT";
+    private final int FIRST_POS=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +87,8 @@ public class DetailedReviewActivity extends AppCompatActivity implements CreateC
     // Method implement from CreateCommentListener in CreateCommentDialogFragment
     @Override
     public void onDialogPositiveClick(DialogFragment fragment, String comment) {
-
+        // TODO:Add new comment to RecyclerView
+        mAdapter.add(FIRST_POS,  null, comment);
+        mRecyclerView.scrollToPosition(FIRST_POS);
     }
 }

@@ -31,11 +31,13 @@ public class DetailedCommentsAdapter extends RecyclerView.Adapter<DetailedCommen
     public void add(int position, String name, String comment) {
         this.name.add(position, name);
         this.comment.add(position, comment);
+        notifyItemInserted(position);
     }
 
     public void remove(int position) {
         this.name.remove(position);
         this.comment.remove(position);
+        notifyItemRemoved(position);
     }
 
     @Override

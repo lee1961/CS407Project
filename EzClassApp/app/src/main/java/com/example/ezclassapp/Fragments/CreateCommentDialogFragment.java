@@ -7,8 +7,12 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.text.TextUtilsCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.widget.EditText;
 
 import com.example.ezclassapp.R;
 
@@ -55,9 +59,17 @@ public class CreateCommentDialogFragment extends DialogFragment {
             .setPositiveButton(R.string.alert_box_submit_btn, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    // TODO: Write comment to Firebase
-                    // TODO: Send comment string back to detailed review page
-                    mListener.onDialogPositiveClick(CreateCommentDialogFragment.this, "");
+                    EditText comment = (EditText) getDialog().findViewById(R.id.alert_comment);
+                    String input = comment.getText().toString().trim();
+                    Log.d("create_comment", input);
+                    // If input string is empty, then close the dialog box
+                    if (checkInput(input)) {
+                        dismiss();
+                    } else {
+                        // TODO: Write comment to Firebase
+                        // TODO: Send comment string back to detailed review page
+                        mListener.onDialogPositiveClick(CreateCommentDialogFragment.this, input);
+                    }
                 }
             }).setNeutralButton(R.string.alert_box_cancel, new DialogInterface.OnClickListener() {
             @Override
@@ -68,5 +80,9 @@ public class CreateCommentDialogFragment extends DialogFragment {
 
 
         return builder.create();
+    }
+
+    public Boolean checkInput(String input) {
+        return TextUtils.isEmpty(input);
     }
 }
