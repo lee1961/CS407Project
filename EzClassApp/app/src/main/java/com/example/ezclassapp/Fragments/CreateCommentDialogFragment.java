@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -12,9 +14,19 @@ import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
+import com.example.ezclassapp.Activities.Constants;
+import com.example.ezclassapp.Helpers.StringImageConverter;
 import com.example.ezclassapp.R;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.example.ezclassapp.Activities.Constants.PREFS_NAME;
+import static com.example.ezclassapp.Activities.Constants.USER_NAME;
+import static com.example.ezclassapp.Helpers.StringImageConverter.decodeBase64AndSetImage;
 
 /**
  * n
@@ -32,7 +44,7 @@ public class CreateCommentDialogFragment extends DialogFragment {
     }
 
     // Use this instance of the interface to deliver action events
-    CreateCommentListener mListener;
+    private CreateCommentListener mListener;
 
     @Override
     public void onAttach(Context context) {
@@ -51,10 +63,21 @@ public class CreateCommentDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the alert builder class for convenient dialog construction
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        // Get instance of sharedpreferences
+        SharedPreferences preferences = getActivity().getSharedPreferences(PREFS_NAME, 0);
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         // Inflate and set the layout for the dialog
         // Pass null for parent view because it's going in the dialog layout
+        View view = inflater.inflate(R.layout.alert_dialog_create_comment, null);
+        // Set user name from Shared Preferences
+        TextView userData = (TextView) view.findViewById(R.id.alert_user_name);
+        userData.setText(preferences.getString(USER_NAME, null));
+        // Set user image from Shared Preferences
+        CircleImageView userImage = (CircleImageView) view.findViewById(R.id.alert_user_pic);
+        Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(preferences.getString(Constants.USER_PIC, null), userImage);
+        // TODO: Fill the circleImageView with bitmap
+
         builder.setView(inflater.inflate(R.layout.alert_dialog_create_comment, null))
                 .setTitle("Write a comment")
                 // Add action buttons

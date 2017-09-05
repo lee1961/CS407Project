@@ -1,5 +1,6 @@
 package com.example.ezclassapp.Activities;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
@@ -15,16 +16,19 @@ import android.view.View;
 import com.example.ezclassapp.Adapters.DetailedCommentsAdapter;
 import com.example.ezclassapp.Fragments.CreateCommentDialogFragment;
 import com.example.ezclassapp.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DetailedReviewActivity extends AppCompatActivity implements CreateCommentDialogFragment.CreateCommentListener{
+public class DetailedReviewActivity extends AppCompatActivity implements CreateCommentDialogFragment.CreateCommentListener {
     private RecyclerView mRecyclerView;
     private DetailedCommentsAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
-    private final String TAG="CREATECOMMENT";
-    private final int FIRST_POS=0;
+    private final String TAG = "CREATECOMMENT";
+    private final int FIRST_POS = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +61,7 @@ public class DetailedReviewActivity extends AppCompatActivity implements CreateC
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
                 return true;
@@ -67,7 +71,7 @@ public class DetailedReviewActivity extends AppCompatActivity implements CreateC
     }
 
     // Initialize the FAB to create comments
-    public void initializeFABAction() {
+    private void initializeFABAction() {
         FloatingActionButton createComment = (FloatingActionButton) findViewById(R.id.detailed_create_comment);
         createComment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,7 +83,7 @@ public class DetailedReviewActivity extends AppCompatActivity implements CreateC
     }
 
     // Creates the comment using a alertDialogBox by calling CreateCommentDialogFragment
-    public void createAlertDialog() {
+    private void createAlertDialog() {
         DialogFragment fragment = new CreateCommentDialogFragment();
         fragment.show(getSupportFragmentManager(), TAG);
     }
@@ -88,7 +92,8 @@ public class DetailedReviewActivity extends AppCompatActivity implements CreateC
     @Override
     public void onDialogPositiveClick(DialogFragment fragment, String comment) {
         // TODO:Add username and picture
-        mAdapter.add(FIRST_POS,  null, comment);
+        mAdapter.add(FIRST_POS, null, comment);
         mRecyclerView.scrollToPosition(FIRST_POS);
     }
+
 }
