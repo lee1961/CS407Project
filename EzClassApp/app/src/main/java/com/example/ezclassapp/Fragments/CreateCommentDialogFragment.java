@@ -20,6 +20,8 @@ import com.example.ezclassapp.Activities.Constants;
 import com.example.ezclassapp.Helpers.StringImageConverter;
 import com.example.ezclassapp.Models.Comment;
 import com.example.ezclassapp.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -56,7 +58,7 @@ public class CreateCommentDialogFragment extends DialogFragment {
         // Use the alert builder class for convenient dialog construction
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get instance of sharedpreferences
-        SharedPreferences preferences = getActivity().getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences preferences = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         // Inflate the alert dialog view and initialize the name and image
@@ -92,8 +94,10 @@ public class CreateCommentDialogFragment extends DialogFragment {
                         if (checkInput(input)) {
                             dismiss();
                         } else {
+                            SharedPreferences preferences = getActivity().getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
+                            String userUID = preferences.getString(Constants.USER_UID, null);
                             // Create a comment object
-                            Comment userComment = new Comment(username, input);
+                            Comment userComment = new Comment(userUID, input);
                             // Create a database reference
                             DatabaseReference database = FirebaseDatabase.getInstance().getReference();
                             // Create a string UID to store the comment

@@ -38,7 +38,8 @@ public class DetailedReviewActivity extends AppCompatActivity implements CreateC
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Dummy values
+        // TODO: Remove dummy values, get list of comments from firebase
+        // TODO: Get Review ID and parse it to get a list of items
         List<String> name = new ArrayList<>();
         List<String> comment = new ArrayList<>();
         for (int i = 0, j = 100; i < 100; i++, j--) {

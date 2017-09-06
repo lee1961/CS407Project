@@ -5,24 +5,24 @@ package com.example.ezclassapp.Models;
  */
 
 public class Comment {
-    private String name;
+    private String userUID;
     private String comment;
 
     // Default constructor needed by Firebase
     public Comment() {
     }
 
-    public Comment(String name, String comment) {
-        this.name = name;
+    public Comment(String userUID, String comment) {
+        this.userUID = userUID;
         this.comment = comment;
     }
 
     public String getName() {
-        return name;
+        return userUID;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String userUID) {
+        this.userUID = userUID;
     }
 
     public String getComment() {
@@ -36,7 +36,7 @@ public class Comment {
     @Override
     public String toString() {
         return "Comment{" +
-                "name='" + name + '\'' +
+                "userUID='" + userUID + '\'' +
                 ", comment='" + comment + '\'' +
                 '}';
     }

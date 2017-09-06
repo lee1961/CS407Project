@@ -12,4 +12,5 @@ public class Constants {
     public static final String USER = "Users";
     public static final String COURSENAME = "fullCourseName";
     public static final String COMMENT = "Comment";
+    public static final String USER_UID = "USER_UID";
 }

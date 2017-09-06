@@ -413,7 +413,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    Course currentClass = (Course) data.getValue(Course.class);
+                    Course currentClass = data.getValue(Course.class);
                     SUGGESTIONS.add(currentClass);
                     Log.d("populating", "populating class" + currentClass.getCourseName());
                 }
@@ -457,6 +457,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         Log.d("main_activity", user.toString());
         SharedPreferences preferences = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(Constants.USER_UID, mAuth.getCurrentUser().getUid());
         editor.putString(Constants.USER_NAME, user.getName());
         editor.putString(Constants.USER_PIC, user.getImage());
         editor.apply();
