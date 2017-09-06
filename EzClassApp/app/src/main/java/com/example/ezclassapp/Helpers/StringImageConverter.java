@@ -28,9 +28,11 @@ public class StringImageConverter {
     }
 
     public static Bitmap decodeBase64AndSetImage(String completeImageData, CircleImageView userImage) {
+        // Check if input is null
+        if (completeImageData == null) return null;
+
         // In case we store it in a place that has extensions
         String imageDataBytes = completeImageData.substring(completeImageData.indexOf(',') + 1);
-
         InputStream stream = new ByteArrayInputStream(Base64.decode(imageDataBytes.getBytes(), Base64.DEFAULT));
         return BitmapFactory.decodeStream(stream);
     }

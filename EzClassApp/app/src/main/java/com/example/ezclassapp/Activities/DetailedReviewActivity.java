@@ -1,10 +1,8 @@
 package com.example.ezclassapp.Activities;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,19 +14,16 @@ import android.view.View;
 import com.example.ezclassapp.Adapters.DetailedCommentsAdapter;
 import com.example.ezclassapp.Fragments.CreateCommentDialogFragment;
 import com.example.ezclassapp.R;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DetailedReviewActivity extends AppCompatActivity implements CreateCommentDialogFragment.CreateCommentListener {
+    private final String TAG = "CREATECOMMENT";
+    private final int FIRST_POS = 0;
     private RecyclerView mRecyclerView;
     private DetailedCommentsAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
-    private final String TAG = "CREATECOMMENT";
-    private final int FIRST_POS = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
