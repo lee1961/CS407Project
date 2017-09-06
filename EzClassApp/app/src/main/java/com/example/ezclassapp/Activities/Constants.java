@@ -9,7 +9,7 @@ public class Constants {
     public static final String USER_NAME = "USER_NAME";
     public static final String USER_PIC = "USER_PIC";
     public static final String COURSE = "Course";
-    public static final String USER = "User";
+    public static final String USER = "Users";
     public static final String COURSENAME = "fullCourseName";
     public static final String COMMENT = "Comment";
 }

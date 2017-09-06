@@ -1,8 +1,8 @@
 package com.example.ezclassapp.Activities;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -25,13 +25,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
 
 import com.example.ezclassapp.Fragments.ClassesCardFragment;
 import com.example.ezclassapp.Fragments.ReviewListFragment;
 import com.example.ezclassapp.Models.Course;
+import com.example.ezclassapp.Models.User;
 import com.example.ezclassapp.Models.Utils;
 import com.example.ezclassapp.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,6 +47,11 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements ClassesCardFragment.onCardSelected {
 
+    private static final int ANIM_DURATION_TOOLBAR = 300;
+    private static ArrayList<Course> SUGGESTIONS;
+    final String[] from = new String[]{"className"};
+    FirebaseDatabase database;
+    DatabaseReference classDatabaseReference;
     private FirebaseAuth mAuth;
     private Toolbar mToolbar;
     private String APPNAME = "EZclass";
@@ -55,16 +60,10 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavmenu;
     private MenuItem searchItem;
-
     private String mActivityTitle;
-    FirebaseDatabase database;
-    DatabaseReference classDatabaseReference;
-
-    private static ArrayList<Course> SUGGESTIONS;
     private SimpleCursorAdapter mAdapter;
     private SearchView searchView;
     private boolean Animate; // boolean to determine whether it is the first time being animatedi
-    final String[] from = new String[]{"className"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         setContentView(R.layout.activity_main);
 
         mAuth = FirebaseAuth.getInstance();
-        database= FirebaseDatabase.getInstance();
+        database = FirebaseDatabase.getInstance();
         Animate = false;
 
 
@@ -119,8 +118,6 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
 
     }
 
-    private static final int ANIM_DURATION_TOOLBAR = 300;
-
     private void startIntroAnimation() {
 
         int actionbarSize = Utils.dpToPx(56);
@@ -139,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                 .setDuration(500)
                 .start();
     }
+
     private void startContentAnimation() {
         mDrawerLayout.animate()
                 .translationY(0)
@@ -148,14 +146,29 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                 .start();
     }
 
-    public void onStart() {
+    @Override
+    protected void onStart() {
+        Log.d("main_activity", "onStart");
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            sendToStart();
+        }
         super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d("main_activity", "onResume");
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
             sendToStart();
         } else {
-            //mUserRef.child("online").setValue("true");
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child(Constants.USER);
+            String userUID = currentUser.getUid();
+            // Sets up current user
+            getAndSetUpCurrentUser(userRef, userUID);
         }
+        super.onResume();
     }
 
     @Override
@@ -168,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         // this basically sets up the search view listeners
         setUpSearchView();
-        if(!Animate) {
+        if (!Animate) {
             startIntroAnimation();
             Animate = !Animate;
         }
@@ -222,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     private void populateAdapter(String query) {
         final MatrixCursor c = new MatrixCursor(new String[]{BaseColumns._ID, "className"});
         for (int i = 0; i < SUGGESTIONS.size(); i++) {
-            if (queryIsRelevant(query,i)) {
+            if (queryIsRelevant(query, i)) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(SUGGESTIONS.get(i).getCourseNumber() + " ");
                 sb.append(SUGGESTIONS.get(i).getCourseName());
@@ -233,9 +246,9 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
 
     }
 
-    private boolean queryIsRelevant(String query,int position) {
+    private boolean queryIsRelevant(String query, int position) {
         if (SUGGESTIONS.get(position).getCourseName().toLowerCase().startsWith(query.toLowerCase()) ||
-            SUGGESTIONS.get(position).getCourseNumber().toLowerCase().startsWith(query.toLowerCase())) {
+                SUGGESTIONS.get(position).getCourseNumber().toLowerCase().startsWith(query.toLowerCase())) {
             return true;
         }
         return false;
@@ -304,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
             @Override
             public boolean onQueryTextChange(String newText) {
 
-                if(newText.length() > 2) {
+                if (newText.length() > 2) {
                     populateAdapter(newText.trim());
                     updateCardFragment(newText);
                 } else {
@@ -327,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     @Override
     public void onCardSelected(String name) {
         final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name);
-        getSupportFragmentManager().beginTransaction().setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out).
+        getSupportFragmentManager().beginTransaction().setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out).
                 replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
                 .addToBackStack(null)
                 .commit();
@@ -335,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     }
 
     private void setupDrawer() {
-            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open,
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open,
                 R.string.drawer_close) {
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
@@ -399,10 +412,10 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         classDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot data: dataSnapshot.getChildren()) {
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
                     Course currentClass = (Course) data.getValue(Course.class);
                     SUGGESTIONS.add(currentClass);
-                    Log.d("populating","populating class" + currentClass.getCourseName());
+                    Log.d("populating", "populating class" + currentClass.getCourseName());
                 }
             }
 
@@ -416,5 +429,36 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     private void sendToSettings() {
         Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
         startActivity(settingsIntent);
+    }
+
+    // Sets up current user and store user info to Shared Preferences
+    private void getAndSetUpCurrentUser(DatabaseReference reference, final String userUID) {
+        Log.d("main_activity", "getAndSetUpCurrentUser() called");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    if (snapshot.getKey().equals(userUID)) {
+                        Log.d("main_activity", snapshot.getValue(User.class).toString());
+                        setUpUser(snapshot.getValue(User.class));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    // Set up user data in SharedPreferences
+    private void setUpUser(User user) {
+        Log.d("main_activity", user.toString());
+        SharedPreferences preferences = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(Constants.USER_NAME, user.getName());
+        editor.putString(Constants.USER_PIC, user.getImage());
+        editor.apply();
     }
 }
