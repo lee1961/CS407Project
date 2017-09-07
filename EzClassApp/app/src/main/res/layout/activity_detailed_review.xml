@@ -23,6 +23,7 @@
 
         <!-- Used nested scroll view to allow the whole page to scroll together -->
         <android.support.v4.widget.NestedScrollView
+            android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginEnd="@dimen/activity_right_margin"
@@ -106,7 +107,7 @@
             android:layout_marginEnd="@dimen/btn_fab_margins"
             android:background="@drawable/btn_fab_default"
             android:src="@drawable/ic_create_white_24dp"
-            app:layout_anchor="@id/detailed_container"
+            app:layout_anchor="@id/container"
             app:layout_anchorGravity="bottom|end" />
     </android.support.design.widget.CoordinatorLayout>
 </android.widget.LinearLayout>

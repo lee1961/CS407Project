@@ -20,8 +20,6 @@ import com.example.ezclassapp.Activities.Constants;
 import com.example.ezclassapp.Helpers.StringImageConverter;
 import com.example.ezclassapp.Models.Comment;
 import com.example.ezclassapp.R;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -37,24 +35,25 @@ import static com.example.ezclassapp.Activities.Constants.USER_NAME;
 
 public class CreateCommentDialogFragment extends DialogFragment {
 
-    // Use this instance of the interface to deliver action events
-    private CreateCommentListener mListener;
+    private static final String REVIEW_UID = "REVIEW_UID";
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        // Verify that the host implements the callback interface
-        try {
-            mListener = (CreateCommentListener) context;
-        } catch (ClassCastException e) {
-            // The Activity doesn't implement the interface, throw exception
-            throw new ClassCastException(context.toString() + " must implement CreateCommentListener");
-        }
+    // Builder method for CreateCommentDialogFragment
+    public static CreateCommentDialogFragment newInstance(String reviewUID) {
+        // Create a bundle to store reviewUID
+        Bundle bundle = new Bundle();
+        bundle.putString(REVIEW_UID, reviewUID);
+        CreateCommentDialogFragment fragment = new CreateCommentDialogFragment();
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        // Get the reviewUID from bundle
+        // TODO: Remove the comment below and remove the reviewUID
+        // final String reviewUID = getArguments().getString(REVIEW_UID);
+        final String reviewUID = "Kt9Hi-Q8_u6lqsoAt_4";
         // Use the alert builder class for convenient dialog construction
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get instance of sharedpreferences
@@ -96,16 +95,14 @@ public class CreateCommentDialogFragment extends DialogFragment {
                         } else {
                             SharedPreferences preferences = getActivity().getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
                             String userUID = preferences.getString(Constants.USER_UID, null);
-                            // Create a comment object
-                            Comment userComment = new Comment(userUID, input);
                             // Create a database reference
                             DatabaseReference database = FirebaseDatabase.getInstance().getReference();
                             // Create a string UID to store the comment
-                            String commentUID = database.child(Constants.COMMENT).push().getKey();
+                            String commentUID = database.child(Constants.COMMENT).child(reviewUID).push().getKey();
+                            // Create a comment object
+                            Comment userComment = new Comment(userUID, input, commentUID);
                             // Set the value in UID to the Comment object
-                            database.child(Constants.COMMENT).child(commentUID).setValue(userComment);
-                            // Send comment string back to detailed review page
-                            mListener.onDialogPositiveClick(CreateCommentDialogFragment.this, input);
+                            database.child(Constants.COMMENT).child(reviewUID).child(commentUID).setValue(userComment);
                         }
                     }
                 }).setNeutralButton(R.string.alert_box_cancel, new DialogInterface.OnClickListener() {
@@ -120,13 +117,5 @@ public class CreateCommentDialogFragment extends DialogFragment {
 
     public Boolean checkInput(String input) {
         return TextUtils.isEmpty(input);
-    }
-
-    /* The activity that creates an instance of this dialog fragment must implement this
-       this interface in order to receive event callbacks. Each method passes the DialogFragment
-       in case the host needs to query it.
-     */
-    public interface CreateCommentListener {
-        public void onDialogPositiveClick(DialogFragment fragment, String comment);
     }
 }

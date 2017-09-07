@@ -1,6 +1,5 @@
 package com.example.ezclassapp.Models;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -10,27 +9,36 @@ import java.util.UUID;
  */
 
 public class Review {
-    String ID;
-    String foreignID_classID;
-    UUID foreignID_userID;
-    String opinion;
-    String tips;
-    int difficulty;
-    int usefulness;
-    int upvote;
-    int downvote;
-    HashMap<String,Boolean> checkUserVoted;
+    private String ID;
+    private String foreignID_classID;
+    private UUID foreignID_userID;
+    private String opinion;
+    private String tips;
+    private int difficulty;
+    private int usefulness;
+    private int upvote;
+    private int downvote;
+    private HashMap<String, Boolean> checkUserVoted;
+    private List<String> commentUID;
 
     public Review() {
 
     }
 
-    public String getId() {
+    public String getID() {
         return ID;
     }
 
     public void setID(String ID) {
         this.ID = ID;
+    }
+
+    public List<String> getCommentUID() {
+        return commentUID;
+    }
+
+    public void setCommentUID(List<String> commentUID) {
+        this.commentUID = commentUID;
     }
 
     public String getForeignID_classID() {
