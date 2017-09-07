@@ -37,7 +37,6 @@ import com.example.ezclassapp.Models.User;
 import com.example.ezclassapp.Models.Utils;
 import com.example.ezclassapp.R;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -73,53 +72,63 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        Log.d("main_activity", Boolean.toString(hasLoggedIn()));
+        // Check if user has logged in
+        if (!hasLoggedIn()) {
+            Log.d("main_activity", "sendToStart() called");
+            sendToStart();
+        } else {
+            setContentView(R.layout.activity_main);
 
-        mAuth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance();
-        Animate = false;
+            mAuth = FirebaseAuth.getInstance();
+            database = FirebaseDatabase.getInstance();
+            Animate = false;
 
-        // Set up the toolbar
-        mToolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setTitle(APPNAME);
+            // Set up the toolbar
+            mToolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
+            setSupportActionBar(mToolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setTitle(APPNAME);
 
-        // Initialize the drawer layout and navigation view
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mNavmenu = (NavigationView) findViewById(R.id.navigation_view);
-        mActivityTitle = getTitle().toString();
+            // Initialize the drawer layout and navigation view
+            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+            mNavmenu = (NavigationView) findViewById(R.id.navigation_view);
+            mActivityTitle = getTitle().toString();
 
-        setupDrawer();
-        setupNavigationMenu();
+            setupDrawer();
+            setupNavigationMenu();
 //        FragmentManager fm = getSupportFragmentManager();
 //        Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
 
         /*
               this database points at the class
         */
-        classDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constants.COURSE);
-        mToolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("EZclass");
+            classDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constants.COURSE);
+            mToolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
+            setSupportActionBar(mToolbar);
+            getSupportActionBar().setTitle("EZclass");
 
-        SUGGESTIONS = new ArrayList<Course>();
+            SUGGESTIONS = new ArrayList<Course>();
 
 
-        final int[] to = new int[]{android.R.id.text1};
-        mAdapter = new SimpleCursorAdapter(getApplicationContext(),
-                R.layout.cursor_layout,
-                null,
-                from,
-                to,
-                CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+            final int[] to = new int[]{android.R.id.text1};
+            mAdapter = new SimpleCursorAdapter(getApplicationContext(),
+                    R.layout.cursor_layout,
+                    null,
+                    from,
+                    to,
+                    CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
-        populateClassName(); // retrieve all the coursename first
+            populateClassName(); // retrieve all the coursename first
 
-        ClassesCardFragment classesCardFragment = ClassesCardFragment.newInstance("");
-        getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, classesCardFragment).commit();
+            ClassesCardFragment classesCardFragment = ClassesCardFragment.newInstance("");
+            getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, classesCardFragment).commit();
+        }
+    }
 
+    private boolean hasLoggedIn() {
+        return FirebaseAuth.getInstance().getCurrentUser() != null;
     }
 
     private void startIntroAnimation() {
@@ -151,24 +160,13 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     }
 
     @Override
-    protected void onStart() {
-        Log.d("main_activity", "onStart");
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            sendToStart();
-        }
-        super.onStart();
-    }
-
-    @Override
     protected void onResume() {
         Log.d("main_activity", "onResume");
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
+        if (!hasLoggedIn()) {
             sendToStart();
         } else {
             DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child(Constants.USER);
-            String userUID = currentUser.getUid();
+            String userUID = mAuth.getCurrentUser().getUid();
             // Sets up current user
             getAndSetUpCurrentUser(userRef, userUID);
         }
@@ -226,8 +224,8 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
 
     private void sendToStart() {
         Intent startIntent = new Intent(MainActivity.this, StartActivity.class);
-        startActivity(startIntent);
         finish();
+        startActivity(startIntent);
     }
 
 

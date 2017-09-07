@@ -66,7 +66,6 @@ public class DetailedReviewActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // TODO: Check if bundle is null
         // Get data from Bundle
         Bundle extras = getIntent().getExtras();
         final String reviewUID;
