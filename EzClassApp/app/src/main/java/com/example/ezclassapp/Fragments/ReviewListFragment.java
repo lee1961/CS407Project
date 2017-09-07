@@ -6,10 +6,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,7 +24,6 @@ import android.widget.Toast;
 import com.example.ezclassapp.Activities.Constants;
 import com.example.ezclassapp.Models.Review;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.example.ezclassapp.Activities.MainActivity;
 import com.example.ezclassapp.Activities.SubmitReview;
 import com.example.ezclassapp.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,7 +32,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -185,6 +181,7 @@ public class ReviewListFragment extends Fragment {
         public TextView mUpVoteTextViewCounter;
         public TextView mDownVoteTextViewCounter;
         public TextView mReviewId;
+        public boolean mIsAnimated;
 
         public ReviewViewHolder(View v) {
             super(v);
@@ -193,6 +190,7 @@ public class ReviewListFragment extends Fragment {
             mDownVoteTextViewCounter = (TextView) v.findViewById(R.id.downVoteCounterTextView);
             mReviewtitleTextView = (TextView) v.findViewById(R.id.opinion_textView);
             mReviewerName = (TextView) v.findViewById(R.id.reviewer_textView);
+            mIsAnimated = false;
 
             itemView.setOnClickListener(this);
 
@@ -243,23 +241,32 @@ public class ReviewListFragment extends Fragment {
                             viewHolder.mDownVoteImageView.setImageResource(R.drawable.dislike);
                         } else {
 
-                            //REACHES HERE means he hasnt upvote the post yet
-                            /* WHEN THE PERSON UPVOTE THE POST */
-                            viewHolder.mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Log.d("tag", "upvoting it");
-                                    updateUpvoteButton(viewHolder,reviewID,map,userID);
 
-                                }
-                            });
-                            viewHolder.mDownVoteImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Log.d("tag", "downvoting it");
-                                    updateDownvoteButton(viewHolder,reviewID,map,userID);
-                                }
-                            });
+                                //REACHES HERE means he hasnt upvote the post yet
+                            /* WHEN THE PERSON UPVOTE THE POST */
+                                viewHolder.mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Log.d("tag", "upvoting it");
+                                        viewHolder.mUpVoteImageView.setClickable(false);
+                                        viewHolder.mDownVoteImageView.setClickable(false);
+                                        updateUpvoteButton(viewHolder,reviewID,map,userID);
+
+                                    }
+                                });
+                                viewHolder.mDownVoteImageView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Log.d("tag", "downvoting it");
+                                        viewHolder.mDownVoteImageView.setClickable(false);
+                                        viewHolder.mUpVoteImageView.setClickable(false);
+                                        updateDownvoteButton(viewHolder,reviewID,map,userID);
+                                    }
+                                });
+                                viewHolder.mIsAnimated = true;
+
+
+
                         }
                     }
                 };
