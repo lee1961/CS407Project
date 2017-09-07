@@ -27,9 +27,11 @@ import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.ezclassapp.Fragments.ClassesCardFragment;
 import com.example.ezclassapp.Fragments.ReviewListFragment;
+import com.example.ezclassapp.Helpers.StringImageConverter;
 import com.example.ezclassapp.Models.Course;
 import com.example.ezclassapp.Models.User;
 import com.example.ezclassapp.Models.Utils;
@@ -43,6 +45,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class MainActivity extends AppCompatActivity implements ClassesCardFragment.onCardSelected {
@@ -64,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     private SimpleCursorAdapter mAdapter;
     private SearchView searchView;
     private boolean Animate; // boolean to determine whether it is the first time being animatedi
+    private SharedPreferences preferences; // Stores user basic information
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         Animate = false;
-
 
         // Set up the toolbar
         mToolbar = (Toolbar) findViewById(R.id.main_page_toolbar);
@@ -370,6 +374,8 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     }
 
     private void setupNavigationMenu() {
+        // Set the Navigation Menu Views
+        setView();
         mNavmenu.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -397,6 +403,29 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                 }
             }
         });
+    }
+
+    // Set the view for navigation menu
+    private void setView() {
+        preferences = getSharedPreferences(Constants.PREFS_NAME, MODE_PRIVATE);
+        String username = preferences.getString(Constants.USER_NAME, null);
+        String email = mAuth.getCurrentUser().getEmail();
+        String picture = preferences.getString(Constants.USER_PIC, null);
+        // Get the headerView in the navigation menu
+        View headerView = mNavmenu.getHeaderView(0);
+        TextView _username = (TextView) headerView.findViewById(R.id.header_username);
+        TextView _email = (TextView) headerView.findViewById(R.id.header_email);
+        CircleImageView _picture = (CircleImageView) headerView.findViewById(R.id.profile_image);
+        _username.setText(username);
+        _email.setText(email);
+        Log.d("main_activity", "Picture: " + picture + " , Username: " + username + " , Email: " + email);
+        if (picture == null || picture.toLowerCase().equals("default")) {
+            _picture.setImageResource(R.color.colorPrimaryDark);
+            Log.d("main_activity", "primaryColor set as profile pic");
+        } else {
+            StringImageConverter.decodeBase64AndSetImage(picture, _picture);
+            Log.d("main_activity", "picture set");
+        }
     }
 
     private void hideMenuItems(Menu menu, boolean visible) {
