@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ezclassapp.Activities.Constants;
+import com.example.ezclassapp.Activities.DetailedReviewActivity;
 import com.example.ezclassapp.Activities.SubmitReview;
 import com.example.ezclassapp.Models.Review;
 import com.example.ezclassapp.R;
@@ -58,6 +59,7 @@ public class ReviewListFragment extends Fragment {
     private List<String> mParam3;
     private String mCourseId;
     private ArrayList<String> reviewListId;
+    private static ReviewListFragment mFragment;
 
     /**
      * Use this factory method to create a new instance of
@@ -181,7 +183,7 @@ public class ReviewListFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
+        mFragment = this;
     }
 
     @Override
@@ -280,6 +282,8 @@ public class ReviewListFragment extends Fragment {
                         viewHolder.mUpVoteImageView.setTag(R.drawable.neutral_like);
                         viewHolder.mUpVoteImageView.setImageResource(R.drawable.neutral_like);
 
+                        viewHolder.setReviewUID(getRef(position).getKey());
+
                         viewHolder.mDownVoteTextViewCounter.setText(String.valueOf(review.getDownvote()));
                         viewHolder.mDownVoteImageView.setTag(R.drawable.neutral_dislike);
                         viewHolder.mDownVoteImageView.setImageResource(R.drawable.neutral_dislike);
@@ -356,6 +360,7 @@ public class ReviewListFragment extends Fragment {
         public TextView mDownVoteTextViewCounter;
         public TextView mReviewId;
         public boolean mIsAnimated;
+        private String reviewUID;
 
         public ReviewViewHolder(View v) {
             super(v);
@@ -373,11 +378,30 @@ public class ReviewListFragment extends Fragment {
 
         }
 
+        void setReviewUID(String reviewUID) {
+            this.reviewUID = reviewUID;
+        }
+
+        String getReviewUID() {
+            return this.reviewUID;
+        }
+
         /*
                 TODO should launch to a more specific activity LOL
          */
         @Override
         public void onClick(View v) {
+            try {
+                if (getReviewUID() != null) {
+                    Log.d("review_list", getReviewUID());
+                } else {
+                    Log.d("review_list", "reviewUID is null");
+                }
+                Intent detailedReview = DetailedReviewActivity.newInstance(mFragment, getReviewUID());
+                mFragment.getActivity().startActivity(detailedReview);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
             Toast.makeText(v.getContext(), "u click " + mReviewtitleTextView.getText().toString(), Toast.LENGTH_SHORT).show();
         }
     }

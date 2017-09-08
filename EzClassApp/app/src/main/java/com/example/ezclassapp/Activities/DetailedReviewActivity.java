@@ -38,6 +38,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
     // Static method to build and create a new activity to detailedReviewActivity
     public static Intent newInstance(Fragment fragment, String reviewUID) throws IllegalAccessException {
         if (fragment instanceof ReviewListFragment) {
+            Log.d("newInstance", "detailed_review newInstance called()");
             // Create bundle to store data
             Bundle bundle = new Bundle();
             bundle.putString(REVIEW_UID, reviewUID);
@@ -67,12 +68,10 @@ public class DetailedReviewActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Get data from Bundle
-        Bundle extras = getIntent().getExtras();
-        final String reviewUID;
+        Bundle extras = getIntent().getExtras().getBundle(REVIEW_ACTIVITY);
+        String reviewUID = "";
         if (extras == null) {
-            // TODO: Remove this comment and the reviewUID
-            // finish();
-            reviewUID = "Kt9Hi-Q8_u6lqsoAt_4";
+            finish();
         } else {
             reviewUID = extras.getString(REVIEW_UID);
         }
