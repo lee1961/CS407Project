@@ -8,12 +8,12 @@ import java.util.List;
  */
 
 public class Course {
-    String id;
-    String courseName;
-    String courseNumber;
-    String fullCourseName;
-    String imageUrl;
-    List<String> reviewID_list;
+    private String id;
+    private String courseName;
+    private String courseNumber;
+    private String fullCourseName;
+    private String imageUrl;
+    private List<String> reviewID_list;
 
     public Course() {
 
@@ -48,6 +48,10 @@ public class Course {
 
     public String getFullCourseName() {
         return fullCourseName;
+    }
+
+    public void setFullCourseName(String fullCourseName) {
+        this.fullCourseName = fullCourseName;
     }
 
     public String getId() {

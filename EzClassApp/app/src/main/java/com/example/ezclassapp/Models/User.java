@@ -10,7 +10,6 @@ public class User {
     private String image;
     private String thumb_image;
     private int karmaPoints;
-    private int age;
 
     public User() {
 
@@ -60,7 +59,6 @@ public class User {
                 ", image='" + image + '\'' +
                 ", thumb_image='" + thumb_image + '\'' +
                 ", karmaPoints=" + karmaPoints +
-                ", age=" + age +
                 '}';
     }
 

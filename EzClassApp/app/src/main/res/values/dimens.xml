@@ -21,4 +21,8 @@
     <dimen name="dialog_padding_start">24dp</dimen>
     <dimen name="dialog_padding_end">24dp</dimen>
 
+    <dimen name="icon_width2">30dip</dimen>
+    <dimen name="icon_height2">30dip</dimen>
+    <dimen name="icon_padding2">8dp</dimen>
+
 </resources>

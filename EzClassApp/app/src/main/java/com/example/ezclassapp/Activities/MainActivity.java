@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
@@ -44,6 +45,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -98,8 +100,6 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
 
             setupDrawer();
             setupNavigationMenu();
-//        FragmentManager fm = getSupportFragmentManager();
-//        Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
 
         /*
               this database points at the class
@@ -171,6 +171,15 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
             getAndSetUpCurrentUser(userRef, userUID);
         }
         super.onResume();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        if (frag instanceof ReviewListFragment) {
+            searchView.setVisibility(View.VISIBLE);
+        }
+        super.onBackPressed();
     }
 
     @Override
@@ -260,9 +269,10 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         ClassesCardFragment classesCardFragment = (ClassesCardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         Log.d("debug", "query is " + query);
         if (classesCardFragment != null && classesCardFragment.isVisible() && query.length() > 2) {
-            Log.d("yeah yeah", "someone has input some text into the query");
             RecyclerView myRecyclerView = (RecyclerView) findViewById(R.id.cardView);
-            myRecyclerView.scrollToPosition(0);
+            if (myRecyclerView != null) {
+                myRecyclerView.scrollToPosition(0);
+            }
             classesCardFragment.onNewQuery(query);
         } else if (classesCardFragment == null && query.length() > 2) {
             FragmentManager fm = getSupportFragmentManager();
@@ -340,12 +350,13 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         - when the user clicks on the class Card should launch the classes ReviewFragment
     */
     @Override
-    public void onCardSelected(String name) {
-        final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name);
+    public void onCardSelected(String name, String courseId, List<String> reviewListId) {
+        final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name, courseId, reviewListId);
         getSupportFragmentManager().beginTransaction().setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out).
                 replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
                 .addToBackStack(null)
                 .commit();
+        searchView.setVisibility(View.GONE);
 
     }
 
