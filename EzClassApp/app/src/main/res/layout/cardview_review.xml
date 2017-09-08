@@ -1,11 +1,10 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp">
+        android:layout_margin="16dp"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,8 +32,10 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                >
+
 
                 <LinearLayout
                     android:layout_weight="0.5"
@@ -45,14 +46,14 @@
                     >
 
                     <ImageView
-                        android:id="@+id/likeImageView"
+                        android:id="@+id/downVoteImageView"
                         android:layout_width="@dimen/icon_width2"
                         android:layout_height="@dimen/icon_height2"
                         android:padding="@dimen/icon_padding"
-                        android:src="@drawable/dislike"/>
+                        android:src="@drawable/neutral_dislike"/>
 
                     <TextView
-                        android:id="@+id/textView"
+                        android:id="@+id/downVoteCounterTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="123 likes"
@@ -65,19 +66,23 @@
                     android:layout_weight="0.5"
                     android:layout_width="0dip"
                     android:layout_height="wrap_content"
-                    android:gravity="center|start"
+                    android:gravity="right"
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:id="@+id/dislikeImageView"
+                        android:id="@+id/upVoteImageView"
                         android:layout_width="@dimen/icon_width2"
                         android:layout_height="@dimen/icon_height2"
+                        android:layout_marginEnd="@dimen/icon_padding"
                         android:padding="@dimen/icon_padding"
-                        android:src="@drawable/like"/>
+                        android:src="@drawable/neutral_like"/>
 
                     <TextView
+                        android:id="@+id/upVoteCounterTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:padding="@dimen/icon_padding"
+                        android:layout_marginRight="@dimen/icon_padding"
                         android:text="123 likes">
 
                     </TextView>
@@ -89,4 +94,3 @@
 
         </LinearLayout>
     </android.support.v7.widget.CardView>
-</RelativeLayout>

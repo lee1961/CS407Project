@@ -6,9 +6,12 @@ package com.example.ezclassapp.Activities;
 
 public class Constants {
     public static String COURSE = "Course";
-    public static String USER = "User";
+    public static String USER = "Users";
     public static String COURSENAME = "fullCourseName";
     public static String REVIEW = "Review";
     public static String REVIEWLIST = "reviewID_list";
-
+    public static String FOREIGNCLASSKEY = "foreignID_classID";
+    public static String UPVOTE = "upvote";
+    public static String DOWNVOTE = "downvote";
+    public static String MAPCHECK = "checkUserVoted";
 }
