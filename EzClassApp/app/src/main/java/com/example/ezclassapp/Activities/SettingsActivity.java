@@ -7,7 +7,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -198,7 +200,23 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     // Set up circleImageView by decoding Base64 String which contains the image
-    private void setUserImage(String image) {
+    private void setUserImage(final String image) {
+        ViewTreeObserver viewTreeObserver = mDisplayImage.getViewTreeObserver();
+        viewTreeObserver.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                Log.d("main_activity", "getting circleImageView dimensions");
+                mDisplayImage.getViewTreeObserver().removeOnPreDrawListener(this);
+                int height = mDisplayImage.getMeasuredHeight();
+                int width = mDisplayImage.getMeasuredWidth();
+                Log.d("main_activity", "height: " + Integer.toString(height) + " , width: " + Integer.toString(width));
+                // Creates a scaled down version of the image before it is loaded into memory
+                Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(image, height, width);
+                mDisplayImage.setImageBitmap(bitmap);
+                Log.d("main_activity", "image set");
+                return false;
+            }
+        });
         Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(image);
         mDisplayImage.setImageBitmap(bitmap);
     }

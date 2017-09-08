@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
@@ -418,23 +419,40 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     // Set the view for navigation menu
     private void setView() {
         preferences = getSharedPreferences(Constants.PREFS_NAME, MODE_PRIVATE);
-        String username = preferences.getString(Constants.USER_NAME, null);
-        String email = mAuth.getCurrentUser().getEmail();
-        String picture = preferences.getString(Constants.USER_PIC, null);
+        final String username = preferences.getString(Constants.USER_NAME, null);
+        final String email = mAuth.getCurrentUser().getEmail();
+        final String picture = preferences.getString(Constants.USER_PIC, null);
         // Get the headerView in the navigation menu
         View headerView = mNavmenu.getHeaderView(0);
         TextView _username = (TextView) headerView.findViewById(R.id.header_username);
         TextView _email = (TextView) headerView.findViewById(R.id.header_email);
-        CircleImageView _picture = (CircleImageView) headerView.findViewById(R.id.profile_image);
+        final CircleImageView _picture = (CircleImageView) headerView.findViewById(R.id.profile_image);
+
         _username.setText(username);
         _email.setText(email);
         Log.d("main_activity", "Picture: " + picture + " , Username: " + username + " , Email: " + email);
+
         if (picture == null || picture.toLowerCase().equals("default")) {
             _picture.setImageResource(R.color.colorPrimaryDark);
             Log.d("main_activity", "primaryColor set as profile pic");
         } else {
-            Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(picture);
-            _picture.setImageBitmap(bitmap);
+            ViewTreeObserver viewTreeObserver = _picture.getViewTreeObserver();
+            viewTreeObserver.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    Log.d("main_activity", "getting circleImageView dimensions");
+                    _picture.getViewTreeObserver().removeOnPreDrawListener(this);
+                    int height = _picture.getMeasuredHeight();
+                    int width = _picture.getMeasuredWidth();
+                    Log.d("main_activity", "height: " + Integer.toString(height) + " , width: " + Integer.toString(width));
+                    // Creates a scaled down version of the image before it is loaded into memory
+                    Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(picture, height, width);
+                    _picture.setImageBitmap(bitmap);
+                    Log.d("main_activity", "image set");
+                    return false;
+                }
+            });
+
             Log.d("main_activity", "picture set");
         }
     }
