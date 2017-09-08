@@ -295,21 +295,26 @@ public class ReviewListFragment extends Fragment {
                         } else {
                             //REACHES HERE means he hasnt upvote the post yet
                             /* WHEN THE PERSON UPVOTE THE POST */
-                            viewHolder.mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Log.d("tag", "upvoting it");
-                                    updateUpvoteButton(viewHolder, reviewID, map, userID);
+                                viewHolder.mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Log.d("tag", "upvoting it");
+                                        viewHolder.mUpVoteImageView.setClickable(false);
+                                        viewHolder.mDownVoteImageView.setClickable(false);
+                                        updateUpvoteButton(viewHolder,reviewID,map,userID);
 
-                                }
-                            });
-                            viewHolder.mDownVoteImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Log.d("tag", "downvoting it");
-                                    updateDownvoteButton(viewHolder, reviewID, map, userID);
-                                }
-                            });
+                                    }
+                                });
+                                viewHolder.mDownVoteImageView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Log.d("tag", "downvoting it");
+                                        viewHolder.mDownVoteImageView.setClickable(false);
+                                        viewHolder.mUpVoteImageView.setClickable(false);
+                                        updateDownvoteButton(viewHolder,reviewID,map,userID);
+                                    }
+                                });
+                                viewHolder.mIsAnimated = true;
                         }
                     }
                 };
@@ -350,6 +355,7 @@ public class ReviewListFragment extends Fragment {
         public TextView mUpVoteTextViewCounter;
         public TextView mDownVoteTextViewCounter;
         public TextView mReviewId;
+        public boolean mIsAnimated;
 
         public ReviewViewHolder(View v) {
             super(v);
@@ -358,6 +364,7 @@ public class ReviewListFragment extends Fragment {
             mDownVoteTextViewCounter = (TextView) v.findViewById(R.id.downVoteCounterTextView);
             mReviewtitleTextView = (TextView) v.findViewById(R.id.opinion_textView);
             mReviewerName = (TextView) v.findViewById(R.id.reviewer_textView);
+            mIsAnimated = false;
 
             itemView.setOnClickListener(this);
 
