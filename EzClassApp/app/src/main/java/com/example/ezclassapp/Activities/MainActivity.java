@@ -427,15 +427,16 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         TextView _username = (TextView) headerView.findViewById(R.id.header_username);
         TextView _email = (TextView) headerView.findViewById(R.id.header_email);
         final CircleImageView _picture = (CircleImageView) headerView.findViewById(R.id.profile_image);
-
+        // Set the username and email
         _username.setText(username);
         _email.setText(email);
         Log.d("main_activity", "Picture: " + picture + " , Username: " + username + " , Email: " + email);
-
+        // Set default picture to color PrimaryDark
         if (picture == null || picture.toLowerCase().equals("default")) {
             _picture.setImageResource(R.color.colorPrimaryDark);
             Log.d("main_activity", "primaryColor set as profile pic");
         } else {
+            // Get the imageView size
             ViewTreeObserver viewTreeObserver = _picture.getViewTreeObserver();
             viewTreeObserver.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
@@ -445,7 +446,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                     int height = _picture.getMeasuredHeight();
                     int width = _picture.getMeasuredWidth();
                     Log.d("main_activity", "height: " + Integer.toString(height) + " , width: " + Integer.toString(width));
-                    // Creates a scaled down version of the image before it is loaded into memory
+                    // Get the imageView size and scale the picture before loading into memory
                     Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(picture, height, width);
                     _picture.setImageBitmap(bitmap);
                     Log.d("main_activity", "image set");
