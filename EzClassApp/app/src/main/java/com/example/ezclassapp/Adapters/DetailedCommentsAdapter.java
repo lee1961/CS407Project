@@ -1,6 +1,7 @@
 package com.example.ezclassapp.Adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -98,7 +99,8 @@ public class DetailedCommentsAdapter extends RecyclerView.Adapter<DetailedCommen
     // Sets the views after
     private void setView(ViewHolder holder, User user, String comment) {
         // Set image using helper function
-        StringImageConverter.decodeBase64AndSetImage(user.getImage(), holder.mUserImage);
+        Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(user.getImage());
+        holder.mUserImage.setImageBitmap(bitmap);
         // Set name and comment
         holder.mUsername.setText(user.getName());
         holder.mComment.setText(comment);

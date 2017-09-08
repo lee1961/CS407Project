@@ -2,16 +2,18 @@ package com.example.ezclassapp.Activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.ezclassapp.Helpers.StringImageConverter;
+import com.example.ezclassapp.Models.Course;
 import com.example.ezclassapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -22,15 +24,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.example.ezclassapp.Models.Course;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Random;
 
@@ -38,67 +36,76 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SettingsActivity extends AppCompatActivity {
 
+    private static final int GALLERY_PICK = 1;
     private DatabaseReference mUserDatabase;
     private DatabaseReference mClassDatabase;
     private FirebaseUser mCurrentUser;
-
     private CircleImageView mDisplayImage;
     private TextView mName;
     private TextView mMajor;
-
     private Button mStatusBtn;
     private Button mAddClassBtn;
-
-    private static final int GALLERY_PICK = 1;
-
-    private StorageReference mImageStorage;
     private ProgressDialog mProgressDialog;
+
+    public static String random() {
+        Random generator = new Random();
+        StringBuilder randomStringBuilder = new StringBuilder();
+        int randomLength = generator.nextInt(10);
+        char tempChar;
+        for (int i = 0; i < randomLength; i++) {
+            tempChar = (char) (generator.nextInt(96) + 32);
+            randomStringBuilder.append(tempChar);
+        }
+        return randomStringBuilder.toString();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
-        mDisplayImage = (CircleImageView)findViewById(R.id.settings_image);
-        mName = (TextView)findViewById(R.id.settings_display_name);
-        mMajor = (TextView)findViewById(R.id.settings_status);
-        mStatusBtn = (Button)findViewById(R.id.settings_status_btn);
-        mAddClassBtn = (Button)findViewById(R.id.add_class_btn);
-
-        mImageStorage = FirebaseStorage.getInstance().getReference();
-
+        // Set up the views for the settings page
+        mDisplayImage = (CircleImageView) findViewById(R.id.settings_image);
+        mName = (TextView) findViewById(R.id.settings_display_name);
+        mMajor = (TextView) findViewById(R.id.settings_status);
+        mStatusBtn = (Button) findViewById(R.id.settings_status_btn);
+        mAddClassBtn = (Button) findViewById(R.id.add_class_btn);
+        // Get the current user and the user database instance
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         final String current_uid = mCurrentUser.getUid();
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(current_uid);
-        mUserDatabase.addValueEventListener(new ValueEventListener() {
+        mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                //Toast.makeText(SettingsActivity.this, dataSnapshot.toString(), Toast.LENGTH_SHORT).show();
+                // Get the user information from firebase
                 String name = "";
                 String thumb_image = "";
-                String major ="";
+                String major = "";
                 String image = "";
-                if(dataSnapshot.child("name").getValue() != null) {
+                if (dataSnapshot.child("name").getValue() != null) {
                     name = dataSnapshot.child("name").getValue().toString();
                 }
-                if(dataSnapshot.child("major").getValue() != null) {
+                if (dataSnapshot.child("major").getValue() != null) {
                     major = dataSnapshot.child("major").getValue().toString();
-                }if(dataSnapshot.child("image").getValue() != null) {
+                }
+                if (dataSnapshot.child("image").getValue() != null) {
                     image = dataSnapshot.child("image").getValue().toString();
                 }
-                if( dataSnapshot.child("thumb_image").getValue() != null) {
+                if (dataSnapshot.child("thumb_image").getValue() != null) {
                     thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
                 }
 
-
                 mName.setText(name);
-                if(major != null)
+                if (major != null) {
                     mMajor.setText(major);
-
-                if(!image.equals("default")){
-                    Picasso.with(SettingsActivity.this).load(image).into(mDisplayImage);
                 }
 
+                if (image != null) {
+                    // Set the image for the user if found
+                    setUserImage(image);
+                } else {
+                    // If image is not found, then user image is given color primaryDark
+                    mDisplayImage.setImageResource(R.color.colorPrimaryDark);
+                }
             }
 
             @Override
@@ -110,7 +117,7 @@ public class SettingsActivity extends AppCompatActivity {
         mStatusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent status_intent = new Intent(SettingsActivity.this,StatusActivity.class);
+                Intent status_intent = new Intent(SettingsActivity.this, StatusActivity.class);
                 startActivity(status_intent);
             }
         });
@@ -120,7 +127,7 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 List<Course> classes = Course.getDummyCourseList();
                 mClassDatabase = FirebaseDatabase.getInstance().getReference().child("Course");
-                for (Course currentCourse: classes) {
+                for (Course currentCourse : classes) {
                     String key = mClassDatabase.push().getKey();
                     currentCourse.setId(key);
                     mClassDatabase.child(key).setValue(currentCourse);
@@ -136,7 +143,7 @@ public class SettingsActivity extends AppCompatActivity {
                 Intent galleryIntent = new Intent();
                 galleryIntent.setType("image/*");
                 galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(galleryIntent,"SELECT IMAGE"),GALLERY_PICK);
+                startActivityForResult(Intent.createChooser(galleryIntent, "SELECT IMAGE"), GALLERY_PICK);
                 /*CropImage.activity()
                         .setGuidelines(CropImageView.Guidelines.ON)
                         .start(SettingsActivity.this);*/
@@ -147,14 +154,16 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        // User picked an image from the Gallery
         if (requestCode == GALLERY_PICK && resultCode == RESULT_OK) {
             Uri imageUri = data.getData();
+            // Sends an activity to get a cropped image
             CropImage.activity(imageUri)
-                    .setAspectRatio(1,1)
+                    .setAspectRatio(1, 1)
                     .start(this);
-            //Toast.makeText(this, imageUri, Toast.LENGTH_SHORT).show();
         }
 
+        // User cropped a photo
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
@@ -163,48 +172,34 @@ public class SettingsActivity extends AppCompatActivity {
                 mProgressDialog.setMessage("Please wait while we upload and process the image");
                 mProgressDialog.setCanceledOnTouchOutside(false);
                 mProgressDialog.show();
+                // Gets the cropped picture uri
                 Uri resultUri = result.getUri();
-                String current_user_id = mCurrentUser.getUid();
-                StorageReference filepath = mImageStorage.child("profile_images").child(current_user_id + ".jpg");
-                filepath.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            //Toast.makeText(SettingsActivity.this, "working", Toast.LENGTH_SHORT).show();
-                            @SuppressWarnings("VisibleForTests")
-                            String download_url = task.getResult().getDownloadUrl().toString();
-                            mUserDatabase.child("image").setValue(download_url).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        mProgressDialog.dismiss();
-                                        Toast.makeText(SettingsActivity.this, "Success Uploading", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
+                // Gets the absolute path of the image stored
+                File file = new File(resultUri.getPath());
+                String filepath = file.getAbsolutePath();
+                // Decode that picture into a base64 string
+                final String convertedImage = StringImageConverter.getBase64String(filepath);
 
-                        } else {
-                            Toast.makeText(SettingsActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                // Save the image string into firebase
+                mUserDatabase.child("image").setValue(convertedImage).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
                             mProgressDialog.dismiss();
+                            setUserImage(convertedImage);
+                            Toast.makeText(SettingsActivity.this, "Success Uploading", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
-
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }
         }
     }
 
-    public static String random() {
-        Random generator = new Random();
-        StringBuilder randomStringBuilder = new StringBuilder();
-        int randomLength = generator.nextInt(10);
-        char tempChar;
-        for (int i = 0; i < randomLength; i++){
-            tempChar = (char) (generator.nextInt(96) + 32);
-            randomStringBuilder.append(tempChar);
-        }
-        return randomStringBuilder.toString();
+    // Set up circleImageView by decoding Base64 String which contains the image
+    private void setUserImage(String image) {
+        Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(image);
+        mDisplayImage.setImageBitmap(bitmap);
     }
 }

@@ -68,7 +68,7 @@ public class CreateCommentDialogFragment extends DialogFragment {
         userData.setText(username);
         CircleImageView userImage = (CircleImageView) view.findViewById(R.id.alert_user_pic);
 
-        Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(preferences.getString(Constants.USER_PIC, null), userImage);
+        Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(preferences.getString(Constants.USER_PIC, null));
         if (bitmap == null) {
             // Set user image to color primary if there is no profile image set yet, change null to theme if any
             userImage.setImageResource(R.color.colorPrimary);

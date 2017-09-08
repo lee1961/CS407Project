@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
@@ -432,7 +433,8 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
             _picture.setImageResource(R.color.colorPrimaryDark);
             Log.d("main_activity", "primaryColor set as profile pic");
         } else {
-            StringImageConverter.decodeBase64AndSetImage(picture, _picture);
+            Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(picture);
+            _picture.setImageBitmap(bitmap);
             Log.d("main_activity", "picture set");
         }
     }
@@ -490,7 +492,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         });
     }
 
-    // Set up user data in SharedPreferences
+    // Set up user data in SharedPreferences, then call setView() to make sure user info is updated
     private void setUpUser(User user) {
         Log.d("main_activity", user.toString());
         SharedPreferences preferences = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
@@ -499,5 +501,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         editor.putString(Constants.USER_NAME, user.getName());
         editor.putString(Constants.USER_PIC, user.getImage());
         editor.apply();
+        // Update navigation user info
+        setView();
     }
 }
