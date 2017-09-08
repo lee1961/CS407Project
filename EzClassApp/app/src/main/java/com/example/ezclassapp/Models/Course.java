@@ -2,7 +2,6 @@ package com.example.ezclassapp.Models;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by victorlee95 on 8/26/2017.
@@ -15,9 +14,11 @@ public class Course {
     private String fullCourseName;
     private String imageUrl;
     private List<String> reviewID_list;
+
     public Course() {
 
     }
+
 
     public Course(String courseNumber, String courseName) {
         this.courseName = courseName;
@@ -25,11 +26,6 @@ public class Course {
         this.courseNumber = courseNumber;
         this.fullCourseName = courseNumber + " " + courseName;
     }
-
-    public String getFullCourseName() {
-        return fullCourseName;
-    }
-
 
     public static ArrayList<Course> getDummyCourseList() {
         ArrayList<Course> classList = new ArrayList<Course>();
@@ -48,6 +44,14 @@ public class Course {
 //
 //            }
 //        }
+    }
+
+    public String getFullCourseName() {
+        return fullCourseName;
+    }
+
+    public void setFullCourseName(String fullCourseName) {
+        this.fullCourseName = fullCourseName;
     }
 
     public String getId() {

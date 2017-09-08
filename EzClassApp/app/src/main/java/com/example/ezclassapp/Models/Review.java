@@ -1,10 +1,8 @@
 package com.example.ezclassapp.Models;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created by victorlee95 on 8/26/2017.
@@ -21,10 +19,20 @@ public class Review {
     private int usefulness;
     private int upvote;
     private int downvote;
-    private Map<String,Boolean> checkUserVoted;
+    private List<String> commentUID;
+    private Map<String, Boolean> checkUserVoted;
 
     public Review() {
 
+    }
+
+    public Review(String ID, String reviewerName, String foreignID_classID, String opinion) {
+        this.ID = ID;
+        this.reviewerName = reviewerName;
+        this.foreignID_classID = foreignID_classID;
+        this.opinion = opinion;
+        checkUserVoted = new HashMap<>();
+        checkUserVoted.put(ID, true);
     }
 
     public String getReviewerName() {
@@ -35,21 +43,20 @@ public class Review {
         this.reviewerName = reviewerName;
     }
 
-    public Review(String ID,String reviewerName, String foreignID_classID, String opinion) {
-        this.ID = ID;
-        this.reviewerName = reviewerName;
-        this.foreignID_classID = foreignID_classID;
-        this.opinion = opinion;
-        checkUserVoted = new HashMap<>();
-        checkUserVoted.put(ID,true);
-    }
-
-    public String getId() {
+    public String getID() {
         return ID;
     }
 
     public void setID(String ID) {
         this.ID = ID;
+    }
+
+    public List<String> getCommentUID() {
+        return commentUID;
+    }
+
+    public void setCommentUID(List<String> commentUID) {
+        this.commentUID = commentUID;
     }
 
     public String getForeignID_classID() {
