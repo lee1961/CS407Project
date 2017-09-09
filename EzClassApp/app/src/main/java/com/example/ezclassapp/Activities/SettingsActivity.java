@@ -98,7 +98,7 @@ public class SettingsActivity extends AppCompatActivity {
                     mMajor.setText(major);
                 }
 
-                if (image != null) {
+                if (image != null && !image.equals("default")) {
                     // Set the image for the user if found
                     setUserImage(image);
                 } else {
