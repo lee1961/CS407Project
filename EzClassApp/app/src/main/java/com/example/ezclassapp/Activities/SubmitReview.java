@@ -35,6 +35,7 @@ public class SubmitReview extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private DatabaseReference reviewReference;
     private DatabaseReference particularCourseReference;
+    private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
