@@ -2,7 +2,9 @@
                                     xmlns:app="http://schemas.android.com/apk/res-auto"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_margin="16dp">
+                                    android:layout_margin="8dp"
+                                    app:cardCornerRadius="5dp"
+                                    app:cardElevation="3dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,23 +15,56 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="8dp">
 
-            <TextView
-                android:id="@+id/opinion_textView"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Opinion..."
-                android:textColor="#000"
-                android:textSize="18sp"/>
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/reviewer_textView"
-                android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#80000000"
+                    android:textSize="18sp"
+                    android:text="Opinion: "
+                    />
+
+                <TextView
+                    android:id="@+id/opinion_textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:textColor="#000"
+                    android:textSize="16sp"/>
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="By..."
-                android:textColor="#555"/>
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="By: "
+                    android:textColor="#80000000"
+                    android:textSize="15sp"
+                    />
+
+                <TextView
+                    android:id="@+id/reviewer_textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#212121"
+                    android:textSize="14sp"/>
+
+            </LinearLayout>
+
+
         </LinearLayout>
 
         <LinearLayout
