@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.ezclassapp.Models.Review;
@@ -30,7 +31,7 @@ public class SubmitReview extends AppCompatActivity {
 
     private Toolbar mToolbar;
     private Button mSubmit_btn;
-    private TextInputLayout mReviewText;
+    private EditText mReviewText;
     public static final String ARG_PARAM1 = "courseName";
     public static final String ARG_PARAM2 = "reviewListId";
     private DatabaseReference mDatabase;
@@ -43,7 +44,7 @@ public class SubmitReview extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_submit_review);
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mReviewText = (TextInputLayout)findViewById(R.id.review_input);
+        mReviewText = (EditText)findViewById(R.id.review_input);
         mSubmit_btn = (Button) findViewById(R.id.submit_btn);
         Bundle currentBundle = getIntent().getExtras();
         final String courseid = currentBundle.getString(ARG_PARAM1);
@@ -87,7 +88,7 @@ public class SubmitReview extends AppCompatActivity {
                         DatabaseReference reviewReference = foreignKeyReference;
                         final String key = reviewReference.push().getKey();
                         final String user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                        Review review = new Review(key,userName,courseid,mReviewText.getEditText().getText().toString(),user_id);
+                        Review review = new Review(key,userName,courseid,mReviewText.getText().toString(),user_id);
                         reviewReference.child(key).setValue(review);
                         finish();
                     }
