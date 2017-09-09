@@ -189,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_user,menu);
 
         // the search bar for searching classes, this will be very important
         searchItem = menu.findItem(R.id.action_search);
