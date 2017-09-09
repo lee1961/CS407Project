@@ -97,10 +97,16 @@ public class DetailedCommentsAdapter extends RecyclerView.Adapter<DetailedCommen
     }
 
     // Sets the views after
-    private void setView(ViewHolder holder, User user, String comment) {
+    private void setView(final ViewHolder holder, final User user, final String comment) {
         // Set image using helper function
-        Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(user.getImage());
-        holder.mUserImage.setImageBitmap(bitmap);
+        StringImageConverter.getDimensions(holder.mUserImage, new StringImageConverter.setDimensionsListener() {
+            @Override
+            public void onComplete(int height, int width) {
+                Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(user.getImage(), height, width);
+                holder.mUserImage.setImageBitmap(bitmap);
+                Log.d("Comments_Adapter", "User image set");
+            }
+        });
         // Set name and comment
         holder.mUsername.setText(user.getName());
         holder.mComment.setText(comment);

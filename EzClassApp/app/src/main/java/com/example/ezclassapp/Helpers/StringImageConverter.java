@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewTreeObserver;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -87,5 +89,27 @@ public class StringImageConverter {
         }
 
         return inSampleSize;
+    }
+
+    public static void getDimensions(final View view, final StringImageConverter.setDimensionsListener listener) {
+        ViewTreeObserver viewTreeObserver = view.getViewTreeObserver();
+        viewTreeObserver.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                Log.d("StringImageConverter", "getting circleImageView dimensions");
+                view.getViewTreeObserver().removeOnPreDrawListener(this);
+                int height = view.getMeasuredHeight();
+                int width = view.getMeasuredWidth();
+                listener.onComplete(height, width);
+                Log.d("StringImageConverter", "height: " + Integer.toString(height) + " , width: " + Integer.toString(width));
+                return false;
+            }
+        });
+
+
+    }
+
+    public interface setDimensionsListener {
+        void onComplete(int height, int width);
     }
 }

@@ -26,7 +26,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
@@ -234,8 +233,12 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     }
 
     private void sendToStart() {
-        Intent startIntent = new Intent(MainActivity.this, StartActivity.class);
+        // Clear the user data from SharedPreferences first
+        SharedPreferences userInfo = getSharedPreferences(Constants.PREFS_NAME, MODE_PRIVATE);
+        userInfo.edit().clear().apply();
+        // Stop the activity, then create a new Intent to the login page
         finish();
+        Intent startIntent = new Intent(MainActivity.this, StartActivity.class);
         startActivity(startIntent);
     }
 
@@ -436,25 +439,15 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
             _picture.setImageResource(R.color.colorPrimaryDark);
             Log.d("main_activity", "primaryColor set as profile pic");
         } else {
-            // Get the imageView size
-            ViewTreeObserver viewTreeObserver = _picture.getViewTreeObserver();
-            viewTreeObserver.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            // Call this method to get the dimensions of the imageView and then set the picture in onComplete
+            StringImageConverter.getDimensions(_picture, new StringImageConverter.setDimensionsListener() {
                 @Override
-                public boolean onPreDraw() {
-                    Log.d("main_activity", "getting circleImageView dimensions");
-                    _picture.getViewTreeObserver().removeOnPreDrawListener(this);
-                    int height = _picture.getMeasuredHeight();
-                    int width = _picture.getMeasuredWidth();
-                    Log.d("main_activity", "height: " + Integer.toString(height) + " , width: " + Integer.toString(width));
-                    // Get the imageView size and scale the picture before loading into memory
+                public void onComplete(int height, int width) {
                     Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(picture, height, width);
                     _picture.setImageBitmap(bitmap);
-                    Log.d("main_activity", "image set");
-                    return false;
+                    Log.d("main_activity", "picture set");
                 }
             });
-
-            Log.d("main_activity", "picture set");
         }
     }
 
