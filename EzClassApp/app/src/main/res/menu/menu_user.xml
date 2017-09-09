@@ -15,12 +15,13 @@
             android:id="@+id/menu_create_class"
             android:checked="false"
             android:icon="@drawable/default_avatar"
-            android:title="@string/create_class"/>
+            android:title="@string/create_class" />
 
         <item
             android:id="@+id/menu_detailed_review"
             android:checked="false"
             android:icon="@drawable/default_avatar"
-            android:title="@string/dummy_detailed_review"/>
+            android:title="@string/dummy_detailed_review"
+            android:visible="false" />
     </group>
 </menu>
