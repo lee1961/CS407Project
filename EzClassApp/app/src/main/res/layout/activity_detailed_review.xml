@@ -26,8 +26,6 @@
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginEnd="@dimen/activity_right_margin"
-            android:layout_marginStart="@dimen/activity_left_margin"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <!-- descendantFocusability is set such that recyclerView does not take focus everytime -->
@@ -50,26 +48,39 @@
                         android:orientation="vertical"
                         android:padding="8dp">
 
-                        <TextView
-                            android:id="@+id/detailed_user"
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/subtitle_height"
-                            android:gravity="center_vertical"
-                            android:text="PLACEHOLDER"
-                            android:textSize="14sp" />
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:orientation="horizontal">
+
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                android:id="@+id/detailed_user_pic"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:layout_gravity="center_vertical" />
+
+                            <TextView
+                                android:id="@+id/detailed_username"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:text="USERNAME"
+                                android:textSize="14sp" />
+                        </LinearLayout>
 
                         <TextView
                             android:id="@+id/detailed_opinion"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="PLACEHOLDER"
+                            android:text="OPINION"
                             android:textSize="16sp" />
 
                         <TextView
                             android:id="@+id/detailed_tips"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="PLACEHOLDER"
+                            android:text="TIPS"
                             android:textSize="16sp" />
                     </LinearLayout>
                 </android.support.v7.widget.CardView>

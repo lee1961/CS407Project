@@ -1,6 +1,7 @@
 package com.example.ezclassapp.Activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -8,15 +9,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.example.ezclassapp.Adapters.DetailedCommentsAdapter;
 import com.example.ezclassapp.Fragments.CreateCommentDialogFragment;
 import com.example.ezclassapp.Fragments.ReviewListFragment;
+import com.example.ezclassapp.Helpers.StringImageConverter;
 import com.example.ezclassapp.Models.Comment;
 import com.example.ezclassapp.Models.Review;
+import com.example.ezclassapp.Models.User;
 import com.example.ezclassapp.R;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -25,7 +30,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class DetailedReviewActivity extends AppCompatActivity {
+    private static final String CLASS_UID = "CLASS_UID";
     private static final String REVIEW_UID = "REVIEW_UID";
     private static final String REVIEW_ACTIVITY = "REVIEW_ACTIVITY";
     final int FIRST_POS = 0;
@@ -37,11 +47,12 @@ public class DetailedReviewActivity extends AppCompatActivity {
     private ChildEventListener mChildEventListener;
 
     // Static method to build and create a new activity to detailedReviewActivity
-    public static Intent newInstance(Fragment fragment, String reviewUID) throws IllegalAccessException {
+    public static Intent newInstance(Fragment fragment, String classUID, String reviewUID) throws IllegalAccessException {
         if (fragment instanceof ReviewListFragment) {
             Log.d("newInstance", "detailed_review newInstance called()");
             // Create bundle to store data
             Bundle bundle = new Bundle();
+            bundle.putString(CLASS_UID, classUID);
             bundle.putString(REVIEW_UID, reviewUID);
             // Create and return intent
             Intent detailedReview = new Intent(fragment.getContext(), DetailedReviewActivity.class);
@@ -70,19 +81,26 @@ public class DetailedReviewActivity extends AppCompatActivity {
 
         // Get data from Bundle
         Bundle extras = getIntent().getExtras().getBundle(REVIEW_ACTIVITY);
+        String classUID = "";
         String reviewUID = "";
         if (extras == null) {
             finish();
         } else {
+            classUID = extras.getString(CLASS_UID);
             reviewUID = extras.getString(REVIEW_UID);
+            // Check for valid input
+            if (!TextUtils.isEmpty(classUID) && !TextUtils.isEmpty(reviewUID)) {
+                Log.d("detailed_review", "classUID: " + classUID + ", reviewUID: " + reviewUID);
+                // Get firebase database reference and setup the review
+                reference = FirebaseDatabase.getInstance().getReference();
+                DatabaseReference review = reference.child(Constants.REVIEW).child(classUID).child(reviewUID);
+                setUpDetailedReview(review);
+                // Initialize FAB
+                initializeFABAction(reviewUID);
+            } else {
+                Log.d("detailed_review", "classUID and reviewUID is null");
+            }
         }
-        // Get firebase database reference and setup the review
-        reference = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference review = reference.child(Constants.REVIEW).child(reviewUID);
-        setUpDetailedReview(review);
-
-        // Initialize FAB
-        initializeFABAction(reviewUID);
     }
 
     @Override
@@ -141,8 +159,61 @@ public class DetailedReviewActivity extends AppCompatActivity {
     }
 
     // Set up the views using data in the review object
-    private void setViews(Review revilew) {
+    private void setViews(final Review review) {
         // TODO: Set up the views for the review itself
+        // Get the userImage first before setting the views
+        Log.d("detailed_review", review.toString());
+        Log.d("detailed_review", reference.toString());
+        DatabaseReference user = reference.child(Constants.USER).child(review.getForeignID_userID());
+        user.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                // Get the final data to be presented
+                final String _userPic = user.getImage();
+                final String _userName = review.getReviewerName();
+                final String _opinion = review.getOpinion();
+                final String _tip = review.getTips();
+                // Get the views
+                final CircleImageView userImage = (CircleImageView) findViewById(R.id.detailed_user_pic);
+                final TextView username = (TextView) findViewById(R.id.detailed_username);
+                final TextView opinion = (TextView) findViewById(R.id.detailed_opinion);
+                final TextView tip = (TextView) findViewById(R.id.detailed_tips);
+                // populate the views
+                // If user email is null or "default" then show default avatar
+                if (!TextUtils.isEmpty(_userPic) && _userPic.equals("default")) {
+                    userImage.setImageResource(R.drawable.default_avatar);
+                } else {
+                    // User helper function to decode string into an image
+                    StringImageConverter.getDimensions(userImage, new StringImageConverter.setDimensionsListener() {
+                        @Override
+                        public void onComplete(int height, int width) {
+                            Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(_userPic, height, width);
+                            userImage.setImageBitmap(bitmap);
+                        }
+                    });
+                }
+                // Set the text views
+                setTextView(_userName, username);
+                setTextView(_opinion, opinion);
+                setTextView(_tip, tip);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void setTextView(String input, TextView view) {
+        if (TextUtils.isEmpty(input)) {
+            view.setText("");
+            Log.d("detailed_review", String.valueOf(view.getId()) + " is null.");
+        } else {
+            view.setText(input);
+            Log.d("detailed_review", String.valueOf(view.getId()) + " is set");
+        }
     }
 
     // Sets up the recyclerView for the comments section
