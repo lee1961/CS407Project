@@ -52,8 +52,7 @@ public class CreateCommentDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Get the reviewUID from bundle
         // TODO: Remove the comment below and remove the reviewUID
-        // final String reviewUID = getArguments().getString(REVIEW_UID);
-        final String reviewUID = "Kt9Hi-Q8_u6lqsoAt_4";
+        final String reviewUID = getArguments().getString(REVIEW_UID);
         // Use the alert builder class for convenient dialog construction
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get instance of sharedpreferences
