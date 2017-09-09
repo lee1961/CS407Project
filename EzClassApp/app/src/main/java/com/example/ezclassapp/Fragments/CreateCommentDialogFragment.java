@@ -52,8 +52,7 @@ public class CreateCommentDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Get the reviewUID from bundle
         // TODO: Remove the comment below and remove the reviewUID
-        // final String reviewUID = getArguments().getString(REVIEW_UID);
-        final String reviewUID = "Kt9Hi-Q8_u6lqsoAt_4";
+        final String reviewUID = getArguments().getString(REVIEW_UID);
         // Use the alert builder class for convenient dialog construction
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get instance of sharedpreferences
@@ -68,7 +67,7 @@ public class CreateCommentDialogFragment extends DialogFragment {
         userData.setText(username);
         CircleImageView userImage = (CircleImageView) view.findViewById(R.id.alert_user_pic);
 
-        Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(preferences.getString(Constants.USER_PIC, null), userImage);
+        Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(preferences.getString(Constants.USER_PIC, null));
         if (bitmap == null) {
             // Set user image to color primary if there is no profile image set yet, change null to theme if any
             userImage.setImageResource(R.color.colorPrimary);

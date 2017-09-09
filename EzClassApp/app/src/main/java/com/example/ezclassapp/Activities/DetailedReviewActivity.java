@@ -34,6 +34,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private DetailedCommentsAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
+    private ChildEventListener mChildEventListener;
 
     // Static method to build and create a new activity to detailedReviewActivity
     public static Intent newInstance(Fragment fragment, String reviewUID) throws IllegalAccessException {
@@ -82,6 +83,13 @@ public class DetailedReviewActivity extends AppCompatActivity {
 
         // Initialize FAB
         initializeFABAction(reviewUID);
+    }
+
+    @Override
+    protected void onStop() {
+        // Remove listeners before activity stops
+        reference.removeEventListener(mChildEventListener);
+        super.onStop();
     }
 
     @Override
@@ -141,7 +149,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
         mAdapter = new DetailedCommentsAdapter();
         mRecyclerView.setAdapter(mAdapter);
         // Contains a childEventListener if someone creates a comment, the user is immediately notified
-        reference.child(Constants.COMMENT).child(reviewUID).addChildEventListener(new ChildEventListener() {
+        mChildEventListener = reference.child(Constants.COMMENT).child(reviewUID).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d("detailed_review", "onChildAdded called");

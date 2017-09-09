@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
@@ -232,8 +233,12 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     }
 
     private void sendToStart() {
-        Intent startIntent = new Intent(MainActivity.this, StartActivity.class);
+        // Clear the user data from SharedPreferences first
+        SharedPreferences userInfo = getSharedPreferences(Constants.PREFS_NAME, MODE_PRIVATE);
+        userInfo.edit().clear().apply();
+        // Stop the activity, then create a new Intent to the login page
         finish();
+        Intent startIntent = new Intent(MainActivity.this, StartActivity.class);
         startActivity(startIntent);
     }
 
@@ -417,23 +422,32 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     // Set the view for navigation menu
     private void setView() {
         preferences = getSharedPreferences(Constants.PREFS_NAME, MODE_PRIVATE);
-        String username = preferences.getString(Constants.USER_NAME, null);
-        String email = mAuth.getCurrentUser().getEmail();
-        String picture = preferences.getString(Constants.USER_PIC, null);
+        final String username = preferences.getString(Constants.USER_NAME, null);
+        final String email = mAuth.getCurrentUser().getEmail();
+        final String picture = preferences.getString(Constants.USER_PIC, null);
         // Get the headerView in the navigation menu
         View headerView = mNavmenu.getHeaderView(0);
         TextView _username = (TextView) headerView.findViewById(R.id.header_username);
         TextView _email = (TextView) headerView.findViewById(R.id.header_email);
-        CircleImageView _picture = (CircleImageView) headerView.findViewById(R.id.profile_image);
+        final CircleImageView _picture = (CircleImageView) headerView.findViewById(R.id.profile_image);
+        // Set the username and email
         _username.setText(username);
         _email.setText(email);
         Log.d("main_activity", "Picture: " + picture + " , Username: " + username + " , Email: " + email);
+        // Set default picture to color PrimaryDark
         if (picture == null || picture.toLowerCase().equals("default")) {
             _picture.setImageResource(R.color.colorPrimaryDark);
             Log.d("main_activity", "primaryColor set as profile pic");
         } else {
-            StringImageConverter.decodeBase64AndSetImage(picture, _picture);
-            Log.d("main_activity", "picture set");
+            // Call this method to get the dimensions of the imageView and then set the picture in onComplete
+            StringImageConverter.getDimensions(_picture, new StringImageConverter.setDimensionsListener() {
+                @Override
+                public void onComplete(int height, int width) {
+                    Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(picture, height, width);
+                    _picture.setImageBitmap(bitmap);
+                    Log.d("main_activity", "picture set");
+                }
+            });
         }
     }
 
@@ -490,7 +504,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         });
     }
 
-    // Set up user data in SharedPreferences
+    // Set up user data in SharedPreferences, then call setView() to make sure user info is updated
     private void setUpUser(User user) {
         Log.d("main_activity", user.toString());
         SharedPreferences preferences = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
@@ -499,5 +513,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         editor.putString(Constants.USER_NAME, user.getName());
         editor.putString(Constants.USER_PIC, user.getImage());
         editor.apply();
+        // Update navigation user info
+        setView();
     }
 }
