@@ -88,7 +88,9 @@ public class DetailedReviewActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         // Remove listeners before activity stops
-        reference.removeEventListener(mChildEventListener);
+        if (mChildEventListener != null) {
+            reference.removeEventListener(mChildEventListener);
+        }
         super.onStop();
     }
 
