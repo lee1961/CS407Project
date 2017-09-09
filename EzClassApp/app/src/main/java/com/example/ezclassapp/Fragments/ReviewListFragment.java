@@ -48,6 +48,7 @@ public class ReviewListFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     private static final String ARG_PARAM3 = "param3";
     private static DatabaseReference reviewReference;
+    private static ReviewListFragment mFragment;
     RecyclerView ReviewRecyclerView;
     FirebaseRecyclerAdapter<Review, ReviewViewHolder> mReviewViewHolderFirebaseRecyclerAdapter;
     ArrayList<String> listitems = new ArrayList<>();
@@ -59,7 +60,6 @@ public class ReviewListFragment extends Fragment {
     private List<String> mParam3;
     private String mCourseId;
     private ArrayList<String> reviewListId;
-    private static ReviewListFragment mFragment;
 
     /**
      * Use this factory method to create a new instance of
@@ -283,6 +283,7 @@ public class ReviewListFragment extends Fragment {
                         viewHolder.mUpVoteImageView.setImageResource(R.drawable.neutral_like);
 
                         viewHolder.setReviewUID(getRef(position).getKey());
+                        viewHolder.setReviewClassUID(mCourseId);
 
                         viewHolder.mDownVoteTextViewCounter.setText(String.valueOf(review.getDownvote()));
                         viewHolder.mDownVoteImageView.setTag(R.drawable.neutral_dislike);
@@ -299,26 +300,26 @@ public class ReviewListFragment extends Fragment {
                         } else {
                             //REACHES HERE means he hasnt upvote the post yet
                             /* WHEN THE PERSON UPVOTE THE POST */
-                                viewHolder.mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        Log.d("tag", "upvoting it");
-                                        viewHolder.mUpVoteImageView.setClickable(false);
-                                        viewHolder.mDownVoteImageView.setClickable(false);
-                                        updateUpvoteButton(viewHolder,reviewID,map,userID);
+                            viewHolder.mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.d("tag", "upvoting it");
+                                    viewHolder.mUpVoteImageView.setClickable(false);
+                                    viewHolder.mDownVoteImageView.setClickable(false);
+                                    updateUpvoteButton(viewHolder, reviewID, map, userID);
 
-                                    }
-                                });
-                                viewHolder.mDownVoteImageView.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        Log.d("tag", "downvoting it");
-                                        viewHolder.mDownVoteImageView.setClickable(false);
-                                        viewHolder.mUpVoteImageView.setClickable(false);
-                                        updateDownvoteButton(viewHolder,reviewID,map,userID);
-                                    }
-                                });
-                                viewHolder.mIsAnimated = true;
+                                }
+                            });
+                            viewHolder.mDownVoteImageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Log.d("tag", "downvoting it");
+                                    viewHolder.mDownVoteImageView.setClickable(false);
+                                    viewHolder.mUpVoteImageView.setClickable(false);
+                                    updateDownvoteButton(viewHolder, reviewID, map, userID);
+                                }
+                            });
+                            viewHolder.mIsAnimated = true;
                         }
                     }
                 };
@@ -358,9 +359,9 @@ public class ReviewListFragment extends Fragment {
         public ImageView mDownVoteImageView;
         public TextView mUpVoteTextViewCounter;
         public TextView mDownVoteTextViewCounter;
-        public TextView mReviewId;
         public boolean mIsAnimated;
         private String reviewUID;
+        private String reviewClassUID;
 
         public ReviewViewHolder(View v) {
             super(v);
@@ -375,20 +376,28 @@ public class ReviewListFragment extends Fragment {
 
             mUpVoteImageView = (ImageView) v.findViewById(R.id.upVoteImageView);
             mDownVoteImageView = (ImageView) v.findViewById(R.id.downVoteImageView);
-
-        }
-
-        void setReviewUID(String reviewUID) {
-            this.reviewUID = reviewUID;
+            // Initialize the strings to null
+            reviewUID = null;
+            reviewClassUID = null;
         }
 
         String getReviewUID() {
             return this.reviewUID;
         }
 
-        /*
-                TODO should launch to a more specific activity LOL
-         */
+        void setReviewUID(String reviewUID) {
+            this.reviewUID = reviewUID;
+        }
+
+        String getReviewClassUID() {
+            return reviewClassUID;
+        }
+
+        void setReviewClassUID(String reviewClassUID) {
+            this.reviewClassUID = reviewClassUID;
+        }
+
+        // Launch to DetailedReviewActivity
         @Override
         public void onClick(View v) {
             try {
@@ -397,12 +406,11 @@ public class ReviewListFragment extends Fragment {
                 } else {
                     Log.d("review_list", "reviewUID is null");
                 }
-                Intent detailedReview = DetailedReviewActivity.newInstance(mFragment, getReviewUID());
+                Intent detailedReview = DetailedReviewActivity.newInstance(mFragment, getReviewClassUID(), getReviewUID());
                 mFragment.getActivity().startActivity(detailedReview);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-            Toast.makeText(v.getContext(), "u click " + mReviewtitleTextView.getText().toString(), Toast.LENGTH_SHORT).show();
         }
     }
 

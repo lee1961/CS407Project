@@ -131,4 +131,22 @@ public class Review {
     public void setCheckUserVoted(Map<String, Boolean> checkUserVoted) {
         this.checkUserVoted = checkUserVoted;
     }
+
+    @Override
+    public String toString() {
+        return "Review{" +
+                "ID='" + ID + '\'' +
+                ", reviewerName='" + reviewerName + '\'' +
+                ", foreignID_classID='" + foreignID_classID + '\'' +
+                ", foreignID_userID='" + foreignID_userID + '\'' +
+                ", opinion='" + opinion + '\'' +
+                ", tips='" + tips + '\'' +
+                ", difficulty=" + difficulty +
+                ", usefulness=" + usefulness +
+                ", upvote=" + upvote +
+                ", downvote=" + downvote +
+                ", commentUID=" + commentUID +
+                ", checkUserVoted=" + checkUserVoted +
+                '}';
+    }
 }
