@@ -13,24 +13,23 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="55dp"
         android:text="Welcome to EZclass"
         android:textColor="@android:color/white"
         android:textSize="24sp"
         android:layout_above="@+id/start_login_button"
         android:layout_centerHorizontal="true"
-        />
+        android:layout_marginBottom="33dp" />
 
     <Button
         android:id="@+id/start_reg_button"
         android:layout_width="192dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="109dp"
+        android:layout_marginBottom="62dp"
         android:text="NEED A NEW ACCOUNT?"
         android:textColor="@color/colorPrimary"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
 
     <Button
@@ -44,4 +43,13 @@
         android:layout_above="@+id/start_reg_button"
         android:layout_alignStart="@+id/start_reg_button"
         android:layout_marginBottom="25dp" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="47dp"
+        app:srcCompat="@drawable/logo2"
+        android:layout_above="@+id/textView"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
