@@ -70,7 +70,7 @@ public class CreateCommentDialogFragment extends DialogFragment {
         Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(preferences.getString(Constants.USER_PIC, null));
         if (bitmap == null) {
             // Set user image to color primary if there is no profile image set yet, change null to theme if any
-            userImage.setImageResource(R.color.colorPrimary);
+            userImage.setImageResource(R.drawable.default_avatar);
             Log.d("detailed", "background color set");
         } else {
             userImage.setImageBitmap(bitmap);

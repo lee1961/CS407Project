@@ -3,6 +3,7 @@ package com.example.ezclassapp.Adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -99,14 +100,21 @@ public class DetailedCommentsAdapter extends RecyclerView.Adapter<DetailedCommen
     // Sets the views after
     private void setView(final ViewHolder holder, final User user, final String comment) {
         // Set image using helper function
-        StringImageConverter.getDimensions(holder.mUserImage, new StringImageConverter.setDimensionsListener() {
-            @Override
-            public void onComplete(int height, int width) {
-                Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(user.getImage(), height, width);
-                holder.mUserImage.setImageBitmap(bitmap);
-                Log.d("Comments_Adapter", "User image set");
-            }
-        });
+        if (TextUtils.isEmpty(user.getImage()) || user.getImage().equals("default")) {
+            Log.d("Comments_Adapter", "Default Avatar Set");
+            holder.mUserImage.setImageResource(R.drawable.default_avatar);
+        } else {
+            StringImageConverter.getDimensions(holder.mUserImage, new StringImageConverter.setDimensionsListener() {
+                @Override
+                public void onComplete(int height, int width) {
+                    Bitmap bitmap = StringImageConverter.decodeBase64AndSetImage(user.getImage(), height, width);
+                    holder.mUserImage.setImageBitmap(bitmap);
+                    Log.d("Comments_Adapter", user.getImage());
+                    Log.d("Comments_Adapter", "User image set");
+                }
+            });
+        }
+
         // Set name and comment
         holder.mUsername.setText(user.getName());
         holder.mComment.setText(comment);
