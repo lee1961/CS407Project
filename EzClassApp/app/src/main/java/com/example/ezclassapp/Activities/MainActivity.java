@@ -436,7 +436,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         Log.d("main_activity", "Picture: " + picture + " , Username: " + username + " , Email: " + email);
         // Set default picture to color PrimaryDark
         if (picture == null || picture.toLowerCase().equals("default")) {
-            _picture.setImageResource(R.color.colorPrimaryDark);
+            _picture.setImageResource(R.drawable.default_avatar);
             Log.d("main_activity", "primaryColor set as profile pic");
         } else {
             // Call this method to get the dimensions of the imageView and then set the picture in onComplete

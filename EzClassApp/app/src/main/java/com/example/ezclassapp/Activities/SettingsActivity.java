@@ -103,7 +103,7 @@ public class SettingsActivity extends AppCompatActivity {
                     setUserImage(image);
                 } else {
                     // If image is not found, then user image is given color primaryDark
-                    mDisplayImage.setImageResource(R.color.colorPrimaryDark);
+                    mDisplayImage.setImageResource(R.drawable.default_avatar);
                 }
             }
 
