@@ -9,8 +9,10 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -36,9 +38,17 @@ import com.example.ezclassapp.Models.Course;
 import com.example.ezclassapp.Models.WonderModel;
 import com.example.ezclassapp.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
+import static android.R.attr.id;
+import static com.example.ezclassapp.R.id.imageView;
 
 
 public class ClassesCardFragment extends Fragment {
@@ -148,6 +158,23 @@ public class ClassesCardFragment extends Fragment {
                             animation.setDuration(delay);
                             viewHolder.itemView.startAnimation(animation);
                         }
+                        if (course.getImageUrl() != null || course.getImageUrl().length() <= 0) {
+                            Picasso.with(getActivity()).load(course.getImageUrl()).into(viewHolder.coverImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError() {
+                                    Log.d("classescardFramengent","load image failed retard!");
+                                }
+                            });
+                        }
+
+
+
+
                     }
                 };
         MyRecyclerView.setAdapter(mCourseViewHolderFirebaseRecyclerAdapter);
