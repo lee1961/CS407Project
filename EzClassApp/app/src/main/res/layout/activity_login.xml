@@ -56,7 +56,7 @@
     app:layout_constraintTop_toBottomOf="@+id/login_email">
 
     <EditText
-        android:id="@+id/editText3"
+        android:id="@+id/opinion_input"
         android:layout_width="361dp"
         android:layout_height="wrap_content"
         android:hint="Your Password"

@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             xmlns:app="http://schemas.android.com/apk/res-auto"
-                                             xmlns:tools="http://schemas.android.com/tools"
-                                             android:layout_width="match_parent"
-                                             android:layout_height="match_parent"
-                                             tools:context="com.example.ezclassapp.Activities.SubmitReview"
-                                             tools:layout_editor_absoluteY="25dp"
-                                             tools:layout_editor_absoluteX="0dp">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.example.ezclassapp.Activities.SubmitReview"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="25dp">
 
 
         <EditText
@@ -16,108 +22,109 @@
 
             android:layout_width="366dp"
             android:layout_height="wrap_content"
-            android:hint="Your Review"
+            android:layout_marginBottom="25dp"
+            android:layout_marginLeft="9dp"
             android:background="@drawable/addreview"
-            android:textColor="@android:color/black"
-            android:inputType="textCapSentences|textMultiLine"
             android:gravity="top|left"
+            android:hint="Your Review"
+            android:inputType="textCapSentences|textMultiLine"
             android:lines="3"
             android:maxLines="3"
-            android:layout_marginBottom="25dp"
+            android:textColor="@android:color/black"
             app:layout_constraintBottom_toTopOf="@+id/lblRate_2"
-            android:layout_marginLeft="9dp"
             app:layout_constraintLeft_toLeftOf="parent" />
 
-    <RatingBar
-        android:id="@+id/ratingBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:numStars="5"
-        android:stepSize="1.0"
-        android:layout_marginLeft="9dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/lblRate_1" />
+        <RatingBar
+            android:id="@+id/difficulty_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="9dp"
+            android:numStars="5"
+            android:stepSize="1.0"
+            app:layout_constraintBottom_toTopOf="@+id/lblRate_1"
+            app:layout_constraintLeft_toLeftOf="parent" />
 
-    <TextView
-        android:id="@+id/lblRate_1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Rate for course's useful"
-        android:textColor="@android:color/darker_gray"
-        android:layout_marginLeft="9dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginBottom="15dp"
-        app:layout_constraintBottom_toTopOf="@+id/ratingBar_1" />
+        <TextView
+            android:id="@+id/lblRate_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="9dp"
+            android:text="Rate for course's useful"
+            android:textColor="@android:color/darker_gray"
+            app:layout_constraintBottom_toTopOf="@+id/useful_bar"
+            app:layout_constraintLeft_toLeftOf="parent" />
 
-    <RatingBar
-        android:id="@+id/ratingBar_1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:numStars="5"
-        android:stepSize="1.0"
-        android:layout_marginLeft="9dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginBottom="22dp"
-        app:layout_constraintBottom_toTopOf="@+id/submit_btn" />
+        <RatingBar
+            android:id="@+id/useful_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="22dp"
+            android:layout_marginLeft="9dp"
+            android:numStars="5"
+            android:stepSize="1.0"
+            app:layout_constraintBottom_toTopOf="@+id/submit_btn"
+            app:layout_constraintLeft_toLeftOf="parent" />
 
-    <TextView
-        android:id="@+id/lblRate_2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Rate for course's difficulty"
-        android:textColor="@android:color/darker_gray"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginBottom="14dp"
-        app:layout_constraintBottom_toTopOf="@+id/ratingBar" />
+        <TextView
+            android:id="@+id/lblRate_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="14dp"
+            android:layout_marginLeft="8dp"
+            android:text="Rate for course's difficulty"
+            android:textColor="@android:color/darker_gray"
+            app:layout_constraintBottom_toTopOf="@+id/difficulty_bar"
+            app:layout_constraintLeft_toLeftOf="parent" />
 
-    <Button
-        android:id="@+id/submit_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:text="Submit"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/colorPrimary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="93dp"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent" />
+        <Button
+            android:id="@+id/submit_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="93dp"
+            android:layout_marginRight="8dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text="Submit"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
 
-    <TextView
-        android:id="@+id/login_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
-        android:text="Enter your review."
-        android:padding="12dp"
-        android:textStyle="bold"
-        android:textColor="@android:color/holo_blue_dark"
-        android:textSize="22dp"
-        tools:text="Enter your review."
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="1dp"
-        android:layout_marginBottom="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/editText3"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="0dp" />
+        <TextView
+            android:id="@+id/login_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="0dp"
+            android:padding="12dp"
+            android:text="Enter your review."
+            android:textColor="@android:color/holo_blue_dark"
+            android:textSize="22dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/opinion_input"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Enter your review." />
 
-    <EditText
-        android:id="@+id/editText3"
-        android:layout_width="366dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/addreview"
-        android:hint="Your Opinion"
-        android:textColor="@android:color/black"
-        android:inputType="textCapSentences|textMultiLine"
-        android:gravity="top|left"
-        android:lines="3"
-        android:maxLines="3"
-        android:layout_marginBottom="7dp"
-        app:layout_constraintBottom_toTopOf="@+id/review_input"
-        android:layout_marginLeft="9dp"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        <EditText
+            android:id="@+id/opinion_input"
+            android:layout_width="366dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="7dp"
+            android:layout_marginLeft="9dp"
+            android:background="@drawable/addreview"
+            android:gravity="top|left"
+            android:hint="Your Opinion"
+            android:inputType="textCapSentences|textMultiLine"
+            android:lines="3"
+            android:maxLines="3"
+            android:textColor="@android:color/black"
+            app:layout_constraintBottom_toTopOf="@+id/review_input"
+            app:layout_constraintLeft_toLeftOf="parent" />
 
-</android.support.constraint.ConstraintLayout>
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>
