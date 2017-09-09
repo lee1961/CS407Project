@@ -2,14 +2,25 @@ package com.example.ezclassapp.Activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.TransitionInflater;
+import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.ezclassapp.Models.User;
@@ -42,7 +53,10 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.activity_register);
+
 
         mToolbar = (Toolbar)findViewById(R.id.login_toolbar);
         setSupportActionBar(mToolbar);
@@ -109,6 +123,27 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void setupWindowAnimations() {
+        Log.e("anim","doing it");
+        Fade fade = new Fade();
+        fade.setDuration(1000000);
+        getWindow().setEnterTransition(fade);
+    }
+//    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+//    private void setupWindowAnimations() {
+//        Slide slide = (Slide) TransitionInflater.from(this).inflateTransition(R.transition.activity_slide);
+//        getWindow().setExitTransition(slide);
+//    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
+
     }
 }
 

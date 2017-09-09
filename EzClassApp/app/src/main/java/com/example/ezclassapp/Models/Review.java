@@ -1,42 +1,62 @@
 package com.example.ezclassapp.Models;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 /**
  * Created by victorlee95 on 8/26/2017.
  */
 
 public class Review {
-    String ID;
-    String foreignID_classID;
-    UUID foreignID_userID;
-    String opinion;
-    String tips;
-    int difficulty;
-    int usefulness;
-    int upvote;
-    int downvote;
-    HashMap<String,Boolean> checkUserVoted;
+    private String ID;
+    private String reviewerName;
+    private String foreignID_classID;
+    private String foreignID_userID;
+    private String opinion;
+    private String tips;
+    private int difficulty;
+    private int usefulness;
+    private int upvote;
+    private int downvote;
+    private List<String> commentUID;
+    private Map<String, Boolean> checkUserVoted;
 
     public Review() {
 
     }
 
-    public Review(String ID, String foreignID_classID,String opinion) {
+    public Review(String ID, String reviewerName, String foreignID_classID, String opinion) {
         this.ID = ID;
+        this.reviewerName = reviewerName;
         this.foreignID_classID = foreignID_classID;
         this.opinion = opinion;
+        checkUserVoted = new HashMap<>();
+        checkUserVoted.put(ID, true);
     }
 
-    public String getId() {
+    public String getReviewerName() {
+        return reviewerName;
+    }
+
+    public void setReviewerName(String reviewerName) {
+        this.reviewerName = reviewerName;
+    }
+
+    public String getID() {
         return ID;
     }
 
     public void setID(String ID) {
         this.ID = ID;
+    }
+
+    public List<String> getCommentUID() {
+        return commentUID;
+    }
+
+    public void setCommentUID(List<String> commentUID) {
+        this.commentUID = commentUID;
     }
 
     public String getForeignID_classID() {
@@ -47,11 +67,11 @@ public class Review {
         this.foreignID_classID = foreignID_classID;
     }
 
-    public UUID getForeignID_userID() {
+    public String getForeignID_userID() {
         return foreignID_userID;
     }
 
-    public void setForeignID_userID(UUID foreignID_userID) {
+    public void setForeignID_userID(String foreignID_userID) {
         this.foreignID_userID = foreignID_userID;
     }
 
@@ -103,11 +123,11 @@ public class Review {
         this.downvote = downvote;
     }
 
-    public HashMap<String, Boolean> getCheckUserVoted() {
+    public Map<String, Boolean> getCheckUserVoted() {
         return checkUserVoted;
     }
 
-    public void setCheckUserVoted(HashMap<String, Boolean> checkUserVoted) {
+    public void setCheckUserVoted(Map<String, Boolean> checkUserVoted) {
         this.checkUserVoted = checkUserVoted;
     }
 }
