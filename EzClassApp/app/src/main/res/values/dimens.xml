@@ -31,6 +31,8 @@
     <dimen name="card_right_padding">16dp</dimen>
     <dimen name="card_top_padding">16dp</dimen>
     <dimen name="card_bottom_padding">16dp</dimen>
+    <dimen name="label_width">72dp</dimen>
+    <!-- Dimensions for comments-->
     <dimen name="comment_icon_width">72dp</dimen>
     <dimen name="comment_icon_height">72dp</dimen>
     <dimen name="icon_padding2">8dp</dimen>

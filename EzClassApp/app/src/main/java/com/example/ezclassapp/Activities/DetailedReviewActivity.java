@@ -173,6 +173,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
+                Log.d("detailed_user", user.toString());
                 // Get the final data to be presented
                 final String _userPic = user.getImage();
                 final String _userName = review.getReviewerName();
@@ -181,13 +182,17 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 // Get the views
                 final CircleImageView userImage = (CircleImageView) findViewById(R.id.detailed_user_pic);
                 final TextView username = (TextView) findViewById(R.id.detailed_username);
+                final TextView opinion_label = (TextView) findViewById(R.id.detailed_opinion_label);
                 final TextView opinion = (TextView) findViewById(R.id.detailed_opinion);
+                final TextView tip_label = (TextView) findViewById(R.id.detailed_tips_label);
                 final TextView tip = (TextView) findViewById(R.id.detailed_tips);
                 // populate the views
                 // If user email is null or "default" then show default avatar
-                if (!TextUtils.isEmpty(_userPic) && _userPic.equals("default")) {
+                if (TextUtils.isEmpty(_userPic) || _userPic.equals("default")) {
+                    Log.d("detailed_review", "image is empty or default");
                     userImage.setImageResource(R.drawable.default_avatar);
                 } else {
+                    Log.d("detailed_review", "user image: " + _userPic);
                     // User helper function to decode string into an image
                     StringImageConverter.getDimensions(userImage, new StringImageConverter.setDimensionsListener() {
                         @Override
@@ -198,9 +203,9 @@ public class DetailedReviewActivity extends AppCompatActivity {
                     });
                 }
                 // Set the text views
-                setTextView(_userName, username);
-                setTextView(_opinion, opinion);
-                setTextView(_tip, tip);
+                setTextView(_userName, null,  username);
+                setTextView(_opinion, opinion_label, opinion);
+                setTextView(_tip, tip_label, tip);
             }
 
             @Override
@@ -210,13 +215,16 @@ public class DetailedReviewActivity extends AppCompatActivity {
         });
     }
 
-    private void setTextView(String input, TextView view) {
+    private void setTextView(String input, TextView label, TextView view) {
         if (TextUtils.isEmpty(input)) {
-            view.setText("");
-            Log.d("detailed_review", String.valueOf(view.getId()) + " is null.");
+            if (label != null) {
+                label.setVisibility(View.GONE);
+                view.setVisibility(View.GONE);
+            }
+            Log.d("detailed_review", String.valueOf(view.getResources().getResourceName(view.getId())) + " is null.");
         } else {
             view.setText(input);
-            Log.d("detailed_review", String.valueOf(view.getId()) + " is set");
+            Log.d("detailed_review", String.valueOf(view.getResources().getResourceName(view.getId())) + " is set");
         }
     }
 
