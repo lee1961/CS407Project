@@ -22,14 +22,14 @@
                 android:layout_marginBottom="8dp"
                 android:text="Opinion..."
                 android:textColor="#000"
-                android:textSize="18sp" />
+                android:textSize="18sp"/>
 
             <TextView
                 android:id="@+id/reviewer_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="By..."
-                android:textColor="#555" />
+                android:textColor="#555"/>
         </LinearLayout>
 
         <LinearLayout
@@ -50,7 +50,7 @@
                     android:layout_width="@dimen/icon_width2"
                     android:layout_height="@dimen/icon_height2"
                     android:padding="@dimen/icon_padding"
-                    android:src="@drawable/neutral_dislike" />
+                    android:src="@drawable/neutral_dislike"/>
 
                 <TextView
                     android:id="@+id/downVoteCounterTextView"
@@ -74,7 +74,7 @@
                     android:layout_height="@dimen/icon_height2"
 
                     android:padding="@dimen/icon_padding"
-                    android:src="@drawable/neutral_like" />
+                    android:src="@drawable/neutral_like"/>
 
                 <TextView
                     android:id="@+id/upVoteCounterTextView"
