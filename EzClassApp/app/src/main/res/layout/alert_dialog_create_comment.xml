@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/dialog_padding_bottom"
+    android:paddingEnd="@dimen/dialog_padding_end"
+    android:paddingStart="@dimen/dialog_padding_start">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/alert_user_pic"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/content_spacing"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="@dimen/content_spacing"
+            app:civ_border_width="1dp" />
+
+        <TextView
+            android:id="@+id/alert_user_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/alert_comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/alert_box_comment"
+        android:imeOptions="actionDone"
+        android:inputType="textCapSentences|textAutoCorrect|textAutoComplete|textMultiLine" />
+
+</LinearLayout>

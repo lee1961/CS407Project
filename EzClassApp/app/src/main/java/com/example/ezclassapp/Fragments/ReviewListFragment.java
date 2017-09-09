@@ -6,10 +6,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,18 +22,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ezclassapp.Activities.Constants;
-import com.example.ezclassapp.Models.Review;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.example.ezclassapp.Activities.MainActivity;
+import com.example.ezclassapp.Activities.DetailedReviewActivity;
 import com.example.ezclassapp.Activities.SubmitReview;
+import com.example.ezclassapp.Models.Review;
 import com.example.ezclassapp.R;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,17 +47,19 @@ public class ReviewListFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String ARG_PARAM3 = "param3";
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-    private List<String> mParam3;
+    private static DatabaseReference reviewReference;
     RecyclerView ReviewRecyclerView;
     FirebaseRecyclerAdapter<Review, ReviewViewHolder> mReviewViewHolderFirebaseRecyclerAdapter;
     ArrayList<String> listitems = new ArrayList<>();
     FloatingActionButton mFloatingActionButton;
+    Query mQueryReference;
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+    private List<String> mParam3;
     private String mCourseId;
     private ArrayList<String> reviewListId;
-    Query mQueryReference;
+    private static ReviewListFragment mFragment;
 
     /**
      * Use this factory method to create a new instance of
@@ -86,6 +85,97 @@ public class ReviewListFragment extends Fragment {
         return fragment;
     }
 
+    // animation for upvoting the review
+    private static void updateUpvoteButton(final ReviewViewHolder holder, final String reviewID, final Map<String, Boolean> map, final String userID) {
+
+
+        int duration = 300;
+        AnimatorSet animatorSet = new AnimatorSet();
+        holder.mUpVoteImageView.setTag(R.drawable.like);
+
+        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(holder.mUpVoteImageView, "rotation", 0f, 360f);
+        rotationAnim.setDuration(duration);
+        rotationAnim.setInterpolator(new AccelerateInterpolator());
+
+        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(holder.mUpVoteImageView, "scaleX", 0.2f, 1f);
+        bounceAnimX.setDuration(duration);
+        bounceAnimX.setInterpolator(new OvershootInterpolator(4f));
+
+        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(holder.mUpVoteImageView, "scaleY", 0.2f, 1f);
+        bounceAnimY.setDuration(duration);
+        bounceAnimY.setInterpolator(new OvershootInterpolator(4f));
+        bounceAnimY.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                holder.mUpVoteImageView.setImageResource(R.drawable.like);
+            }
+        });
+
+        animatorSet.play(rotationAnim);
+        animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+
+                int count = Integer.parseInt(holder.mUpVoteTextViewCounter.getText().toString());
+                count++;
+                DatabaseReference upVoteReference = reviewReference.child(reviewID);
+                upVoteReference.child(Constants.UPVOTE).setValue(count);
+                map.put(userID, true);
+                DatabaseReference mapReference = reviewReference.child(reviewID).child(Constants.MAPCHECK);
+                mapReference.setValue(map);
+            }
+        });
+
+        animatorSet.start();
+    }
+
+    // animation for downvoting the review
+    private static void updateDownvoteButton(final ReviewViewHolder holder, final String reviewID, final Map<String, Boolean> map, final String userID) {
+
+        int duration = 500;
+        AnimatorSet animatorSet = new AnimatorSet();
+        // set this as already liked so that user cant click again
+        holder.mDownVoteImageView.setTag(R.drawable.dislike);
+
+        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(holder.mDownVoteImageView, "rotation", 0f, 360f);
+        rotationAnim.setDuration(duration);
+        rotationAnim.setInterpolator(new AccelerateInterpolator());
+
+        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(holder.mDownVoteImageView, "scaleX", 0.2f, 1f);
+        bounceAnimX.setDuration(duration);
+        bounceAnimX.setInterpolator(new OvershootInterpolator(4f));
+
+        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(holder.mDownVoteImageView, "scaleY", 0.2f, 1f);
+        bounceAnimY.setDuration(duration);
+        bounceAnimY.setInterpolator(new OvershootInterpolator(4f));
+        bounceAnimY.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                holder.mDownVoteImageView.setImageResource(R.drawable.dislike);
+            }
+        });
+
+        animatorSet.play(rotationAnim);
+        animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                int count = Integer.parseInt(holder.mDownVoteTextViewCounter.getText().toString());
+                count++;
+                DatabaseReference downVoteReference = reviewReference.child(reviewID);
+                downVoteReference.child(Constants.DOWNVOTE).setValue(count);
+                map.put(userID, false);
+                DatabaseReference mapReference = reviewReference.child(reviewID).child(Constants.MAPCHECK);
+                mapReference.setValue(map);
+            }
+        });
+
+        animatorSet.start();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +183,7 @@ public class ReviewListFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
+        mFragment = this;
     }
 
     @Override
@@ -105,7 +195,7 @@ public class ReviewListFragment extends Fragment {
             final Bundle args = getArguments();
             mCourseId = args.getString(ARG_PARAM2);
         }
-        DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(mCourseId);
+        reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(mCourseId);
         // sort by the number of upvotes
         mQueryReference = reviewReference.orderByChild("upvote");
         // sort by the the date posted
@@ -174,42 +264,6 @@ public class ReviewListFragment extends Fragment {
 
     }
 
-
-    public static class ReviewViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        public TextView mReviewtitleTextView;
-        public TextView mReviewerName;
-        public ImageView mUpVoteImageView;
-        public ImageView mDownVoteImageView;
-        public TextView mUpVoteTextViewCounter;
-        public TextView mDownVoteTextViewCounter;
-        public TextView mReviewId;
-
-        public ReviewViewHolder(View v) {
-            super(v);
-            final ReviewViewHolder viewHolder = this;
-            mUpVoteTextViewCounter = (TextView) v.findViewById(R.id.upVoteCounterTextView);
-            mDownVoteTextViewCounter = (TextView) v.findViewById(R.id.downVoteCounterTextView);
-            mReviewtitleTextView = (TextView) v.findViewById(R.id.opinion_textView);
-            mReviewerName = (TextView) v.findViewById(R.id.reviewer_textView);
-
-            itemView.setOnClickListener(this);
-
-            mUpVoteImageView = (ImageView) v.findViewById(R.id.upVoteImageView);
-            mDownVoteImageView = (ImageView) v.findViewById(R.id.downVoteImageView);
-
-        }
-
-        /*
-                TODO should launch to a more specific activity LOL
-         */
-        @Override
-        public void onClick(View v) {
-            Toast.makeText(v.getContext(), "u click " + mReviewtitleTextView.getText().toString(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
     public void attachRecyclerViewAdapter() {
         mReviewViewHolderFirebaseRecyclerAdapter =
                 new FirebaseRecyclerAdapter<Review, ReviewViewHolder>(
@@ -228,50 +282,43 @@ public class ReviewListFragment extends Fragment {
                         viewHolder.mUpVoteImageView.setTag(R.drawable.neutral_like);
                         viewHolder.mUpVoteImageView.setImageResource(R.drawable.neutral_like);
 
+                        viewHolder.setReviewUID(getRef(position).getKey());
+
                         viewHolder.mDownVoteTextViewCounter.setText(String.valueOf(review.getDownvote()));
                         viewHolder.mDownVoteImageView.setTag(R.drawable.neutral_dislike);
                         viewHolder.mDownVoteImageView.setImageResource(R.drawable.neutral_dislike);
 
-                        final String reviewID = review.getId();
+                        final String reviewID = review.getID();
                         final Map<String, Boolean> map = review.getCheckUserVoted();
                         final String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                        if ( map.containsKey(userID)) {
+                        if (map.containsKey(userID)) {
                             viewHolder.mUpVoteImageView.setTag(R.drawable.like);
                             viewHolder.mUpVoteImageView.setImageResource(R.drawable.like);
                             viewHolder.mDownVoteImageView.setTag(R.drawable.dislike);
                             viewHolder.mDownVoteImageView.setImageResource(R.drawable.dislike);
                         } else {
-
                             //REACHES HERE means he hasnt upvote the post yet
                             /* WHEN THE PERSON UPVOTE THE POST */
-                            viewHolder.mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Log.d("tag", "upvoting it");
-                                    updateUpvoteButton(viewHolder);
-                                    int count = Integer.parseInt(viewHolder.mUpVoteTextViewCounter.getText().toString());
-                                    count++;
-                                    DatabaseReference upVoteReference = reviewReference.child(reviewID);
-                                    upVoteReference.child(Constants.UPVOTE).setValue(count);
-                                    map.put(userID, true);
-                                    DatabaseReference mapReference = reviewReference.child(reviewID).child(Constants.MAPCHECK);
-                                    mapReference.setValue(map);
-                                }
-                            });
-                            viewHolder.mDownVoteImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Log.d("tag", "downvoting it");
-                                    updateDownvoteButton(viewHolder);
-                                    int count = Integer.parseInt(viewHolder.mDownVoteTextViewCounter.getText().toString());
-                                    count++;
-                                    DatabaseReference downVoteReference = reviewReference.child(reviewID);
-                                    downVoteReference.child(Constants.DOWNVOTE).setValue(count);
-                                    map.put(userID, false);
-                                    DatabaseReference mapReference = reviewReference.child(reviewID).child(Constants.MAPCHECK);
-                                    mapReference.setValue(map);
-                                }
-                            });
+                                viewHolder.mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Log.d("tag", "upvoting it");
+                                        viewHolder.mUpVoteImageView.setClickable(false);
+                                        viewHolder.mDownVoteImageView.setClickable(false);
+                                        updateUpvoteButton(viewHolder,reviewID,map,userID);
+
+                                    }
+                                });
+                                viewHolder.mDownVoteImageView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Log.d("tag", "downvoting it");
+                                        viewHolder.mDownVoteImageView.setClickable(false);
+                                        viewHolder.mUpVoteImageView.setClickable(false);
+                                        updateDownvoteButton(viewHolder,reviewID,map,userID);
+                                    }
+                                });
+                                viewHolder.mIsAnimated = true;
                         }
                     }
                 };
@@ -292,7 +339,6 @@ public class ReviewListFragment extends Fragment {
         //((MainActivity)getActivity()).getSupportActionBar().show();
     }
 
-
     private void startIntroAnimation() {
         mFloatingActionButton.setTranslationY(2 * getResources().getDimensionPixelOffset(R.dimen.btn_fab_size));
         mFloatingActionButton.animate()
@@ -304,80 +350,60 @@ public class ReviewListFragment extends Fragment {
 
     }
 
-    // animation for upvoting the review
-    private static void updateUpvoteButton(final ReviewViewHolder holder) {
+    public static class ReviewViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        int duration = 300;
-        AnimatorSet animatorSet = new AnimatorSet();
-        holder.mUpVoteImageView.setTag(R.drawable.like);
+        public TextView mReviewtitleTextView;
+        public TextView mReviewerName;
+        public ImageView mUpVoteImageView;
+        public ImageView mDownVoteImageView;
+        public TextView mUpVoteTextViewCounter;
+        public TextView mDownVoteTextViewCounter;
+        public TextView mReviewId;
+        public boolean mIsAnimated;
+        private String reviewUID;
 
-        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(holder.mUpVoteImageView, "rotation", 0f, 360f);
-        rotationAnim.setDuration(duration);
-        rotationAnim.setInterpolator(new AccelerateInterpolator());
+        public ReviewViewHolder(View v) {
+            super(v);
+            final ReviewViewHolder viewHolder = this;
+            mUpVoteTextViewCounter = (TextView) v.findViewById(R.id.upVoteCounterTextView);
+            mDownVoteTextViewCounter = (TextView) v.findViewById(R.id.downVoteCounterTextView);
+            mReviewtitleTextView = (TextView) v.findViewById(R.id.opinion_textView);
+            mReviewerName = (TextView) v.findViewById(R.id.reviewer_textView);
+            mIsAnimated = false;
 
-        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(holder.mUpVoteImageView, "scaleX", 0.2f, 1f);
-        bounceAnimX.setDuration(duration);
-        bounceAnimX.setInterpolator(new OvershootInterpolator(4f));
+            itemView.setOnClickListener(this);
 
-        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(holder.mUpVoteImageView, "scaleY", 0.2f, 1f);
-        bounceAnimY.setDuration(duration);
-        bounceAnimY.setInterpolator(new OvershootInterpolator(4f));
-        bounceAnimY.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                holder.mUpVoteImageView.setImageResource(R.drawable.like);
+            mUpVoteImageView = (ImageView) v.findViewById(R.id.upVoteImageView);
+            mDownVoteImageView = (ImageView) v.findViewById(R.id.downVoteImageView);
+
+        }
+
+        void setReviewUID(String reviewUID) {
+            this.reviewUID = reviewUID;
+        }
+
+        String getReviewUID() {
+            return this.reviewUID;
+        }
+
+        /*
+                TODO should launch to a more specific activity LOL
+         */
+        @Override
+        public void onClick(View v) {
+            try {
+                if (getReviewUID() != null) {
+                    Log.d("review_list", getReviewUID());
+                } else {
+                    Log.d("review_list", "reviewUID is null");
+                }
+                Intent detailedReview = DetailedReviewActivity.newInstance(mFragment, getReviewUID());
+                mFragment.getActivity().startActivity(detailedReview);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
-        });
-
-        animatorSet.play(rotationAnim);
-        animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
-
-        animatorSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-            }
-        });
-
-        animatorSet.start();
-    }
-
-
-    // animation for downvoting the review
-    private static void updateDownvoteButton(final ReviewViewHolder holder) {
-
-        int duration = 500;
-        AnimatorSet animatorSet = new AnimatorSet();
-        // set this as already liked so that user cant click again
-        holder.mDownVoteImageView.setTag(R.drawable.dislike);
-
-        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(holder.mDownVoteImageView, "rotation", 0f, 360f);
-        rotationAnim.setDuration(duration);
-        rotationAnim.setInterpolator(new AccelerateInterpolator());
-
-        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(holder.mDownVoteImageView, "scaleX", 0.2f, 1f);
-        bounceAnimX.setDuration(duration);
-        bounceAnimX.setInterpolator(new OvershootInterpolator(4f));
-
-        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(holder.mDownVoteImageView, "scaleY", 0.2f, 1f);
-        bounceAnimY.setDuration(duration);
-        bounceAnimY.setInterpolator(new OvershootInterpolator(4f));
-        bounceAnimY.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                holder.mDownVoteImageView.setImageResource(R.drawable.dislike);
-            }
-        });
-
-        animatorSet.play(rotationAnim);
-        animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
-
-        animatorSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-            }
-        });
-
-        animatorSet.start();
+            Toast.makeText(v.getContext(), "u click " + mReviewtitleTextView.getText().toString(), Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

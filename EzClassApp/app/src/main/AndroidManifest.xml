@@ -48,9 +48,13 @@
             android:name=".Activities.StatusActivity"
             android:parentActivityName=".Activities.SettingsActivity" />
         <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat" />
+        <activity
             android:name=".Activities.CreateClassActivity"
             android:parentActivityName=".Activities.MainActivity" />
-        <activity android:name=".Activities.SubmitReview"></activity>
+        <activity android:name=".Activities.DetailedReviewActivity" />
+        <activity android:name=".Activities.SubmitReview" />
     </application>
 
 </manifest>

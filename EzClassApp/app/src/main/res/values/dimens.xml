@@ -15,6 +15,11 @@
     <dimen name="btn_fab_size">56dp</dimen>
     <dimen name="btn_fab_margins">16dp</dimen>
     <dimen name="default_elevation">8dp</dimen>
+    <dimen name="preferred_toolbar_height">56dp</dimen>
+    <dimen name="dialog_padding_top">24dp</dimen>
+    <dimen name="dialog_padding_bottom">20dp</dimen>
+    <dimen name="dialog_padding_start">24dp</dimen>
+    <dimen name="dialog_padding_end">24dp</dimen>
 
     <dimen name="icon_width2">30dip</dimen>
     <dimen name="icon_height2">30dip</dimen>
