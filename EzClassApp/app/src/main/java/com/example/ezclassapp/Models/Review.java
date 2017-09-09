@@ -26,11 +26,12 @@ public class Review {
 
     }
 
-    public Review(String ID, String reviewerName, String foreignID_classID, String opinion) {
+    public Review(String ID, String reviewerName, String foreignID_classID, String opinion, String foreignID_userID) {
         this.ID = ID;
         this.reviewerName = reviewerName;
         this.foreignID_classID = foreignID_classID;
         this.opinion = opinion;
+        this.foreignID_userID = foreignID_userID;
         checkUserVoted = new HashMap<>();
         checkUserVoted.put(ID, true);
     }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -44,6 +45,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private DetailedCommentsAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
+    private DividerItemDecoration mDividerItemDecoration;
     private ChildEventListener mChildEventListener;
 
     // Static method to build and create a new activity to detailedReviewActivity
@@ -73,6 +75,8 @@ public class DetailedReviewActivity extends AppCompatActivity {
         mRecyclerView = (RecyclerView) findViewById(R.id.detailed_recycler);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mDividerItemDecoration = new DividerItemDecoration(this, mLayoutManager.getOrientation());
+        mRecyclerView.addItemDecoration(mDividerItemDecoration);
 
         // Set up toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.detailed_toolbar);

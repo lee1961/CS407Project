@@ -411,7 +411,6 @@ public class ReviewListFragment extends Fragment {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-            Toast.makeText(v.getContext(), "u click " + mReviewtitleTextView.getText().toString(), Toast.LENGTH_SHORT).show();
         }
     }
 
