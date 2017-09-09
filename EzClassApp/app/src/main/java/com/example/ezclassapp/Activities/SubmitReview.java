@@ -86,7 +86,8 @@ public class SubmitReview extends AppCompatActivity {
 
                         DatabaseReference reviewReference = foreignKeyReference;
                         final String key = reviewReference.push().getKey();
-                        Review review = new Review(key,userName,courseid,mReviewText.getEditText().getText().toString());
+                        final String user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        Review review = new Review(key,userName,courseid,mReviewText.getEditText().getText().toString(),user_id);
                         reviewReference.child(key).setValue(review);
                         finish();
                     }
