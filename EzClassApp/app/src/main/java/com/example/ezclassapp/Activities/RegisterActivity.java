@@ -60,7 +60,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         mToolbar = (Toolbar)findViewById(R.id.login_toolbar);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Create Account");
+        getSupportActionBar().setTitle("Create your Account");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mRegProgress = new ProgressDialog(this);

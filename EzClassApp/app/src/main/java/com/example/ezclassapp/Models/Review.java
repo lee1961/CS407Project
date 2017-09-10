@@ -19,6 +19,7 @@ public class Review {
     private int usefulness;
     private int upvote;
     private int downvote;
+    private String review;
     private List<String> commentUID;
     private Map<String, Boolean> checkUserVoted;
 
@@ -26,13 +27,19 @@ public class Review {
 
     }
 
-    public Review(String ID, String reviewerName, String foreignID_classID, String opinion) {
+    public Review(String ID, String reviewerName, String foreignID_classID, String opinion,String foreignID_userID,
+                  String review,int difficulty,int usefulness) {
         this.ID = ID;
         this.reviewerName = reviewerName;
         this.foreignID_classID = foreignID_classID;
         this.opinion = opinion;
+        this.foreignID_userID = foreignID_userID;
         checkUserVoted = new HashMap<>();
         checkUserVoted.put(ID, true);
+        this.review = review;
+        this.difficulty = difficulty;
+        this.usefulness = usefulness;
+
     }
 
     public String getReviewerName() {
@@ -129,5 +136,30 @@ public class Review {
 
     public void setCheckUserVoted(Map<String, Boolean> checkUserVoted) {
         this.checkUserVoted = checkUserVoted;
+    }
+
+    @Override
+    public String toString() {
+        return "Review{" +
+                "ID='" + ID + '\'' +
+                ", reviewerName='" + reviewerName + '\'' +
+                ", foreignID_classID='" + foreignID_classID + '\'' +
+                ", foreignID_userID='" + foreignID_userID + '\'' +
+                ", opinion='" + opinion + '\'' +
+                ", tips='" + tips + '\'' +
+                ", difficulty=" + difficulty +
+                ", usefulness=" + usefulness +
+                ", upvote=" + upvote +
+                ", downvote=" + downvote +
+                ", commentUID=" + commentUID +
+                ", checkUserVoted=" + checkUserVoted +
+                '}';
+    }
+    public void setReview(String review) {
+        this.review = review;
+    }
+
+    public String getReview() {
+        return review;
     }
 }
