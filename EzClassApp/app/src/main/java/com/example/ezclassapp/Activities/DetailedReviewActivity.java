@@ -1,5 +1,7 @@
 package com.example.ezclassapp.Activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -16,6 +18,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,6 +33,7 @@ import com.example.ezclassapp.Helpers.StringImageConverter;
 import com.example.ezclassapp.Models.Comment;
 import com.example.ezclassapp.Models.Review;
 import com.example.ezclassapp.Models.User;
+import com.example.ezclassapp.Models.Utils;
 import com.example.ezclassapp.R;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -44,6 +50,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
     private static final String CLASS_UID = "CLASS_UID";
     private static final String REVIEW_UID = "REVIEW_UID";
     private static final String REVIEW_ACTIVITY = "REVIEW_ACTIVITY";
+    private static final String ARG_DRAWING_START_LOCATION = "STARTING_LOCATION";
     final int FIRST_POS = 0;
     private final String TAG = "CREATE_COMMENT";
     private DatabaseReference reference;
@@ -52,15 +59,18 @@ public class DetailedReviewActivity extends AppCompatActivity {
     private LinearLayoutManager mLayoutManager;
     private DividerItemDecoration mDividerItemDecoration;
     private ChildEventListener mChildEventListener;
+    private int drawingStartLocation;
+    private FloatingActionButton createComment;
 
     // Static method to build and create a new activity to detailedReviewActivity
-    public static Intent newInstance(Fragment fragment, String classUID, String reviewUID) throws IllegalAccessException {
+    public static Intent newInstance(Fragment fragment, String classUID, String reviewUID,int startingLocation) throws IllegalAccessException {
         if (fragment instanceof ReviewListFragment) {
             Log.d("newInstance", "detailed_review newInstance called()");
             // Create bundle to store data
             Bundle bundle = new Bundle();
             bundle.putString(CLASS_UID, classUID);
             bundle.putString(REVIEW_UID, reviewUID);
+            bundle.putInt(ARG_DRAWING_START_LOCATION,startingLocation);
             // Create and return intent
             Intent detailedReview = new Intent(fragment.getContext(), DetailedReviewActivity.class);
             detailedReview.putExtra(REVIEW_ACTIVITY, bundle);
@@ -78,7 +88,12 @@ public class DetailedReviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detailed_review);
         // Set up all the views
         mRecyclerView = (RecyclerView) findViewById(R.id.detailed_recycler);
-        mLayoutManager = new LinearLayoutManager(this);
+        mLayoutManager = new LinearLayoutManager(this) {
+            @Override
+            protected int getExtraLayoutSpace(RecyclerView.State state) {
+                return 300;
+            }
+        };
         mRecyclerView.setLayoutManager(mLayoutManager);
         mDividerItemDecoration = new DividerItemDecoration(this, mLayoutManager.getOrientation());
         mRecyclerView.addItemDecoration(mDividerItemDecoration);
@@ -110,6 +125,43 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 Log.d("detailed_review", "classUID and reviewUID is null");
             }
         }
+        drawingStartLocation = getIntent().getIntExtra(ARG_DRAWING_START_LOCATION, 0);
+        if (savedInstanceState == null) {
+            final View v = findViewById(R.id.detailParent_layout);
+            v.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    v.getViewTreeObserver().removeOnPreDrawListener(this);
+                    startIntroAnimation();
+                    return true;
+                }
+            });
+        }
+    }
+    private void startIntroAnimation() {
+        final View v = findViewById(R.id.detailParent_layout);
+        v.setScaleY(0.1f);
+        v.setPivotY(drawingStartLocation);
+        createComment.setTranslationY(100);
+
+        v.animate()
+                .scaleY(1)
+                .setDuration(200)
+                .setInterpolator(new AccelerateInterpolator())
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        animateContent();
+                    }
+                })
+                .start();
+    }
+    private void animateContent() {
+        //commentsAdapter.updateItems();
+        createComment.animate().translationY(0)
+                .setInterpolator(new DecelerateInterpolator())
+                .setDuration(200)
+                .start();
     }
 
     @Override
@@ -134,7 +186,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
 
     // Initialize the FAB to create comments
     private void initializeFABAction(final String reviewUID) {
-        FloatingActionButton createComment = (FloatingActionButton) findViewById(R.id.detailed_create_comment);
+        createComment = (FloatingActionButton) findViewById(R.id.detailed_create_comment);
         createComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -296,5 +348,22 @@ public class DetailedReviewActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        View v = findViewById(R.id.detailParent_layout);
+        v.animate()
+                .translationY(Utils.getScreenHeight(this))
+                .setDuration(200)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        DetailedReviewActivity.super.onBackPressed();
+                        overridePendingTransition(0, 0);
+                    }
+                })
+                .start();
     }
 }

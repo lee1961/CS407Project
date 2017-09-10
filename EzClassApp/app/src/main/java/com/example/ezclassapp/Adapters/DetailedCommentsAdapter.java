@@ -1,5 +1,7 @@
 package com.example.ezclassapp.Adapters;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
 import com.example.ezclassapp.Activities.Constants;
@@ -35,6 +38,9 @@ public class DetailedCommentsAdapter extends RecyclerView.Adapter<DetailedCommen
     private List<String> userUID;
     private List<String> comment;
     private List<String> commentUID;
+    private int lastAnimatedPosition = -1;
+    private boolean animationsLocked = false;
+    private boolean delayEnterAnimation = true;
 
     public DetailedCommentsAdapter() {
         userUID = new ArrayList<>();
@@ -73,6 +79,7 @@ public class DetailedCommentsAdapter extends RecyclerView.Adapter<DetailedCommen
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        runEnterAnimation(holder.itemView, position);
         final String _userUID = userUID.get(position);
         final String _comment = comment.get(position);
         Log.d("comments_adapter", "position: " + Integer.toString(position) + ", userUID: " + _userUID + ", comment: " + comment);
@@ -140,4 +147,25 @@ public class DetailedCommentsAdapter extends RecyclerView.Adapter<DetailedCommen
         }
     }
 
+    // animations
+    private void runEnterAnimation(View view, int position) {
+
+        if (position > lastAnimatedPosition) {
+            lastAnimatedPosition = position;
+            view.setTranslationX(300);
+            view.setAlpha(0.f);
+            view.animate()
+                    .translationY(0).alpha(1.f)
+                    .setStartDelay(delayEnterAnimation ? 20 * (position) : 0)
+                    .setInterpolator(new DecelerateInterpolator(2.f))
+                    .setDuration(300)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            animationsLocked = true;
+                        }
+                    })
+                    .start();
+        }
+    }
 }

@@ -58,6 +58,7 @@
                     android:id="@+id/opinion_textView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:lines="2"
                     android:layout_marginBottom="8dp"
                     android:textColor="#000"
                     android:textSize="16sp"/>

@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/material_white"
     android:orientation="vertical"
+    android:id="@+id/detailParent_layout"
     tools:context="com.example.ezclassapp.Activities.DetailedReviewActivity">
 
     <android.support.v7.widget.Toolbar

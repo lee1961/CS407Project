@@ -275,11 +275,32 @@ public class ReviewListFragment extends Fragment {
                     @Override
                     protected void populateViewHolder(final ReviewViewHolder viewHolder, Review review, int position) {
                         final DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(mCourseId);
-                        if(review.getOpinion().length() > 30) {
-                            viewHolder.mReviewtitleTextView.setText(review.getOpinion().toString().substring(0,30) + "....");
+                        if(review.getOpinion().length() > 60) {
+                            viewHolder.mReviewtitleTextView.setText(review.getOpinion().toString().substring(0,60) + "....");
                         } else {
                             viewHolder.mReviewtitleTextView.setText(review.getOpinion());
                         }
+
+                        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                try {
+                                    if (viewHolder.getReviewUID() != null) {
+                                        Log.d("review_list",viewHolder.getReviewUID());
+                                    } else {
+                                        Log.d("review_list", "reviewUID is null");
+                                    }
+                                    //Get location on screen for tapped view
+                                    int[] startingLocation = new int[2];
+                                    v.getLocationOnScreen(startingLocation);
+                                    Intent detailedReview = DetailedReviewActivity.newInstance(mFragment, viewHolder.getReviewClassUID(),viewHolder.getReviewUID(),startingLocation[1]);
+                                    mFragment.getActivity().startActivity(detailedReview);
+                                    getActivity().overridePendingTransition(0,0);
+                                } catch (IllegalAccessException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
 
                         viewHolder.mReviewerName.setText(review.getReviewerName());
 
@@ -328,6 +349,8 @@ public class ReviewListFragment extends Fragment {
                         }
                     }
                 };
+
+
         ReviewRecyclerView.setAdapter(mReviewViewHolderFirebaseRecyclerAdapter);
         ReviewRecyclerView.getAdapter().notifyDataSetChanged();
         //mQueryReference.keepSynced(true);
@@ -356,7 +379,7 @@ public class ReviewListFragment extends Fragment {
 
     }
 
-    public static class ReviewViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class ReviewViewHolder extends RecyclerView.ViewHolder {
 
         public TextView mReviewtitleTextView;
         public TextView mReviewerName;
@@ -377,7 +400,6 @@ public class ReviewListFragment extends Fragment {
             mReviewerName = (TextView) v.findViewById(R.id.reviewer_textView);
             mIsAnimated = false;
 
-            itemView.setOnClickListener(this);
 
             mUpVoteImageView = (ImageView) v.findViewById(R.id.upVoteImageView);
             mDownVoteImageView = (ImageView) v.findViewById(R.id.downVoteImageView);
@@ -402,21 +424,6 @@ public class ReviewListFragment extends Fragment {
             this.reviewClassUID = reviewClassUID;
         }
 
-        // Launch to DetailedReviewActivity
-        @Override
-        public void onClick(View v) {
-            try {
-                if (getReviewUID() != null) {
-                    Log.d("review_list", getReviewUID());
-                } else {
-                    Log.d("review_list", "reviewUID is null");
-                }
-                Intent detailedReview = DetailedReviewActivity.newInstance(mFragment, getReviewClassUID(), getReviewUID());
-                mFragment.getActivity().startActivity(detailedReview);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
 }
