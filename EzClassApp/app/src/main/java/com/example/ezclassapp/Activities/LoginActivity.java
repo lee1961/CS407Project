@@ -5,12 +5,14 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.ezclassapp.R;
@@ -28,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputLayout mLoginEmail;
     private TextInputLayout mLoginPassword;
     private Button mLogin_btn;
+    private Button rSetPassword;
 
     private ProgressDialog mLoginProgress;
 
@@ -64,6 +67,45 @@ public class LoginActivity extends AppCompatActivity {
                     mLoginProgress.show();
                     loginUser(email,password);
                 }
+            }
+        });
+
+
+        //reset the password
+        rSetPassword = (Button)findViewById(R.id.reset_pw);
+        rSetPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+
+            public void onClick(View v) {
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(LoginActivity.this);
+                View mView = getLayoutInflater().inflate(R.layout.reset_password, null);
+                final EditText rEmail = (EditText) mView.findViewById(R.id.edEmail);
+                Button sPasswd = (Button) mView.findViewById(R.id.send);
+                mBuilder.setView(mView);
+                final AlertDialog dialog = mBuilder.create();
+                dialog.show();
+                sPasswd.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String emailAddress = rEmail.getText().toString();
+                        if(emailAddress != null) {
+                            mAuth.sendPasswordResetEmail(emailAddress).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()) {
+                                        Toast.makeText(LoginActivity.this, "Reset password email send", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(LoginActivity.this, "Reset password email send failed", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            });
+                            dialog.dismiss();
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Please Enter Your Email Address", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
             }
         });
     }
