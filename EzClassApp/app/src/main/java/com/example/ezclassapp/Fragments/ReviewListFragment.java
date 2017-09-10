@@ -275,7 +275,12 @@ public class ReviewListFragment extends Fragment {
                     @Override
                     protected void populateViewHolder(final ReviewViewHolder viewHolder, Review review, int position) {
                         final DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(mCourseId);
-                        viewHolder.mReviewtitleTextView.setText(review.getOpinion());
+                        if(review.getOpinion().length() > 30) {
+                            viewHolder.mReviewtitleTextView.setText(review.getOpinion().toString().substring(0,30) + "....");
+                        } else {
+                            viewHolder.mReviewtitleTextView.setText(review.getOpinion());
+                        }
+
                         viewHolder.mReviewerName.setText(review.getReviewerName());
 
                         viewHolder.mUpVoteTextViewCounter.setText(String.valueOf(review.getUpvote()));
