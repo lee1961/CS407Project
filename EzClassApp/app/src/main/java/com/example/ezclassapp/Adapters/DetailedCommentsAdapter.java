@@ -152,10 +152,10 @@ public class DetailedCommentsAdapter extends RecyclerView.Adapter<DetailedCommen
 
         if (position > lastAnimatedPosition) {
             lastAnimatedPosition = position;
-            view.setTranslationX(300);
+            view.setTranslationY(100);
             view.setAlpha(0.f);
             view.animate()
-                    .translationX(0).alpha(1.f)
+                    .translationY(0).alpha(1.f)
                     .setStartDelay(delayEnterAnimation ? 20 * (position) : 0)
                     .setInterpolator(new DecelerateInterpolator(2.f))
                     .setDuration(300)
