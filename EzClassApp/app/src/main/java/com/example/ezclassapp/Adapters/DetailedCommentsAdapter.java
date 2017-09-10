@@ -79,7 +79,7 @@ public class DetailedCommentsAdapter extends RecyclerView.Adapter<DetailedCommen
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        runEnterAnimation(holder.itemView, position);
+        //runEnterAnimation(holder.itemView, position);
         final String _userUID = userUID.get(position);
         final String _comment = comment.get(position);
         Log.d("comments_adapter", "position: " + Integer.toString(position) + ", userUID: " + _userUID + ", comment: " + comment);
@@ -155,7 +155,7 @@ public class DetailedCommentsAdapter extends RecyclerView.Adapter<DetailedCommen
             view.setTranslationX(300);
             view.setAlpha(0.f);
             view.animate()
-                    .translationY(0).alpha(1.f)
+                    .translationX(0).alpha(1.f)
                     .setStartDelay(delayEnterAnimation ? 20 * (position) : 0)
                     .setInterpolator(new DecelerateInterpolator(2.f))
                     .setDuration(300)
