@@ -44,12 +44,4 @@
         android:layout_alignStart="@+id/start_reg_button"
         android:layout_marginBottom="25dp" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="47dp"
-        app:srcCompat="@drawable/logo2"
-        android:layout_above="@+id/textView"
-        android:layout_centerHorizontal="true" />
 </RelativeLayout>
