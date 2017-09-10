@@ -6,6 +6,8 @@ It is an app that allows users to publish their own opinion/reviews about the cl
 
 ![alt text](images/create_account_page.png "Create Account Page")
 
+![alt text](images/main_page.png "Main Page where you can search for classes")
+
 ![alt text](images/review_page.png "List of reviews Page")
 
-![alt text](images/submitform_review_page.png.png "List of reviews Page")
+![alt text](images/submitform_review_page.png "Page where you submit a review based on the class you chose from the main page")
