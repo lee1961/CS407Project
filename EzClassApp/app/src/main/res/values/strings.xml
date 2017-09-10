@@ -17,4 +17,8 @@
     <string name="alert_box_comment">Enter comment here...</string>
     <string name="alert_box_submit_btn">Submit</string>
     <string name="alert_box_cancel">Cancel</string>
+    <string name="tips_label">Tips:</string>
+    <string name="opinion_label">Opinion:</string>
+    <string name="like_button">like button</string>
+    <string name="dislike_button">dislike button</string>
 </resources>

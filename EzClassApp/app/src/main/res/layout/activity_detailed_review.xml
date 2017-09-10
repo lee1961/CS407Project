@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/material_white"
     android:orientation="vertical"
     tools:context="com.example.ezclassapp.Activities.DetailedReviewActivity">
 
@@ -68,22 +69,56 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:text="USERNAME"
-                                android:textSize="14sp" />
+                                android:textSize="16sp" />
                         </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/detailed_opinion"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="OPINION"
-                            android:textSize="16sp" />
+                            android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/detailed_tips"
+                            <TextView
+                                android:id="@+id/detailed_opinion_label"
+                                android:layout_width="@dimen/label_width"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+                                android:paddingStart="@dimen/card_left_padding"
+                                android:text="@string/opinion_label"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/detailed_opinion"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingBottom="@dimen/content_spacing"
+                                android:paddingEnd="@dimen/card_right_padding"
+                                android:paddingStart="@dimen/card_left_padding"
+                                android:textSize="16sp" />
+                        </LinearLayout>
+
+
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="TIPS"
-                            android:textSize="16sp" />
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/detailed_tips_label"
+                                android:layout_width="@dimen/label_width"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+                                android:paddingStart="@dimen/card_left_padding"
+                                android:text="@string/tips_label"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/detailed_tips"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingEnd="@dimen/card_right_padding"
+                                android:paddingStart="@dimen/card_left_padding"
+                                android:textSize="16sp" />
+                        </LinearLayout>
 
                         <!-- This is for the upvotes and downvotes-->
                         <LinearLayout
@@ -91,17 +126,69 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
-                            <TextView
-                                android:id="@+id/detailed_upvotes"
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1" />
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:orientation="horizontal">
 
-                            <TextView
-                                android:id="@+id/detailed_downvotes"
-                                android:layout_width="wrap_content"
+                                <LinearLayout
+                                    android:id="@+id/detailed_like"
+                                    style="?android:attr/borderlessButtonStyle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:padding="0dp">
+
+                                    <ImageView
+                                        android:layout_width="@dimen/user_action_bar"
+                                        android:layout_height="@dimen/user_action_bar"
+                                        android:layout_gravity="start"
+                                        android:contentDescription="@string/like_button"
+                                        android:padding="16dp"
+                                        android:scaleType="centerCrop"
+                                        android:src="@drawable/like" />
+
+                                    <TextView
+                                        android:id="@+id/detailed_like_count"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="@dimen/user_action_bar"
+                                        android:gravity="center_vertical|start" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1" />
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:id="@+id/detailed_dislike"
+                                    style="?android:attr/borderlessButtonStyle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:padding="0dp">
+
+                                    <TextView
+                                        android:id="@+id/detailed_dislike_count"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="@dimen/user_action_bar"
+                                        android:layout_gravity="end"
+                                        android:gravity="center_vertical|end" />
+
+                                    <ImageView
+                                        android:layout_width="@dimen/user_action_bar"
+                                        android:layout_height="@dimen/user_action_bar"
+                                        android:contentDescription="@string/dislike_button"
+                                        android:padding="16dp"
+                                        android:scaleType="centerCrop"
+                                        android:src="@drawable/dislike" />
+                                </LinearLayout>
+                            </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
