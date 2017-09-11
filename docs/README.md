@@ -10,13 +10,17 @@ A color picker tool programmed in Java.
 ![alt text](images/start_page.png "Start Page")
 ## Login Page
 ![alt text](images/login_page.png "The login page")
-## Create an Accout Page
+## Create an Account Page
+<p>This is where you create an account </p>
 ![alt text](images/create_account_page.png "Create Account Page")
 ## Main Page
+<p>This is where after you have logged in or register an account, the this will be the main page where you can search for the classes you want </p>
 ![alt text](images/main_page.png "Main Page where you can search for classes")
 ## List of Review Page
+<p>This is where after clicking the class that you are interested in from the main page, you can see the list of reviews sorted by number of upvotes</p>
 ![alt text](images/review_page.png "List of reviews Page")
 ## Submit form Review Page
+<p>This is where if you click the floating action button from the list of review page, you can submit a review here</p>
 ![alt text](images/submitform_review_page.png "Page where you submit a review based on the class you chose from the main page")
 
 
