@@ -10,16 +10,16 @@ Students who have not taken a class before and have no idea how hard or how to s
 ## Login Page
 ![alt text](images/login_page.png "The login page")
 ## Create an Account Page
-<p>This is where you create an account </p>
+This is where you create an account.
 ![alt text](images/create_account_page.png "Create Account Page")
 ## Main Page
-<p>This is where after you have logged in or register an account, the this will be the main page where you can search for the classes you want </p>
+This is where after you have logged in or register an account, the this will be the main page where you can search for the classes you want.
 ![alt text](images/main_page.png "Main Page where you can search for classes")
 ## List of Review Page
-<p>This is where after clicking the class that you are interested in from the main page, you can see the list of reviews sorted by number of upvotes</p>
+This is where after clicking the class that you are interested in from the main page, you can see the list of reviews sorted by number of upvotes.
 ![alt text](images/review_page.png "List of reviews Page")
 ## Submit form Review Page
-<p>This is where if you click the floating action button from the list of review page, you can submit a review here</p>
+This is where if you click the floating action button from the list of review page, you can submit a review here.
 ![alt text](images/submitform_review_page.png "Page where you submit a review based on the class you chose from the main page")
 
 
