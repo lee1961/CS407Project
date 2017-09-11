@@ -1,10 +1,9 @@
 
 # DOCUMENTATION
 ## EZClassApp
-<p>Students who have not taken a class before and have no idea how hard or how to succeed in the class can use this this Android app to gain more insight about a class.</p>
 
 ## DESCRIPTION
-A color picker tool programmed in Java.
+Students who have not taken a class before and have no idea how hard or how to succeed in the class can use this this Android app to gain more insight about a class.
 
 ## START PAGE
 ![alt text](images/start_page.png "Start Page")
