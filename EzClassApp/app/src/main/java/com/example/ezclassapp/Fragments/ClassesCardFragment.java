@@ -48,7 +48,6 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import static android.R.attr.id;
-import static com.example.ezclassapp.R.id.imageView;
 
 
 public class ClassesCardFragment extends Fragment {

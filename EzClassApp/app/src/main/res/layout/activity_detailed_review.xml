@@ -94,6 +94,7 @@
                                 android:paddingBottom="@dimen/content_spacing"
                                 android:paddingEnd="@dimen/card_right_padding"
                                 android:paddingStart="@dimen/card_left_padding"
+                                android:text="Tips: "
                                 android:textSize="16sp" />
                         </LinearLayout>
 

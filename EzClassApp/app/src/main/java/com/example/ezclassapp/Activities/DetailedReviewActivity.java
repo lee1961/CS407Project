@@ -267,8 +267,17 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 }
                 // Set the text views
                 setTextView(_userName, null,  username);
-                setTextView(_opinion, opinion_label, opinion);
-                setTextView(_tip, tip_label, tip);
+                final String empty = "N\\A";
+                if(_opinion == null || _opinion.length() <= 0) {
+                    setTextView(empty, opinion_label, opinion);
+                } else {
+                    setTextView(_opinion, opinion_label, opinion);
+                }
+                if(_tip == null || _tip.length() <= 0) {
+                    setTextView(empty, tip_label, tip);
+                } else {
+                    setTextView(_tip, tip_label, tip);
+                }
                 setTextView(_like_count, like_count);
                 setTextView(_dislike_count, dislike_count);
                 // TODO:Set like_btn and dislike_btn onClickListener
