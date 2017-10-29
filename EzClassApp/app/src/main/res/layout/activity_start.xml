@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:text="ALREADY HAVE ACCOUNT"
         android:textColor="@android:color/white"
-        app:backgroundTint="@color/colorAccent"
+        android:backgroundTint="@color/colorAccent"
         tools:textSize="14sp"
         android:layout_above="@+id/start_reg_button"
         android:layout_alignStart="@+id/start_reg_button"
