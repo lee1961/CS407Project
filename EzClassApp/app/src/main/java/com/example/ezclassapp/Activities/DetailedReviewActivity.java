@@ -35,6 +35,7 @@ import com.example.ezclassapp.Models.Review;
 import com.example.ezclassapp.Models.User;
 import com.example.ezclassapp.Models.Utils;
 import com.example.ezclassapp.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -43,6 +44,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
+
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -249,6 +252,8 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 final TextView like_count = (TextView) findViewById(R.id.detailed_like_count);
                 final LinearLayout dislike_btn = (LinearLayout) findViewById(R.id.detailed_dislike);
                 final TextView dislike_count = (TextView) findViewById(R.id.detailed_dislike_count);
+                final ImageView like_image_btn = (ImageView) findViewById(R.id.like_image);
+                final ImageView dislike_image_btn = (ImageView) findViewById(R.id.dislike_image);
                 // populate the views
                 // If user email is null or "default" then show default avatar
                 if (TextUtils.isEmpty(_userPic) || _userPic.equals("default")) {
@@ -281,18 +286,28 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 setTextView(_like_count, like_count);
                 setTextView(_dislike_count, dislike_count);
                 // TODO:Set like_btn and dislike_btn onClickListener
-                like_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                final Map<String, Boolean> map = review.getCheckUserVoted();
+                final String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                if(map.containsKey(userID)) {
+                    like_image_btn.setTag(R.drawable.like);
+                    like_image_btn.setImageResource(R.drawable.like);
+                    dislike_image_btn.setTag(R.drawable.dislike);
+                    dislike_image_btn.setImageResource(R.drawable.dislike);
+                } else {
+                    like_image_btn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Log.d("liking", "you are liking the b utton");
+                        }
+                    });
+                    dislike_btn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
 
-                    }
-                });
-                dislike_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                        }
+                    });
+                }
 
-                    }
-                });
             }
 
             @Override
@@ -375,4 +390,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 })
                 .start();
     }
+
+
+
 }

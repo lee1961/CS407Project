@@ -318,6 +318,7 @@ public class ReviewListFragment extends Fragment {
                         final String reviewID = review.getID();
                         final Map<String, Boolean> map = review.getCheckUserVoted();
                         final String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
                         if (map.containsKey(userID)) {
                             viewHolder.mUpVoteImageView.setTag(R.drawable.like);
                             viewHolder.mUpVoteImageView.setImageResource(R.drawable.like);
