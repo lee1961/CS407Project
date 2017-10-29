@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     private SharedPreferences preferences; // Stores user basic information
     private MenuItem mfilterdates;
     private MenuItem mfilterlikes;
+    private boolean isSortByDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -219,11 +220,15 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
             case R.id.menu_item_filterdate:
                 Toast.makeText(this, "filter date", Toast.LENGTH_SHORT).show();
                 mfilterdates.setChecked(true);
+                isSortByDate = true;
+                updateFilterReviewListFragment();
                 //mfilterlikes.setChecked(false);
                 return true;
             case R.id.menu_item_filterlike:
                 Toast.makeText(this, "filter likes", Toast.LENGTH_SHORT).show();
                 mfilterlikes.setChecked(true);
+                isSortByDate = false;
+                updateFilterReviewListFragment();
                 //mfilterdates.setChecked(false);
                 return true;
         }
@@ -295,6 +300,9 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     }
 
     private void updateCardFragment(String query) {
+        if ( !(getSupportFragmentManager().findFragmentById(R.id.fragmentContainer) instanceof ClassesCardFragment)) {
+            return;
+        }
         ClassesCardFragment classesCardFragment = (ClassesCardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         Log.d("debug", "query is " + query);
         if (classesCardFragment != null && classesCardFragment.isVisible() && query.length() > 2) {
@@ -307,6 +315,16 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
             FragmentManager fm = getSupportFragmentManager();
             classesCardFragment = ClassesCardFragment.newInstance(query);
             fm.beginTransaction().add(R.id.fragmentContainer, classesCardFragment).commit();
+        }
+    }
+
+    private void updateFilterReviewListFragment() {
+        if ( !(getSupportFragmentManager().findFragmentById(R.id.fragmentContainer) instanceof ReviewListFragment)) {
+            return;
+        }
+        ReviewListFragment reviewListFragment = (ReviewListFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        if(reviewListFragment != null && reviewListFragment.isVisible()) {
+            reviewListFragment.changeFilter(isSortByDate);
         }
     }
 
@@ -380,7 +398,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     */
     @Override
     public void onCardSelected(String name, String courseId, List<String> reviewListId) {
-        final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name, courseId, reviewListId);
+        final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name, courseId, reviewListId,isSortByDate);
         getSupportFragmentManager().beginTransaction().setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out).
                 replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
                 .addToBackStack(null)

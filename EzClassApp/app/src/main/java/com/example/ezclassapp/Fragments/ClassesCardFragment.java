@@ -119,7 +119,7 @@ public class ClassesCardFragment extends Fragment {
         super.onCreate(savedInstanceState);
         /* TODO should listen to firebase data changed here*/
         //initializeList(); // initialise all this hardcoded list but should listen from firebase
-        getActivity().setTitle("7 Wonders of the Modern World");
+        getActivity().setTitle("Choose a Course");
         currentActivity = getActivity();
     }
 
@@ -192,10 +192,8 @@ public class ClassesCardFragment extends Fragment {
         MyRecyclerView.setHasFixedSize(true);
         LinearLayoutManager MyLayoutManager = new LinearLayoutManager(getActivity());
         MyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-
         MyRecyclerView.setLayoutManager(MyLayoutManager);
         attachRecyclerViewAdapter();
-        Log.d("debugging","start again");
         return view;
     }
 

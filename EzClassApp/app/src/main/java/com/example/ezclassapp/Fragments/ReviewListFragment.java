@@ -47,6 +47,7 @@ public class ReviewListFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String ARG_PARAM3 = "param3";
+    private static final String ARG_PARAM4 = "param4";
     private static DatabaseReference reviewReference;
     private static ReviewListFragment mFragment;
     RecyclerView ReviewRecyclerView;
@@ -60,6 +61,9 @@ public class ReviewListFragment extends Fragment {
     private List<String> mParam3;
     private String mCourseId;
     private ArrayList<String> reviewListId;
+    private boolean isSortByDate;
+    private boolean isSortByLikes;
+    LinearLayoutManager MyLayoutManager;
 
     /**
      * Use this factory method to create a new instance of
@@ -71,10 +75,11 @@ public class ReviewListFragment extends Fragment {
      * @param3 ReviewListCourseID
      */
     // TODO: Rename and change types and number of parameters
-    public static ReviewListFragment newInstance(String fullCourseName, String courseID, List<String> reviewListId) {
+    public static ReviewListFragment newInstance(String fullCourseName, String courseID, List<String> reviewListId,boolean isSortByDate) {
         final Bundle args = new Bundle();
         args.putString(ARG_PARAM1, fullCourseName);
         args.putString(ARG_PARAM2, courseID);
+        args.putBoolean(ARG_PARAM3,isSortByDate);
         if (reviewListId == null) {
             args.putStringArrayList(ARG_PARAM3, new ArrayList<String>());
         } else {
@@ -186,6 +191,41 @@ public class ReviewListFragment extends Fragment {
         mFragment = this;
     }
 
+    public void changeFilter(boolean sortByDate) {
+        Log.d("sorting" , " sorting value changed to " + sortByDate);
+        ReviewRecyclerView.setHasFixedSize(true);
+        MyLayoutManager = new LinearLayoutManager(getActivity());
+        MyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        MyLayoutManager.setReverseLayout(true);
+        MyLayoutManager.setStackFromEnd(true);
+        if(!sortByDate) {
+            //if u want it sort by number of likes
+            mQueryReference = reviewReference.orderByChild("upvote");
+        } else {
+            mQueryReference = reviewReference.orderByKey();
+        }
+        ReviewRecyclerView.setLayoutManager(MyLayoutManager);
+        ReviewRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int scrollState) {
+                super.onScrollStateChanged(recyclerView, scrollState);
+
+                if (scrollState == RecyclerView.SCROLL_STATE_IDLE) {
+                    mFloatingActionButton.setVisibility(View.VISIBLE);
+                } else {
+                    mFloatingActionButton.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
+        attachRecyclerViewAdapter();
+
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -194,6 +234,7 @@ public class ReviewListFragment extends Fragment {
         if (getArguments() != null) {
             final Bundle args = getArguments();
             mCourseId = args.getString(ARG_PARAM2);
+            isSortByDate = args.getBoolean(ARG_PARAM3);
         }
         reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(mCourseId);
         // sort by the number of upvotes
@@ -203,7 +244,7 @@ public class ReviewListFragment extends Fragment {
 
         ReviewRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_review);
         ReviewRecyclerView.setHasFixedSize(true);
-        LinearLayoutManager MyLayoutManager = new LinearLayoutManager(getActivity());
+        MyLayoutManager = new LinearLayoutManager(getActivity());
         MyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         //if u want it sort by order
         MyLayoutManager.setReverseLayout(true);
