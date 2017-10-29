@@ -2,6 +2,8 @@ package com.example.ezclassapp.Activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -21,6 +23,7 @@ import android.view.ViewStub;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -64,7 +67,8 @@ public class DetailedReviewActivity extends AppCompatActivity {
     private ChildEventListener mChildEventListener;
     private int drawingStartLocation;
     private FloatingActionButton createComment;
-
+    private String classUID;
+    private String reviewUID;
     // Static method to build and create a new activity to detailedReviewActivity
     public static Intent newInstance(Fragment fragment, String classUID, String reviewUID,int startingLocation) throws IllegalAccessException {
         if (fragment instanceof ReviewListFragment) {
@@ -108,8 +112,8 @@ public class DetailedReviewActivity extends AppCompatActivity {
 
         // Get data from Bundle
         Bundle extras = getIntent().getExtras().getBundle(REVIEW_ACTIVITY);
-        String classUID = "";
-        String reviewUID = "";
+        classUID = "";
+        reviewUID = "";
         if (extras == null) {
             finish();
         } else {
@@ -298,12 +302,18 @@ public class DetailedReviewActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             Log.d("liking", "you are liking the b utton");
+                            like_image_btn.setClickable(false);
+                            dislike_image_btn.setClickable(false);
+                            updateUpvoteButton(like_image_btn,dislike_image_btn,like_count,reviewUID,map,userID);
                         }
                     });
-                    dislike_btn.setOnClickListener(new View.OnClickListener() {
+                    dislike_image_btn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
+                            Log.d("disliking", "you are disliking the b utton");
+                            like_image_btn.setClickable(false);
+                            dislike_image_btn.setClickable(false);
+                            updateDownvoteButton(dislike_image_btn,like_image_btn,dislike_count,reviewUID,map,userID);
                         }
                     });
                 }
@@ -392,5 +402,109 @@ public class DetailedReviewActivity extends AppCompatActivity {
     }
 
 
+    // animation for upvoting the review
+    private void updateUpvoteButton(final ImageView mUpVoteImageView,final ImageView mDownVoteImageView,final TextView mUpVoteTextViewCounter, final String reviewID, final Map<String, Boolean> map, final String userID) {
+
+
+        int duration = 300;
+        AnimatorSet animatorSet = new AnimatorSet();
+        mUpVoteImageView.setTag(R.drawable.like);
+        mUpVoteImageView.setClickable(false);
+        mDownVoteImageView.setTag(R.drawable.dislike);
+        mDownVoteImageView.setClickable(false);
+
+        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(mUpVoteImageView, "rotation", 0f, 360f);
+        rotationAnim.setDuration(duration);
+        rotationAnim.setInterpolator(new AccelerateInterpolator());
+
+        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(mUpVoteImageView, "scaleX", 0.2f, 1f);
+        bounceAnimX.setDuration(duration);
+        bounceAnimX.setInterpolator(new OvershootInterpolator(4f));
+
+        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(mUpVoteImageView, "scaleY", 0.2f, 1f);
+        bounceAnimY.setDuration(duration);
+        bounceAnimY.setInterpolator(new OvershootInterpolator(4f));
+        bounceAnimY.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mUpVoteImageView.setImageResource(R.drawable.like);
+                mDownVoteImageView.setImageResource(R.drawable.dislike);
+            }
+        });
+
+        animatorSet.play(rotationAnim);
+        animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+
+                int count = Integer.parseInt(mUpVoteTextViewCounter.getText().toString());
+                count++;
+                mUpVoteTextViewCounter.setText(String.valueOf(count));
+                DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(classUID);
+                DatabaseReference upVoteReference = reviewReference.child(reviewID);
+                upVoteReference.child(Constants.UPVOTE).setValue(count);
+                map.put(userID, true);
+                DatabaseReference mapReference = reviewReference.child(reviewID).child(Constants.MAPCHECK);
+                mapReference.setValue(map);
+            }
+        });
+
+        animatorSet.start();
+    }
+
+
+    // animation for downvoting the review
+    private void updateDownvoteButton(final ImageView mDownVoteImageView,final ImageView mUpVoteImageView,final TextView mDownVoteTextCounter, final String reviewID, final Map<String, Boolean> map, final String userID) {
+
+        int duration = 500;
+        AnimatorSet animatorSet = new AnimatorSet();
+        // set this as already liked so that user cant click again
+        mUpVoteImageView.setTag(R.drawable.like);
+        mUpVoteImageView.setClickable(false);
+        mDownVoteImageView.setTag(R.drawable.dislike);
+        mDownVoteImageView.setClickable(false);
+
+
+        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(mDownVoteImageView, "rotation", 0f, 360f);
+        rotationAnim.setDuration(duration);
+        rotationAnim.setInterpolator(new AccelerateInterpolator());
+
+        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(mDownVoteImageView, "scaleX", 0.2f, 1f);
+        bounceAnimX.setDuration(duration);
+        bounceAnimX.setInterpolator(new OvershootInterpolator(4f));
+
+        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(mDownVoteImageView, "scaleY", 0.2f, 1f);
+        bounceAnimY.setDuration(duration);
+        bounceAnimY.setInterpolator(new OvershootInterpolator(4f));
+        bounceAnimY.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mDownVoteImageView.setImageResource(R.drawable.dislike);
+                mUpVoteImageView.setImageResource(R.drawable.like);
+            }
+        });
+
+        animatorSet.play(rotationAnim);
+        animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                int count = Integer.parseInt(mDownVoteTextCounter.getText().toString());
+                count++;
+                mDownVoteTextCounter.setText(String.valueOf(count));
+                DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(classUID);
+                DatabaseReference downVoteReference = reviewReference.child(reviewID);
+                downVoteReference.child(Constants.DOWNVOTE).setValue(count);
+                map.put(userID, false);
+                DatabaseReference mapReference = reviewReference.child(reviewID).child(Constants.MAPCHECK);
+                mapReference.setValue(map);
+            }
+        });
+
+        animatorSet.start();
+    }
 
 }
