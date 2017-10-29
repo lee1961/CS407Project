@@ -197,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         mfilterdates = menu.findItem(R.id.menu_item_filterdate);
         mfilterlikes = menu.findItem(R.id.menu_item_filterlike);
         mfilterdates.setChecked(true);
+        isSortByDate = true;
         // the search bar for searching classes, this will be very important
         searchItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
@@ -398,6 +399,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     */
     @Override
     public void onCardSelected(String name, String courseId, List<String> reviewListId) {
+        Log.d("sort by fdate", "this sort by date value is " + isSortByDate);
         final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name, courseId, reviewListId,isSortByDate);
         getSupportFragmentManager().beginTransaction().setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out).
                 replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")

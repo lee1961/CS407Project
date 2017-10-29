@@ -47,7 +47,7 @@ public class ReviewListFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String ARG_PARAM3 = "param3";
-    private static final String ARG_PARAM4 = "param4";
+    private static final String ARG_PARAM4 = "sortByDateParameter";
     private static DatabaseReference reviewReference;
     private static ReviewListFragment mFragment;
     RecyclerView ReviewRecyclerView;
@@ -79,7 +79,7 @@ public class ReviewListFragment extends Fragment {
         final Bundle args = new Bundle();
         args.putString(ARG_PARAM1, fullCourseName);
         args.putString(ARG_PARAM2, courseID);
-        args.putBoolean(ARG_PARAM3,isSortByDate);
+        args.putBoolean(ARG_PARAM4,isSortByDate);
         if (reviewListId == null) {
             args.putStringArrayList(ARG_PARAM3, new ArrayList<String>());
         } else {
@@ -191,6 +191,9 @@ public class ReviewListFragment extends Fragment {
         mFragment = this;
     }
 
+    /*
+        how the filter works
+     */
     public void changeFilter(boolean sortByDate) {
         Log.d("sorting" , " sorting value changed to " + sortByDate);
         ReviewRecyclerView.setHasFixedSize(true);
@@ -234,52 +237,12 @@ public class ReviewListFragment extends Fragment {
         if (getArguments() != null) {
             final Bundle args = getArguments();
             mCourseId = args.getString(ARG_PARAM2);
-            isSortByDate = args.getBoolean(ARG_PARAM3);
+            isSortByDate = args.getBoolean(ARG_PARAM4);
         }
         reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(mCourseId);
-        // sort by the number of upvotes
-        mQueryReference = reviewReference.orderByChild("upvote");
-        // sort by the the date posted
-        //mQueryReference = reviewReference.orderByKey();
-
         ReviewRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_review);
-        ReviewRecyclerView.setHasFixedSize(true);
-        MyLayoutManager = new LinearLayoutManager(getActivity());
-        MyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        //if u want it sort by order
-        MyLayoutManager.setReverseLayout(true);
-        MyLayoutManager.setStackFromEnd(true);
-        ReviewRecyclerView.setLayoutManager(MyLayoutManager);
-
+        changeFilter(isSortByDate);
         mFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.floating_actionBtn);
-        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent SubmitReviewIntent = new Intent(getActivity(), SubmitReview.class);
-                SubmitReviewIntent.putExtra(SubmitReview.ARG_PARAM1, mCourseId);
-                SubmitReviewIntent.putExtra(SubmitReview.ARG_PARAM2, reviewListId);
-                startActivity(SubmitReviewIntent);
-            }
-        });
-        attachRecyclerViewAdapter();
-        // when you are scrolling the recyclerView
-        ReviewRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int scrollState) {
-                super.onScrollStateChanged(recyclerView, scrollState);
-
-                if (scrollState == RecyclerView.SCROLL_STATE_IDLE) {
-                    mFloatingActionButton.setVisibility(View.VISIBLE);
-                } else {
-                    mFloatingActionButton.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-            }
-        });
         startIntroAnimation();
 
         /*
