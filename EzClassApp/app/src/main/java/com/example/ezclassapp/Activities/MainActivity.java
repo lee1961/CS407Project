@@ -32,6 +32,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.ezclassapp.Fragments.ClassesCardFragment;
 import com.example.ezclassapp.Fragments.ReviewListFragment;
@@ -73,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     private SearchView searchView;
     private boolean Animate; // boolean to determine whether it is the first time being animatedi
     private SharedPreferences preferences; // Stores user basic information
+    private MenuItem mfilterdates;
+    private MenuItem mfilterlikes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,8 +192,10 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        getMenuInflater().inflate(R.menu.menu_user,menu);
-
+        getMenuInflater().inflate(R.menu.filter_menu,menu);
+        mfilterdates = menu.findItem(R.id.menu_item_filterdate);
+        mfilterlikes = menu.findItem(R.id.menu_item_filterlike);
+        mfilterdates.setChecked(true);
         // the search bar for searching classes, this will be very important
         searchItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
@@ -210,8 +215,21 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+        switch (item.getItemId()) {
+            case R.id.menu_item_filterdate:
+                Toast.makeText(this, "filter date", Toast.LENGTH_SHORT).show();
+                mfilterdates.setChecked(true);
+                //mfilterlikes.setChecked(false);
+                return true;
+            case R.id.menu_item_filterlike:
+                Toast.makeText(this, "filter likes", Toast.LENGTH_SHORT).show();
+                mfilterlikes.setChecked(true);
+                //mfilterdates.setChecked(false);
+                return true;
+        }
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -228,6 +246,9 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     /* Called whenever we call invalidateOptionsMenu() */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        //menu.findItem(R.id.menu_item_filterdate).setChecked(true);
+        //menu.findItem(R.id.menu_item_filterlike).setChecked(true);
         // If the nav drawer is open, hide action items related to the content view
         // Menu is the one inflated in the current activity, not the navigation drawer menu
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mNavmenu);
