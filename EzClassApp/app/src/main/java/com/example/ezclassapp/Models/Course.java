@@ -20,19 +20,20 @@ public class Course {
     }
 
 
-    public Course(String courseNumber, String courseName) {
+    public Course(String courseNumber, String courseName,String id) {
         this.courseName = courseName;
         setReviewID_list(new ArrayList<String>());
         this.courseNumber = courseNumber;
         this.fullCourseName = courseNumber + " " + courseName;
+        this.id = id;
     }
 
     public static ArrayList<Course> getDummyCourseList() {
         ArrayList<Course> classList = new ArrayList<Course>();
-        classList.add(new Course("CS354", "Operating System"));
-        classList.add(new Course("CS448", "Database System"));
-        classList.add(new Course("CS333", "Java Programming"));
-        classList.add(new Course("CS240", "C Programming"));
+//        classList.add(new Course("CS354", "Operating System"));
+//        classList.add(new Course("CS448", "Database System"));
+//        classList.add(new Course("CS333", "Java Programming"));
+//        classList.add(new Course("CS240", "C Programming"));
         return classList;
 //        butto.setonclicSiter {
 //

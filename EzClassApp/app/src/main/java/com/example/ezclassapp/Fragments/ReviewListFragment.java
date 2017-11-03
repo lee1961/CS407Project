@@ -245,6 +245,15 @@ public class ReviewListFragment extends Fragment {
         ReviewRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_review);
         changeFilter(isSortByDate);
         mFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.floating_actionBtn);
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent SubmitReviewIntent = new Intent(getActivity(), SubmitReview.class);
+                SubmitReviewIntent.putExtra(SubmitReview.ARG_PARAM1, mCourseId);
+                SubmitReviewIntent.putExtra(SubmitReview.ARG_PARAM2, reviewListId);
+                startActivity(SubmitReviewIntent);
+            }
+        });
         startIntroAnimation();
 
         /*

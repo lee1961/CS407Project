@@ -157,7 +157,7 @@ public class ClassesCardFragment extends Fragment {
                             animation.setDuration(delay);
                             viewHolder.itemView.startAnimation(animation);
                         }
-                        if (course.getImageUrl() != null || course.getImageUrl().length() <= 0) {
+                        if (course.getImageUrl() != null && course.getImageUrl().length() >= 0) {
                             Picasso.with(getActivity()).load(course.getImageUrl()).into(viewHolder.coverImageView, new Callback() {
                                 @Override
                                 public void onSuccess() {

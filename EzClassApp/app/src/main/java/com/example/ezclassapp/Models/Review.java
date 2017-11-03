@@ -36,7 +36,7 @@ public class Review {
         this.foreignID_userID = foreignID_userID;
         checkUserVoted = new HashMap<>();
         checkUserVoted.put(ID, true);
-        this.review = review;
+        this.tips = review;
         this.difficulty = difficulty;
         this.usefulness = usefulness;
 

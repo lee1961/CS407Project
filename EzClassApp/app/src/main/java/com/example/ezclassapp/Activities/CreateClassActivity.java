@@ -55,9 +55,9 @@ public class CreateClassActivity extends AppCompatActivity {
                 String coursename = mCourseName.getText().toString().trim();
                 String coursenum = mCourseNumber.getText().toString().trim();
                 if (!TextUtils.isEmpty(coursename) && !TextUtils.isEmpty(coursenum)) {
-                    DatabaseReference classReference = mDatabase.child("Course");
-                    Course course = new Course(coursenum, coursename);
+                    DatabaseReference classReference = mDatabase.child(Constants.COURSE);
                     String key = classReference.push().getKey();
+                    Course course = new Course(coursenum, coursename,key);
                     classReference.child(key).setValue(course);
                     Toast.makeText(CreateClassActivity.this, coursenum + " Added", Toast.LENGTH_LONG).show();
                 } else {
