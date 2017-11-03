@@ -183,15 +183,17 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     @Override
     public void onBackPressed() {
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        Log.d("got here","got here");
         if (frag instanceof ReviewListFragment) {
             searchView.setVisibility(View.VISIBLE);
         }
         super.onBackPressed();
     }
-
+    Menu currentMenu;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+        currentMenu = menu;
         getMenuInflater().inflate(R.menu.main_menu, menu);
         getMenuInflater().inflate(R.menu.filter_menu,menu);
         mfilterdates = menu.findItem(R.id.menu_item_filterdate);
@@ -217,12 +219,16 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+
+        searchView.setVisibility(View.GONE);
         switch (item.getItemId()) {
             case R.id.menu_item_filterdate:
                 Toast.makeText(this, "filter date", Toast.LENGTH_SHORT).show();
+                Log.d("opens here","opens here");
                 mfilterdates.setChecked(true);
                 isSortByDate = true;
                 updateFilterReviewListFragment();
+                searchView.setVisibility(View.GONE);
                 //mfilterlikes.setChecked(false);
                 return true;
             case R.id.menu_item_filterlike:
@@ -230,9 +236,11 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                 mfilterlikes.setChecked(true);
                 isSortByDate = false;
                 updateFilterReviewListFragment();
+                searchView.setVisibility(View.GONE);
                 //mfilterdates.setChecked(false);
                 return true;
         }
+        Log.d("opens here","does not do anything");
         return super.onOptionsItemSelected(item);
     }
 
@@ -301,6 +309,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     }
 
     private void updateCardFragment(String query) {
+
         if ( !(getSupportFragmentManager().findFragmentById(R.id.fragmentContainer) instanceof ClassesCardFragment)) {
             return;
         }
@@ -339,6 +348,10 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
+                Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+                if(!(frag instanceof ClassesCardFragment)) {
+                    return false;
+                }
                 ClassesCardFragment fragment = (ClassesCardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
                 if (fragment != null && fragment.isVisible()) {
                     fragment.onNewQuery(""); // just insert blank stuff
@@ -350,6 +363,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
             @Override
             public boolean onSuggestionClick(int position) {
+
                 // Your code here
                 Cursor cursor = searchView.getSuggestionsAdapter().getCursor();
                 cursor.moveToPosition(position);
@@ -387,6 +401,17 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                 // whenever the you type something into the search Bar
                 Log.d("clicked action search", "text input is " + newText);
                 return true;
+            }
+        });
+
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+                if(!(frag instanceof ClassesCardFragment)) {
+                    searchView.setVisibility(View.GONE);
+                    searchView.clearFocus();
+                }
             }
         });
 
