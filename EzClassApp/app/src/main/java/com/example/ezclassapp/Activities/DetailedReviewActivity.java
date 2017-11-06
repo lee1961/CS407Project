@@ -237,7 +237,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
-                Log.d("detailed_user", user.toString());
+                //Log.d("detailed_user", user.toString());
                 // Get the final data to be presented
                 final String _userPic = user.getImage();
                 final String _userName = review.getReviewerName();
