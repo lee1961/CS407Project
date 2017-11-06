@@ -60,7 +60,6 @@ public class ReviewListFragment extends Fragment {
     private static final String ARG_PARAM3 = "param3";
     private static final String ARG_PARAM4 = "sortByDateParameter";
     private static DatabaseReference reviewReference;
-    public static boolean isDeleting;
     private static ReviewListFragment mFragment;
     RecyclerView ReviewRecyclerView;
     FirebaseRecyclerAdapter<Review, ReviewViewHolder> mReviewViewHolderFirebaseRecyclerAdapter;
@@ -253,7 +252,6 @@ public class ReviewListFragment extends Fragment {
             mCourseId = args.getString(ARG_PARAM2);
             isSortByDate = args.getBoolean(ARG_PARAM4);
         }
-        isDeleting = false;
         reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(mCourseId);
         ReviewRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_review);
         changeFilter(isSortByDate);
@@ -279,7 +277,6 @@ public class ReviewListFragment extends Fragment {
                 final int position = viewHolder.getAdapterPosition(); //get position which is swipe
 
                 if (direction == ItemTouchHelper.LEFT) {    //if swipe left
-                    isDeleting = true;
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext()); //alert for confirm to delete
 
                     builder.setMessage("Are you sure you want to delete?");    //set message
@@ -303,7 +300,6 @@ public class ReviewListFragment extends Fragment {
                             Log.d("remove","removing review by " + toBeDeletedReview.getReviewerName() + " and the reviewID is " + toBeDeletedReview.getID());
                             databaseReference.child(Constants.REVIEW).child(toBeDeletedReview.getForeignID_classID()).child(toBeDeletedReview.getID()).removeValue();
                             mReviewViewHolderFirebaseRecyclerAdapter.notifyDataSetChanged();
-                            isDeleting = false;
                             return;
                         }
                     }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {  //not removing items if cancel is done
@@ -312,7 +308,6 @@ public class ReviewListFragment extends Fragment {
                             Log.d("cancel","cancel deleting");
                             mReviewViewHolderFirebaseRecyclerAdapter.notifyDataSetChanged();
                             //ReviewRecyclerView.scrollToPosition(viewHolder.getAdapterPosition());
-                            isDeleting = false;
                             return;
                         }
                     }).show();  //show alert dialog
