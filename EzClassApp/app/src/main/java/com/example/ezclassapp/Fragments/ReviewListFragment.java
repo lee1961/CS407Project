@@ -5,12 +5,19 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.ClipData;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -28,6 +35,8 @@ import com.example.ezclassapp.Activities.SubmitReview;
 import com.example.ezclassapp.Models.Review;
 import com.example.ezclassapp.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -64,6 +73,7 @@ public class ReviewListFragment extends Fragment {
     private ArrayList<String> reviewListId;
     private boolean isSortByDate;
     private boolean isSortByLikes;
+    private CoordinatorLayout coordinatorLayout;
     LinearLayoutManager MyLayoutManager;
 
     /**
@@ -254,6 +264,57 @@ public class ReviewListFragment extends Fragment {
                 startActivity(SubmitReviewIntent);
             }
         });
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+
+            @Override
+            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
+                final int position = viewHolder.getAdapterPosition(); //get position which is swipe
+
+                if (direction == ItemTouchHelper.LEFT) {    //if swipe left
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext()); //alert for confirm to delete
+                    builder.setMessage("Are you sure you want to delete?");    //set message
+
+                    builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() { //when click on DELETE
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            /*
+                                TODO check if admin then can only delete u know!
+                             */
+                            DatabaseReference databaseReference = reviewReference;
+                            Review toBeDeletedReview = mReviewViewHolderFirebaseRecyclerAdapter.getItem(viewHolder.getAdapterPosition());
+                            Log.d("remove","removing review by " + toBeDeletedReview.getReviewerName() + " and the reviewID is " + toBeDeletedReview.getID());
+                            databaseReference.child(Constants.REVIEW).child(toBeDeletedReview.getForeignID_classID()).child(toBeDeletedReview.getID()).removeValue();
+//                            databaseReference.child(Constants.REVIEW).child(toBeDeletedReview.getForeignID_classID()).child(toBeDeletedReview.getID()).setValue(null).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                @Override
+//                                public void onComplete(@NonNull Task<Void> task) {
+//                                    Log.d("sucessfully delete", "sucessfully dleted");
+//                                }
+//                            });
+                            mReviewViewHolderFirebaseRecyclerAdapter.notifyDataSetChanged();
+                            return;
+                        }
+                    }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {  //not removing items if cancel is done
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Log.d("cancel","cancel deleting");
+                            mReviewViewHolderFirebaseRecyclerAdapter.notifyDataSetChanged();
+                            //ReviewRecyclerView.scrollToPosition(viewHolder.getAdapterPosition());
+                            return;
+                        }
+                    }).show();  //show alert dialog
+                }
+            }
+
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(ReviewRecyclerView);
+
         startIntroAnimation();
 
         /*
@@ -316,6 +377,7 @@ public class ReviewListFragment extends Fragment {
                                 }
                             }
                         });
+
 
                         viewHolder.mReviewerName.setText(review.getReviewerName());
 

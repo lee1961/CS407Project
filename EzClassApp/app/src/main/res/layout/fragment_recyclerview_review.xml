@@ -8,6 +8,7 @@
     android:paddingLeft="@dimen/activity_left_margin"
     android:paddingRight="@dimen/activity_right_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+                                                 android:id="@+id/coordinator_layout"
     tools:context=".Activities.MainActivity">
 
     <android.support.v7.widget.RecyclerView
