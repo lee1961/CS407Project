@@ -19,6 +19,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -59,6 +60,7 @@ public class ReviewListFragment extends Fragment {
     private static final String ARG_PARAM3 = "param3";
     private static final String ARG_PARAM4 = "sortByDateParameter";
     private static DatabaseReference reviewReference;
+    public static boolean isDeleting;
     private static ReviewListFragment mFragment;
     RecyclerView ReviewRecyclerView;
     FirebaseRecyclerAdapter<Review, ReviewViewHolder> mReviewViewHolderFirebaseRecyclerAdapter;
@@ -251,6 +253,7 @@ public class ReviewListFragment extends Fragment {
             mCourseId = args.getString(ARG_PARAM2);
             isSortByDate = args.getBoolean(ARG_PARAM4);
         }
+        isDeleting = false;
         reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(mCourseId);
         ReviewRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_review);
         changeFilter(isSortByDate);
@@ -276,9 +279,18 @@ public class ReviewListFragment extends Fragment {
                 final int position = viewHolder.getAdapterPosition(); //get position which is swipe
 
                 if (direction == ItemTouchHelper.LEFT) {    //if swipe left
-
+                    isDeleting = true;
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext()); //alert for confirm to delete
+
                     builder.setMessage("Are you sure you want to delete?");    //set message
+                    builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialog) {
+                            //do whatever you want the back key to do
+                            Log.d("cancel dialog", "cancel dialog");
+                            mReviewViewHolderFirebaseRecyclerAdapter.notifyDataSetChanged();
+                        }
+                    });
 
                     builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() { //when click on DELETE
                         @Override
@@ -286,17 +298,12 @@ public class ReviewListFragment extends Fragment {
                             /*
                                 TODO check if admin then can only delete u know!
                              */
-                            DatabaseReference databaseReference = reviewReference;
+                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                             Review toBeDeletedReview = mReviewViewHolderFirebaseRecyclerAdapter.getItem(viewHolder.getAdapterPosition());
                             Log.d("remove","removing review by " + toBeDeletedReview.getReviewerName() + " and the reviewID is " + toBeDeletedReview.getID());
                             databaseReference.child(Constants.REVIEW).child(toBeDeletedReview.getForeignID_classID()).child(toBeDeletedReview.getID()).removeValue();
-//                            databaseReference.child(Constants.REVIEW).child(toBeDeletedReview.getForeignID_classID()).child(toBeDeletedReview.getID()).setValue(null).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<Void> task) {
-//                                    Log.d("sucessfully delete", "sucessfully dleted");
-//                                }
-//                            });
                             mReviewViewHolderFirebaseRecyclerAdapter.notifyDataSetChanged();
+                            isDeleting = false;
                             return;
                         }
                     }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {  //not removing items if cancel is done
@@ -305,6 +312,7 @@ public class ReviewListFragment extends Fragment {
                             Log.d("cancel","cancel deleting");
                             mReviewViewHolderFirebaseRecyclerAdapter.notifyDataSetChanged();
                             //ReviewRecyclerView.scrollToPosition(viewHolder.getAdapterPosition());
+                            isDeleting = false;
                             return;
                         }
                     }).show();  //show alert dialog
