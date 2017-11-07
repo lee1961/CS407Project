@@ -21,4 +21,7 @@
 
     <color name="btn_default_light_normal">#00000000</color>
     <color name="btn_default_light_pressed">#40ffffff</color>
+
+    <!--Color gradient used for transparent toolbar-->
+    <color name="black_alpha_40">#66000000</color>
 </resources>

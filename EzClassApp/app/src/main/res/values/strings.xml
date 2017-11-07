@@ -23,4 +23,7 @@
     <string name="opinion_label">Opinion:</string>
     <string name="like_button">like button</string>
     <string name="dislike_button">dislike button</string>
+    <string name="profile_picture">profile picture</string>
+    <string name="user_profile_karma">Karma</string>
+    <string name="user_profile_post">Posts</string>
 </resources>
