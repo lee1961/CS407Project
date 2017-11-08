@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -15,16 +16,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.text.style.TtsSpan;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewStub;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -45,8 +43,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import org.w3c.dom.Text;
 
 import java.util.Map;
 
@@ -69,15 +65,17 @@ public class DetailedReviewActivity extends AppCompatActivity {
     private FloatingActionButton createComment;
     private String classUID;
     private String reviewUID;
+    private Context mContext;
+
     // Static method to build and create a new activity to detailedReviewActivity
-    public static Intent newInstance(Fragment fragment, String classUID, String reviewUID,int startingLocation) throws IllegalAccessException {
+    public static Intent newInstance(Fragment fragment, String classUID, String reviewUID, int startingLocation) throws IllegalAccessException {
         if (fragment instanceof ReviewListFragment) {
             Log.d("newInstance", "detailed_review newInstance called()");
             // Create bundle to store data
             Bundle bundle = new Bundle();
             bundle.putString(CLASS_UID, classUID);
             bundle.putString(REVIEW_UID, reviewUID);
-            bundle.putInt(ARG_DRAWING_START_LOCATION,startingLocation);
+            bundle.putInt(ARG_DRAWING_START_LOCATION, startingLocation);
             // Create and return intent
             Intent detailedReview = new Intent(fragment.getContext(), DetailedReviewActivity.class);
             detailedReview.putExtra(REVIEW_ACTIVITY, bundle);
@@ -93,6 +91,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed_review);
+        mContext = this;
         // Set up all the views
         mRecyclerView = (RecyclerView) findViewById(R.id.detailed_recycler);
         mLayoutManager = new LinearLayoutManager(this) {
@@ -145,6 +144,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
             });
         }
     }
+
     private void startIntroAnimation() {
         final View v = findViewById(R.id.detailParent_layout);
         v.setScaleY(0.1f);
@@ -163,6 +163,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 })
                 .start();
     }
+
     private void animateContent() {
         //commentsAdapter.updateItems();
         createComment.animate().translationY(0)
@@ -236,7 +237,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
         user.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
+                final User user = dataSnapshot.getValue(User.class);
                 //Log.d("detailed_user", user.toString());
                 // Get the final data to be presented
                 final String _userPic = user.getImage();
@@ -275,14 +276,14 @@ public class DetailedReviewActivity extends AppCompatActivity {
                     });
                 }
                 // Set the text views
-                setTextView(_userName, null,  username);
+                setTextView(_userName, null, username);
                 final String empty = "N\\A";
-                if(_opinion == null || _opinion.length() <= 0) {
+                if (_opinion == null || _opinion.length() <= 0) {
                     setTextView(empty, opinion_label, opinion);
                 } else {
                     setTextView(_opinion, opinion_label, opinion);
                 }
-                if(_tip == null || _tip.length() <= 0) {
+                if (_tip == null || _tip.length() <= 0) {
                     setTextView(empty, tip_label, tip);
                 } else {
                     setTextView(_tip, tip_label, tip);
@@ -292,7 +293,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 // TODO:Set like_btn and dislike_btn onClickListener
                 final Map<String, Boolean> map = review.getCheckUserVoted();
                 final String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                if(map.containsKey(userID)) {
+                if (map.containsKey(userID)) {
                     like_image_btn.setTag(R.drawable.like);
                     like_image_btn.setImageResource(R.drawable.like);
                     dislike_image_btn.setTag(R.drawable.dislike);
@@ -304,7 +305,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
                             Log.d("liking", "you are liking the b utton");
                             like_image_btn.setClickable(false);
                             dislike_image_btn.setClickable(false);
-                            updateUpvoteButton(like_image_btn,dislike_image_btn,like_count,reviewUID,map,userID);
+                            updateUpvoteButton(like_image_btn, dislike_image_btn, like_count, reviewUID, map, userID);
                         }
                     });
                     dislike_image_btn.setOnClickListener(new View.OnClickListener() {
@@ -313,10 +314,36 @@ public class DetailedReviewActivity extends AppCompatActivity {
                             Log.d("disliking", "you are disliking the b utton");
                             like_image_btn.setClickable(false);
                             dislike_image_btn.setClickable(false);
-                            updateDownvoteButton(dislike_image_btn,like_image_btn,dislike_count,reviewUID,map,userID);
+                            updateDownvoteButton(dislike_image_btn, like_image_btn, dislike_count, reviewUID, map, userID);
                         }
                     });
                 }
+
+                // TODO: Check if reviewer is anonymous
+                // if (user is not anonymouse); then:
+                userImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            Intent user_profile = UserProfileActivity.newInstance(mContext, user);
+                            startActivity(user_profile);
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                username.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            Intent user_profile = UserProfileActivity.newInstance(mContext, user);
+                            startActivity(user_profile);
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
 
             }
 
@@ -349,7 +376,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
     // Sets up the recyclerView for the comments section
     private void setupRecyclerView(String reviewUID) {
         // Create an empty adapter and set adapter to recyclerView, data is added once childAdded is called
-        mAdapter = new DetailedCommentsAdapter();
+        mAdapter = new DetailedCommentsAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
         // Contains a childEventListener if someone creates a comment, the user is immediately notified
         mChildEventListener = reference.child(Constants.COMMENT).child(reviewUID).addChildEventListener(new ChildEventListener() {
@@ -403,7 +430,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
 
 
     // animation for upvoting the review
-    private void updateUpvoteButton(final ImageView mUpVoteImageView,final ImageView mDownVoteImageView,final TextView mUpVoteTextViewCounter, final String reviewID, final Map<String, Boolean> map, final String userID) {
+    private void updateUpvoteButton(final ImageView mUpVoteImageView, final ImageView mDownVoteImageView, final TextView mUpVoteTextViewCounter, final String reviewID, final Map<String, Boolean> map, final String userID) {
 
 
         int duration = 300;
@@ -456,7 +483,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
 
 
     // animation for downvoting the review
-    private void updateDownvoteButton(final ImageView mDownVoteImageView,final ImageView mUpVoteImageView,final TextView mDownVoteTextCounter, final String reviewID, final Map<String, Boolean> map, final String userID) {
+    private void updateDownvoteButton(final ImageView mDownVoteImageView, final ImageView mUpVoteImageView, final TextView mDownVoteTextCounter, final String reviewID, final Map<String, Boolean> map, final String userID) {
 
         int duration = 500;
         AnimatorSet animatorSet = new AnimatorSet();

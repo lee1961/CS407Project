@@ -3,6 +3,7 @@ package com.example.ezclassapp.Adapters;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -14,6 +15,8 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
 import com.example.ezclassapp.Activities.Constants;
+import com.example.ezclassapp.Activities.DetailedReviewActivity;
+import com.example.ezclassapp.Activities.UserProfileActivity;
 import com.example.ezclassapp.Helpers.StringImageConverter;
 import com.example.ezclassapp.Models.User;
 import com.example.ezclassapp.R;
@@ -27,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.example.ezclassapp.Activities.UserProfileActivity.newInstance;
 
 /**
  * Created by tychan on 9/2/2017.
@@ -43,6 +48,14 @@ public class DetailedCommentsAdapter extends RecyclerView.Adapter<DetailedCommen
     private boolean delayEnterAnimation = true;
 
     public DetailedCommentsAdapter() {
+        mContext = null;
+        userUID = new ArrayList<>();
+        comment = new ArrayList<>();
+        commentUID = new ArrayList<>();
+    }
+
+    public DetailedCommentsAdapter(Context context) {
+        this.mContext = context;
         userUID = new ArrayList<>();
         comment = new ArrayList<>();
         commentUID = new ArrayList<>();
@@ -121,6 +134,31 @@ public class DetailedCommentsAdapter extends RecyclerView.Adapter<DetailedCommen
                 }
             });
         }
+
+        // Attack listeners to both the picture and the username
+        holder.mUserImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent user_profile = UserProfileActivity.newInstance(mContext, user);
+                    mContext.startActivity(user_profile);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        holder.mUsername.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent user_profile = UserProfileActivity.newInstance(mContext, user);
+                    mContext.startActivity(user_profile);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         // Set name and comment
         holder.mUsername.setText(user.getName());

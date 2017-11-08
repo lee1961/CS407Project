@@ -4,33 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
     tools:context="com.example.ezclassapp.Activities.UserProfileActivity">
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/user_profile_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@drawable/background_transparent_toolbar"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/material_white"
         android:orientation="vertical">
 
         <ImageView
             android:id="@+id/user_profile_image"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="4"
-            android:contentDescription="@string/profile_picture" />
+            android:layout_weight="5"
+            android:background="@drawable/default_avatar"
+            android:contentDescription="@string/profile_picture"
+            android:scaleType="centerCrop" />
 
         <LinearLayout
-            android:paddingTop="16dp"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2"
-            android:orientation="vertical">
+            android:layout_weight="3"
+            android:orientation="vertical"
+            android:paddingTop="16dp">
 
             <TextView
                 android:id="@+id/user_profile_name"
@@ -38,7 +36,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="8dp"
-                android:hint="Hello World"
+                android:gravity="center"
+                android:textColor="@color/profile_black"
                 android:textSize="18sp" />
 
             <TextView
@@ -47,7 +46,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="8dp"
-                android:hint="Hello World"
+                android:gravity="center"
+                android:textColor="@color/profile_space_grey"
                 android:textSize="16sp" />
 
             <LinearLayout
@@ -70,13 +70,17 @@
                         android:id="@+id/user_profile_post_count"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textColor="@color/profile_black"
                         android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/user_profile_post"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:text="@string/user_profile_post"
+                        android:textColor="@color/profile_grey"
                         android:textSize="16sp" />
 
                 </LinearLayout>
@@ -92,13 +96,17 @@
                         android:id="@+id/user_profile_karma_count"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textColor="@color/profile_black"
                         android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/user_profile_karma"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:text="@string/user_profile_karma"
+                        android:textColor="@color/profile_grey"
                         android:textSize="16sp" />
 
                 </LinearLayout>
@@ -108,5 +116,13 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/user_profile_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@drawable/background_transparent_toolbar"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </FrameLayout>
