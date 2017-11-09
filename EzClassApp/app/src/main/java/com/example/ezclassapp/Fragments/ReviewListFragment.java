@@ -464,7 +464,7 @@ public class ReviewListFragment extends Fragment {
         public TextView mReviewerName;
         public ImageView mUpVoteImageView;
         public ImageView mDownVoteImageView;
-        public TextView ,mUpVoteTextViewCounter;
+        public TextView mUpVoteTextViewCounter;
         public TextView mDownVoteTextViewCounter;
         public boolean mIsAnimated;
         private String reviewUID;
