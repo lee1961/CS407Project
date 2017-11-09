@@ -105,7 +105,6 @@ public class ReviewListFragment extends Fragment {
     // animation for upvoting the review
     private static void updateUpvoteButton(final ReviewViewHolder holder, final String reviewID, final Map<String, Boolean> map, final String userID) {
 
-
         int duration = 300;
         AnimatorSet animatorSet = new AnimatorSet();
         holder.mUpVoteImageView.setTag(R.drawable.like);
@@ -270,7 +269,6 @@ public class ReviewListFragment extends Fragment {
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
             }
-
 
             @Override
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
@@ -466,7 +464,7 @@ public class ReviewListFragment extends Fragment {
         public TextView mReviewerName;
         public ImageView mUpVoteImageView;
         public ImageView mDownVoteImageView;
-        public TextView mUpVoteTextViewCounter;
+        public TextView ,mUpVoteTextViewCounter;
         public TextView mDownVoteTextViewCounter;
         public boolean mIsAnimated;
         private String reviewUID;
