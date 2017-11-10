@@ -15,18 +15,24 @@ import android.widget.TextView;
 import com.example.ezclassapp.Helpers.StringImageConverter;
 import com.example.ezclassapp.Models.User;
 import com.example.ezclassapp.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class UserProfileActivity extends AppCompatActivity {
 
-    private static final String USER = "USER";
+    private static final String USER_UID = "USER_UID";
     private static final String INTENT_EXTRA = "INTENT_EXTRA";
+    private DatabaseReference userRef;
 
     // Static method to build and create a new activity to UserProfileActivity
-    public static Intent newInstance(Context context, User user) throws IllegalAccessException {
+    public static Intent newInstance(Context context, String userUID) throws IllegalAccessException {
         // Create a bundle to store data
         if (context instanceof DetailedReviewActivity) {
             Bundle bundle = new Bundle();
-            bundle.putParcelable(USER, user);
+            bundle.putString(USER_UID, userUID);
             Intent userProfile = new Intent(context, UserProfileActivity.class);
             userProfile.putExtra(INTENT_EXTRA, bundle);
             return userProfile;
@@ -48,19 +54,39 @@ public class UserProfileActivity extends AppCompatActivity {
             return;
         }
 
-        User user = bundle.getParcelable(USER);
-        if (user == null) {
+        String userUID = bundle.getString(USER_UID);
+        if (userUID == null) {
             Log.d("user_profile", "user is null");
             finish();
             return;
         }
-
-        initializeViews(user);
+        // Set up user reference
+        userRef = FirebaseDatabase.getInstance().getReference().child(Constants.USER).child(userUID);
+        // Get user information and display
+        getUserProfile();
         // Show back nav button
         Toolbar toolbar = (Toolbar) findViewById(R.id.user_profile_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+    }
+
+    // Gets user profile before populating view
+    private void getUserProfile() {
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null) {
+                    User user = dataSnapshot.getValue(User.class);
+                    initializeViews(user);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -73,7 +99,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
+    // Set up all the views in the profile page
     private void initializeViews(User user) {
         String user_name = user.getName();
         final String user_img = user.getImage();

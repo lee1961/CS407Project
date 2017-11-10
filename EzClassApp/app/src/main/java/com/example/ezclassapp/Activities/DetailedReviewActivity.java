@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
@@ -91,6 +92,9 @@ public class DetailedReviewActivity extends AppCompatActivity {
     private TextView mDisheart_count;
     private ToggleButton mHeart_btn;
     private ToggleButton mDisheart_btn;
+
+    private ValueEventListener mUpvoteListener;
+    private ValueEventListener mDownvoteListener;
 
     // Static method to build and create a new activity to detailedReviewActivity
     public static Intent newInstance(Fragment fragment, String classUID, String reviewUID, int startingLocation) throws IllegalAccessException {
@@ -208,6 +212,12 @@ public class DetailedReviewActivity extends AppCompatActivity {
         if (mChildEventListener != null) {
             reference.removeEventListener(mChildEventListener);
         }
+        if (mUpvoteListener != null) {
+            reference.removeEventListener(mUpvoteListener);
+        }
+        if (mDownvoteListener != null) {
+            reference.removeEventListener(mDownvoteListener);
+        }
         super.onStop();
     }
 
@@ -315,7 +325,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             try {
-                                Intent user_profile = UserProfileActivity.newInstance(mContext, user);
+                                Intent user_profile = UserProfileActivity.newInstance(mContext, review.getForeignID_userID());
                                 startActivity(user_profile);
                             } catch (IllegalAccessException e) {
                                 e.printStackTrace();
@@ -326,7 +336,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             try {
-                                Intent user_profile = UserProfileActivity.newInstance(mContext, user);
+                                Intent user_profile = UserProfileActivity.newInstance(mContext, review.getForeignID_userID());
                                 startActivity(user_profile);
                             } catch (IllegalAccessException e) {
                                 e.printStackTrace();
@@ -355,7 +365,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 final DatabaseReference reviewReference = reference.child(Constants.REVIEW).child(classUID).child(reviewUID);
                 final DatabaseReference upvoteReference = reviewReference.child(Constants.UPVOTE);
                 final DatabaseReference downvoteReference = reviewReference.child(Constants.DOWNVOTE);
-                upvoteReference.addValueEventListener(new ValueEventListener() {
+                mUpvoteListener = upvoteReference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         // Firebase implicitly converts int or longs to long
@@ -368,7 +378,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
 
                     }
                 });
-                downvoteReference.addValueEventListener(new ValueEventListener() {
+                mDownvoteListener = downvoteReference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         // Firebase implicitly converts int or longs to long
@@ -382,37 +392,63 @@ public class DetailedReviewActivity extends AppCompatActivity {
                     }
                 });
 
-                final ScaleAnimation scaleAnimation = new ScaleAnimation(0.7f, 1.0f, 0.7f, 1.0f, Animation.RELATIVE_TO_SELF, 0.7f, Animation.RELATIVE_TO_SELF, 0.7f);
-                scaleAnimation.setDuration(500);
-                BounceInterpolator bounceInterpolator = new BounceInterpolator();
-                scaleAnimation.setInterpolator(bounceInterpolator);
-                mHeart_btn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                // Animation for the heart and dishearted button
+                // ScaleAnimation anim = animateHeart();
+                mHeart_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        buttonView.startAnimation(scaleAnimation);
-                        if (isChecked) {
-                            mDisheart_btn.setChecked(false);
-                        } else {
-                            mDisheart_btn.setChecked(false);
+                    public void onClick(View v) {
+                        // mHeart_btn.startAnimation(anim);
+                        int heart_count = Integer.parseInt(mHeart_count.getText().toString());
+                        int disheart_count = Integer.parseInt(mDisheart_count.getText().toString());
+                        int increment = 0;
+                        if (mHeart_btn.isChecked() && !mDisheart_btn.isChecked()) {
+                            heart_count++;
+                            increment = 1;
+                        } else if (mHeart_btn.isChecked() && mDisheart_btn.isChecked()) {
+                            heart_count++;
+                            disheart_count--;
+                            increment = 2;
+                        } else if (!mHeart_btn.isChecked() && !mDisheart_btn.isChecked()) {
+                            heart_count--;
+                            increment = -1;
                         }
-                        mHeart_btn.setChecked(isChecked);
+                        mDisheart_btn.setChecked(false);
+                        mHeart_count.setText(String.valueOf(heart_count));
+                        mDisheart_count.setText(String.valueOf(disheart_count));
                         Log.d("detailed_review", "You pressed the heart button");
                         onHeartClick(reviewReference);
+                        if (!review.isPostAnon()) {
+                            setKarmaPoints(review, increment);
+                        }
                     }
                 });
 
-                mDisheart_btn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                mDisheart_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        buttonView.startAnimation(scaleAnimation);
-                        if (isChecked) {
-                            mHeart_btn.setChecked(false);
-                        } else {
-                            mHeart_btn.setChecked(false);
+                    public void onClick(View v) {
+                        //  mDisheart_btn.startAnimation(anim);
+                        int heart_count = Integer.parseInt(mHeart_count.getText().toString());
+                        int disheart_count = Integer.parseInt(mDisheart_count.getText().toString());
+                        int increment = 0;
+                        if (!mHeart_btn.isChecked() && mDisheart_btn.isChecked()) {
+                            disheart_count++;
+                            increment = -1;
+                        } else if (mHeart_btn.isChecked() && mDisheart_btn.isChecked()) {
+                            heart_count--;
+                            disheart_count++;
+                            increment = -2;
+                        } else if (!mHeart_btn.isChecked() && !mDisheart_btn.isChecked()) {
+                            disheart_count--;
+                            increment = 1;
                         }
-                        mDisheart_btn.setChecked(isChecked);
+                        mHeart_btn.setChecked(false);
+                        mHeart_count.setText(String.valueOf(heart_count));
+                        mDisheart_count.setText(String.valueOf(disheart_count));
                         Log.d("detailed_review", "You pressed the disheart button");
                         onDisheartedClick(reviewReference);
+                        if (!review.isPostAnon()) {
+                            setKarmaPoints(review, increment);
+                        }
                     }
                 });
             }
@@ -424,8 +460,36 @@ public class DetailedReviewActivity extends AppCompatActivity {
         });
     }
 
+    private ScaleAnimation animateHeart() {
+        final ScaleAnimation scaleAnimation = new ScaleAnimation(0.7f, 1.0f, 0.7f, 1.0f, Animation.RELATIVE_TO_SELF, 0.7f, Animation.RELATIVE_TO_SELF, 0.7f);
+        scaleAnimation.setDuration(10);
+        BounceInterpolator bounceInterpolator = new BounceInterpolator();
+        scaleAnimation.setInterpolator(bounceInterpolator);
+        AnimationSet animationSet = new AnimationSet(false);
+        animationSet.addAnimation(scaleAnimation);
+        scaleAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mHeart_btn.setEnabled(false);
+                mDisheart_btn.setEnabled(false);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mHeart_btn.setEnabled(true);
+                mDisheart_btn.setEnabled(true);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        return scaleAnimation;
+    }
+
     // Checks and sets heart count
-    private void onHeartClick(DatabaseReference reviewReference) {
+    private void onHeartClick(final DatabaseReference reviewReference) {
         Log.d("detailed_review", "Entered onHeartClick");
         reviewReference.runTransaction(new Transaction.Handler() {
             @Override
@@ -480,7 +544,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
 
             @Override
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                // setHeartState(dataSnapshot);
+
             }
         });
     }
@@ -544,6 +608,28 @@ public class DetailedReviewActivity extends AppCompatActivity {
             @Override
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
                 // setHeartState(dataSnapshot);
+            }
+        });
+    }
+
+    // Set karma points of user
+    private void setKarmaPoints(Review review, final int increment) {
+        reference.child(Constants.USER).child(review.getForeignID_userID()).runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                User reviewer = mutableData.getValue(User.class);
+                if (reviewer == null) {
+                    return Transaction.success(mutableData);
+                }
+                int karma = reviewer.getKarmaPoints();
+                reviewer.setKarmaPoints(karma + increment);
+                mutableData.setValue(reviewer);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
             }
         });
     }

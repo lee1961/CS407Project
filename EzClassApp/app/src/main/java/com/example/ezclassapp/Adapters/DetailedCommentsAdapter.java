@@ -107,7 +107,7 @@ public class DetailedCommentsAdapter extends RecyclerView.Adapter<DetailedCommen
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
-                setView(holder, user, comment);
+                setView(holder, user, userUID, comment);
             }
 
             @Override
@@ -118,7 +118,7 @@ public class DetailedCommentsAdapter extends RecyclerView.Adapter<DetailedCommen
     }
 
     // Sets the views after
-    private void setView(final ViewHolder holder, final User user, final String comment) {
+    private void setView(final ViewHolder holder, final User user, final String userUID, final String comment) {
         // Set image using helper function
         if (TextUtils.isEmpty(user.getImage()) || user.getImage().equals("default")) {
             Log.d("Comments_Adapter", "Default Avatar Set");
@@ -140,7 +140,7 @@ public class DetailedCommentsAdapter extends RecyclerView.Adapter<DetailedCommen
             @Override
             public void onClick(View v) {
                 try {
-                    Intent user_profile = UserProfileActivity.newInstance(mContext, user);
+                    Intent user_profile = UserProfileActivity.newInstance(mContext, userUID);
                     mContext.startActivity(user_profile);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
@@ -152,7 +152,7 @@ public class DetailedCommentsAdapter extends RecyclerView.Adapter<DetailedCommen
             @Override
             public void onClick(View v) {
                 try {
-                    Intent user_profile = UserProfileActivity.newInstance(mContext, user);
+                    Intent user_profile = UserProfileActivity.newInstance(mContext, userUID);
                     mContext.startActivity(user_profile);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();

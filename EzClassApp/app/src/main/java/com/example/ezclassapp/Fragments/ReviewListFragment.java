@@ -133,7 +133,6 @@ public class ReviewListFragment extends Fragment {
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-
                 int count = Integer.parseInt(holder.mUpVoteTextViewCounter.getText().toString());
                 count++;
                 DatabaseReference upVoteReference = reviewReference.child(reviewID);
