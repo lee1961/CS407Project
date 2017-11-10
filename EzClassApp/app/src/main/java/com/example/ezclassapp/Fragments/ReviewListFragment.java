@@ -105,7 +105,6 @@ public class ReviewListFragment extends Fragment {
     // animation for upvoting the review
     private static void updateUpvoteButton(final ReviewViewHolder holder, final String reviewID, final Map<String, Boolean> map, final String userID) {
 
-
         int duration = 300;
         AnimatorSet animatorSet = new AnimatorSet();
         holder.mUpVoteImageView.setTag(R.drawable.like);
@@ -134,7 +133,6 @@ public class ReviewListFragment extends Fragment {
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-
                 int count = Integer.parseInt(holder.mUpVoteTextViewCounter.getText().toString());
                 count++;
                 DatabaseReference upVoteReference = reviewReference.child(reviewID);
@@ -271,7 +269,6 @@ public class ReviewListFragment extends Fragment {
                 return false;
             }
 
-
             @Override
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
                 final int position = viewHolder.getAdapterPosition(); //get position which is swipe
@@ -381,8 +378,12 @@ public class ReviewListFragment extends Fragment {
                             }
                         });
 
-
-                        viewHolder.mReviewerName.setText(review.getReviewerName());
+                        if (review.isPostAnon()) {
+                            String anonymous = "Anonymous";
+                            viewHolder.mReviewerName.setText(anonymous);
+                        } else {
+                            viewHolder.mReviewerName.setText(review.getReviewerName());
+                        }
 
                         viewHolder.mUpVoteTextViewCounter.setText(String.valueOf(review.getUpvote()));
                         viewHolder.mUpVoteImageView.setTag(R.drawable.neutral_like);

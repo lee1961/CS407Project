@@ -21,4 +21,16 @@
 
     <color name="btn_default_light_normal">#00000000</color>
     <color name="btn_default_light_pressed">#40ffffff</color>
+
+    <!--Color gradient used for transparent toolbar-->
+    <color name="black_alpha_40">#66000000</color>
+
+    <!--Colors to test boundaries-->
+    <color name="blue">#0000FF</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="green">#228B22</color>
+    <color name="purple">#800080</color>
+    <color name="profile_black">#55577E</color>
+    <color name="profile_grey">#D5D7DB</color>
+    <color name="profile_space_grey">#CED3DE</color>
 </resources>

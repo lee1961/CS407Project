@@ -55,6 +55,7 @@
             android:parentActivityName=".Activities.MainActivity" />
         <activity android:name=".Activities.DetailedReviewActivity" />
         <activity android:name=".Activities.SubmitReview" />
+        <activity android:name=".Activities.UserProfileActivity"></activity>
     </application>
 
 </manifest>

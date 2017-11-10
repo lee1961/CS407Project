@@ -19,4 +19,5 @@ public class Constants {
     public static final String UPVOTE = "upvote";
     public static final String DOWNVOTE = "downvote";
     public static final String MAPCHECK = "checkUserVoted";
+    public static final String USER_HEART = "userHeart";
 }

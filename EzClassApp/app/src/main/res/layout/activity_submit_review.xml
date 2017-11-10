@@ -126,5 +126,20 @@
             app:layout_constraintBottom_toTopOf="@+id/review_input"
             app:layout_constraintLeft_toLeftOf="parent" />
 
+        <CheckBox
+            android:id="@+id/submit_review_post_anonymous"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="40dp"
+            android:text="@string/submit_review_post_as_anonymous"
+            app:layout_constraintBottom_toBottomOf="@+id/submit_btn"
+            app:layout_constraintEnd_toStartOf="@+id/submit_btn"
+            app:layout_constraintHorizontal_bias="0.12"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/useful_bar" />
+
     </android.support.constraint.ConstraintLayout>
 </ScrollView>
