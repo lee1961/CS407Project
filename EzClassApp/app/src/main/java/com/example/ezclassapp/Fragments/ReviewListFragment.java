@@ -378,8 +378,12 @@ public class ReviewListFragment extends Fragment {
                             }
                         });
 
-
-                        viewHolder.mReviewerName.setText(review.getReviewerName());
+                        if (review.isPostAnon()) {
+                            String anonymous = "Anonymous";
+                            viewHolder.mReviewerName.setText(anonymous);
+                        } else {
+                            viewHolder.mReviewerName.setText(review.getReviewerName());
+                        }
 
                         viewHolder.mUpVoteTextViewCounter.setText(String.valueOf(review.getUpvote()));
                         viewHolder.mUpVoteImageView.setTag(R.drawable.neutral_like);
