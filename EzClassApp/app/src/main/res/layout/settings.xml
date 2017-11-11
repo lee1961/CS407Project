@@ -9,7 +9,8 @@
         android:id="@+id/settings_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimary" />
+        android:background="@color/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -22,10 +23,10 @@
             android:orientation="vertical">
 
             <ImageView
-                android:alpha="0.87"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
+                android:alpha="0.87"
                 android:background="@color/colorPrimary"
                 android:contentDescription="@string/none" />
 
