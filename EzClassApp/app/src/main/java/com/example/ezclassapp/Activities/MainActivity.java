@@ -13,7 +13,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.text.TextUtilsCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.DrawerLayout;
@@ -23,7 +22,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -61,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     final String[] from = new String[]{"className"};
     FirebaseDatabase database;
     DatabaseReference classDatabaseReference;
+    Menu currentMenu;
     private FirebaseAuth mAuth;
     private Toolbar mToolbar;
     private String APPNAME = "EZclass";
@@ -183,21 +182,22 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     @Override
     public void onBackPressed() {
         Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-        Log.d("got here","got here");
+        Log.d("got here", "got here");
         if (frag instanceof ReviewListFragment) {
             searchView.setVisibility(View.VISIBLE);
         }
         super.onBackPressed();
     }
-    Menu currentMenu;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         currentMenu = menu;
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        getMenuInflater().inflate(R.menu.filter_menu,menu);
+        getMenuInflater().inflate(R.menu.filter_menu, menu);
         mfilterdates = menu.findItem(R.id.menu_item_filterdate);
         mfilterlikes = menu.findItem(R.id.menu_item_filterlike);
+
         mfilterdates.setChecked(true);
         isSortByDate = true;
         // the search bar for searching classes, this will be very important
@@ -209,7 +209,6 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
             startIntroAnimation();
             Animate = !Animate;
         }
-
         return true;
     }
 
@@ -224,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
         switch (item.getItemId()) {
             case R.id.menu_item_filterdate:
                 Toast.makeText(this, "filter date", Toast.LENGTH_SHORT).show();
-                Log.d("opens here","opens here");
+                Log.d("opens here", "opens here");
                 mfilterdates.setChecked(true);
                 isSortByDate = true;
                 updateFilterReviewListFragment();
@@ -240,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
                 //mfilterdates.setChecked(false);
                 return true;
         }
-        Log.d("opens here","does not do anything");
+        Log.d("opens here", "does not do anything");
         return super.onOptionsItemSelected(item);
     }
 
@@ -310,7 +309,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
 
     private void updateCardFragment(String query) {
 
-        if ( !(getSupportFragmentManager().findFragmentById(R.id.fragmentContainer) instanceof ClassesCardFragment)) {
+        if (!(getSupportFragmentManager().findFragmentById(R.id.fragmentContainer) instanceof ClassesCardFragment)) {
             return;
         }
         ClassesCardFragment classesCardFragment = (ClassesCardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
@@ -329,11 +328,11 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     }
 
     private void updateFilterReviewListFragment() {
-        if ( !(getSupportFragmentManager().findFragmentById(R.id.fragmentContainer) instanceof ReviewListFragment)) {
+        if (!(getSupportFragmentManager().findFragmentById(R.id.fragmentContainer) instanceof ReviewListFragment)) {
             return;
         }
         ReviewListFragment reviewListFragment = (ReviewListFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-        if(reviewListFragment != null && reviewListFragment.isVisible()) {
+        if (reviewListFragment != null && reviewListFragment.isVisible()) {
             reviewListFragment.changeFilter(isSortByDate);
         }
     }
@@ -349,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
             @Override
             public boolean onClose() {
                 Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-                if(!(frag instanceof ClassesCardFragment)) {
+                if (!(frag instanceof ClassesCardFragment)) {
                     return false;
                 }
                 ClassesCardFragment fragment = (ClassesCardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
@@ -408,7 +407,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
             @Override
             public void onClick(View v) {
                 Fragment frag = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-                if(!(frag instanceof ClassesCardFragment)) {
+                if (!(frag instanceof ClassesCardFragment)) {
                     searchView.setVisibility(View.GONE);
                     searchView.clearFocus();
                 }
@@ -425,7 +424,7 @@ public class MainActivity extends AppCompatActivity implements ClassesCardFragme
     @Override
     public void onCardSelected(String name, String courseId, List<String> reviewListId) {
         Log.d("sort by fdate", "this sort by date value is " + isSortByDate);
-        final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name, courseId, reviewListId,isSortByDate);
+        final ReviewListFragment reviewListFragment = ReviewListFragment.newInstance(name, courseId, reviewListId, isSortByDate);
         getSupportFragmentManager().beginTransaction().setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out).
                 replace(R.id.fragmentContainer, reviewListFragment, "reviewListFragment")
                 .addToBackStack(null)

@@ -9,7 +9,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ezclassapp.Helpers.StringImageConverter;
@@ -20,6 +19,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserProfileActivity extends AppCompatActivity {
 
@@ -44,7 +45,7 @@ public class UserProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.userprofile);
+        setContentView(R.layout.user_profile);
 
         // Get intent and bundle
         Bundle bundle = getIntent().getExtras().getBundle(INTENT_EXTRA);
@@ -62,13 +63,13 @@ public class UserProfileActivity extends AppCompatActivity {
         }
         // Set up user reference
         userRef = FirebaseDatabase.getInstance().getReference().child(Constants.USER).child(userUID);
-        // Get user information and display
-        getUserProfile();
         // Show back nav button
         Toolbar toolbar = (Toolbar) findViewById(R.id.user_profile_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        // Get user information and display
+        getUserProfile();
     }
 
     // Gets user profile before populating view
@@ -99,6 +100,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
     // Set up all the views in the profile page
     private void initializeViews(User user) {
         String user_name = user.getName();
@@ -107,7 +109,7 @@ public class UserProfileActivity extends AppCompatActivity {
         int user_karma = user.getKarmaPoints();
         int user_post = user.getPostCount();
 
-        final ImageView profile_img = (ImageView) findViewById(R.id.user_profile_image);
+        final CircleImageView profile_img = (CircleImageView) findViewById(R.id.user_profile_image);
         TextView profile_name = (TextView) findViewById(R.id.user_profile_name);
         TextView profile_major = (TextView) findViewById(R.id.user_profile_major);
         TextView profile_post_count = (TextView) findViewById(R.id.user_profile_post_count);
@@ -143,5 +145,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
         profile_karma_count.setText(String.valueOf(user_karma));
         profile_post_count.setText(String.valueOf(user_post));
+
+        getSupportActionBar().setTitle(user_name + "'s Profile");
     }
 }
