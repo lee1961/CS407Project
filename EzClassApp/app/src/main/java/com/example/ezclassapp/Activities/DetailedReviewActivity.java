@@ -90,6 +90,8 @@ public class DetailedReviewActivity extends AppCompatActivity {
     private TextView mHeart_count;
     private LinearLayout mDislike_btn;
     private TextView mDisheart_count;
+    private TextView mHardScore;
+    private TextView mHelpfulScore;
     private ToggleButton mHeart_btn;
     private ToggleButton mDisheart_btn;
 
@@ -284,6 +286,8 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 final String _userName = review.getReviewerName();
                 final String _opinion = review.getOpinion();
                 final String _tip = review.getTips();
+                final int _hard_count = review.getDifficulty();
+                final int _helpful_count = review.getUsefulness();
                 final int _like_count = review.getUpvote();
                 final int _dislike_count = review.getDownvote();
                 // Get the views
@@ -297,6 +301,8 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 mDisheart_count = (TextView) findViewById(R.id.detailed_disheart_count);
                 mHeart_btn = (ToggleButton) findViewById(R.id.detailed_heart);
                 mDisheart_btn = (ToggleButton) findViewById(R.id.detailed_disheart);
+                mHardScore = (TextView) findViewById(R.id.detailed_difficulty);
+                mHelpfulScore = (TextView) findViewById(R.id.detailed_usefulness);
 
                 // Set view according to whether post is marked as anonymous or not
                 if (review.isPostAnon()) {
@@ -358,7 +364,8 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 }
                 setTextView(_like_count, mHeart_count);
                 setTextView(_dislike_count, mDisheart_count);
-
+                setTextView(_hard_count, mHardScore);
+                setTextView(_helpful_count, mHelpfulScore);
                 // Set heart state for review
                 setHeartState(review.getUserHeart());
                 // Set listener for heart and dishearted icon
@@ -683,7 +690,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
 
     // Set the like button with the number of upvotes and downvotes
     private void setTextView(int input, TextView view) {
-        view.setText(Integer.toString(input));
+        view.setText(String.valueOf(input));
     }
 
     // Sets up the recyclerView for the comments section

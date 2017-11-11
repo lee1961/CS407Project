@@ -27,4 +27,11 @@
     <string name="user_profile_karma">Karma</string>
     <string name="user_profile_post">Posts</string>
     <string name="submit_review_post_as_anonymous">Post as Anonymous</string>
+    <string name="none">None</string>
+    <string name="profile">Profile</string>
+    <string name="change_profile_picture">Change Profile Picture</string>
+    <string name="change_major">Change Major</string>
+    <string name="difficulty">Hard:</string>
+    <string name="usefulness">Helpful:</string>
+    <string name="comments">Comments</string>
 </resources>

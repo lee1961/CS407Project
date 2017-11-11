@@ -8,8 +8,8 @@
     <color name="material_green">#4CAF50</color>
     <color name="material_red">#F44336</color>
 
-    <color name="colorPrimary">#2d5d82</color>
-    <color name="colorPrimaryDark">#21425d</color>
+    <!--<color name="colorPrimary">#2d5d82</color>-->
+    <!--<color name="colorPrimaryDark">#21425d</color>-->
     <color name="colorAccent">#01bcd5</color>
 
     <color name="style_color_primary">#2d5d82</color>
@@ -33,4 +33,15 @@
     <color name="profile_black">#55577E</color>
     <color name="profile_grey">#D5D7DB</color>
     <color name="profile_space_grey">#CED3DE</color>
+
+    <!--App primary colors and secondary colors-->
+    <color name="colorPrimary">#3f51b5</color>
+    <color name="colorPrimaryLight">#757de8</color>
+    <color name="colorPrimaryDark">#002984</color>
+    <color name="colorSecondary">#f50057</color>
+    <color name="colorSecondaryLight">#ff5983</color>
+    <color name="colorSecondaryDark">#bb002f</color>
+    <color name="primaryTextColor">#ffffff</color>
+    <color name="secondaryTextColor">#fafafa</color>
+
 </resources>
