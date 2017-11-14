@@ -7,14 +7,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ezclassapp.Helpers.StringImageConverter;
-import com.example.ezclassapp.Models.Course;
+import com.example.ezclassapp.Models.User;
 import com.example.ezclassapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -28,7 +28,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.File;
-import java.util.List;
 import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -42,8 +41,12 @@ public class SettingsActivity extends AppCompatActivity {
     private CircleImageView mDisplayImage;
     private TextView mName;
     private TextView mMajor;
-    private Button mStatusBtn;
-    private Button mAddClassBtn;
+    private TextView mPostCount;
+    private TextView mKarmaCount;
+    private TextView mProfileName;
+    private TextView mProfileEmail;
+    private TextView mChangeMajor;
+    private TextView mChangeProfilePic;
     private ProgressDialog mProgressDialog;
 
     public static String random() {
@@ -61,13 +64,17 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        setContentView(R.layout.settings);
         // Set up the views for the settings page
         mDisplayImage = (CircleImageView) findViewById(R.id.settings_image);
-        mName = (TextView) findViewById(R.id.settings_display_name);
-        mMajor = (TextView) findViewById(R.id.settings_status);
-        mStatusBtn = (Button) findViewById(R.id.settings_status_btn);
-        mAddClassBtn = (Button) findViewById(R.id.add_class_btn);
+        mName = (TextView) findViewById(R.id.settings_user_name);
+        mMajor = (TextView) findViewById(R.id.settings_user_major);
+        mPostCount = (TextView) findViewById(R.id.settings_post_count);
+        mKarmaCount = (TextView) findViewById(R.id.settings_karma_count);
+        mProfileName = (TextView) findViewById(R.id.settings_show_name);
+        mProfileEmail = (TextView) findViewById(R.id.settings_show_email);
+        mChangeMajor = (TextView) findViewById(R.id.settings_change_major);
+        mChangeProfilePic = (TextView) findViewById(R.id.settings_change_profile_pic);
         // Get the current user and the user database instance
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         final String current_uid = mCurrentUser.getUid();
@@ -80,24 +87,19 @@ public class SettingsActivity extends AppCompatActivity {
                 String thumb_image = "";
                 String major = "";
                 String image = "";
-                if (dataSnapshot.child("name").getValue() != null) {
+
+                User user = dataSnapshot.getValue(User.class);
+                if (user.getName() != null) {
                     name = dataSnapshot.child("name").getValue().toString();
                 }
-                if (dataSnapshot.child("major").getValue() != null) {
+                if (user.getMajor() != null) {
                     major = dataSnapshot.child("major").getValue().toString();
                 }
-                if (dataSnapshot.child("image").getValue() != null) {
+                if (user.getImage() != null) {
                     image = dataSnapshot.child("image").getValue().toString();
                 }
-                if (dataSnapshot.child("thumb_image").getValue() != null) {
-                    thumb_image = dataSnapshot.child("thumb_image").getValue().toString();
-                }
 
-                mName.setText(name);
-                if (major != null) {
-                    mMajor.setText(major);
-                }
-
+                // Set profile image
                 if (image != null && !image.equals("default")) {
                     // Set the image for the user if found
                     setUserImage(image);
@@ -105,6 +107,16 @@ public class SettingsActivity extends AppCompatActivity {
                     // If image is not found, then user image is given color primaryDark
                     mDisplayImage.setImageResource(R.drawable.default_avatar);
                 }
+                // Set name and major
+                mName.setText(name);
+                if (major != null) {
+                    mMajor.setText(major);
+                }
+                // Set post count and karma count
+                mPostCount.setText(String.valueOf(user.getPostCount()));
+                mKarmaCount.setText(String.valueOf(user.getKarmaPoints()));
+                // Set user profile name
+                mProfileName.setText(name);
             }
 
             @Override
@@ -113,7 +125,9 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        mStatusBtn.setOnClickListener(new View.OnClickListener() {
+        // Get user email from Firebase and display it
+        mProfileEmail.setText(mCurrentUser.getEmail());
+        mChangeMajor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent status_intent = new Intent(SettingsActivity.this, StatusActivity.class);
@@ -121,33 +135,21 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        mAddClassBtn.setOnClickListener(new View.OnClickListener() {
+        mChangeProfilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                List<Course> classes = Course.getDummyCourseList();
-                mClassDatabase = FirebaseDatabase.getInstance().getReference().child("Course");
-                for (Course currentCourse : classes) {
-                    String key = mClassDatabase.push().getKey();
-                    currentCourse.setId(key);
-                    mClassDatabase.child(key).setValue(currentCourse);
-                    Toast.makeText(SettingsActivity.this, key, Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        mDisplayImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Toast.makeText(SettingsActivity.this, "works", Toast.LENGTH_SHORT).show();
                 Intent galleryIntent = new Intent();
                 galleryIntent.setType("image/*");
                 galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(galleryIntent, "SELECT IMAGE"), GALLERY_PICK);
-                /*CropImage.activity()
-                        .setGuidelines(CropImageView.Guidelines.ON)
-                        .start(SettingsActivity.this);*/
             }
         });
+
+        String title = "Settings";
+        Toolbar toolbar = (Toolbar) findViewById(R.id.settings_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(title);
     }
 
     @Override
