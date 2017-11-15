@@ -22,7 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class UserProfileActivity extends AppCompatActivity {
+public class  UserProfileActivity extends AppCompatActivity {
 
     private static final String USER_UID = "USER_UID";
     private static final String INTENT_EXTRA = "INTENT_EXTRA";

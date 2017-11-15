@@ -15,7 +15,6 @@ public class User implements Parcelable {
     private int karmaPoints;
     private int postCount;
     private boolean isAdmin;
-
     public User() {
 
     }
