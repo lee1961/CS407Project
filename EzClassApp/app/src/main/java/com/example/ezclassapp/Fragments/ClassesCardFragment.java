@@ -228,25 +228,6 @@ public class ClassesCardFragment extends Fragment {
             fullCourseNameTextView = (TextView) v.findViewById(R.id.titleTextView);
             coverImageView = (ImageView) v.findViewById(R.id.coverImageView);
             itemView.setOnClickListener(this);
-            likeImageView = (ImageView) v.findViewById(R.id.likeImageView);
-            likeImageView.setTag(R.drawable.ic_like);
-            likeImageView.setImageResource(R.drawable.ic_like);
-            shareImageView = (ImageView) v.findViewById(R.id.shareImageView);
-            likeImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int id = (int) likeImageView.getTag();
-                    if (id == R.drawable.ic_like) {
-                        Toast.makeText(v.getContext(), fullCourseNameTextView.getText() + " added to favourites", Toast.LENGTH_SHORT).show();
-                        updateHeartButton(viewHolder,false);
-                    } else {
-                        Log.d("already liked","already liked");
-                        likeImageView.setTag(R.drawable.ic_like);
-                        likeImageView.setImageResource(R.drawable.ic_like);
-                        Toast.makeText(v.getContext(), fullCourseNameTextView.getText() + " removed from favourites", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
         }
 
         public void setFullCourseNameTextView(String textView) {
@@ -269,52 +250,5 @@ public class ClassesCardFragment extends Fragment {
     public interface onCardSelected {
         void onCardSelected(String name,String id,List<String> reviewListOfId);
     }
-
-    private static void updateHeartButton(final CourseViewHolder holder, boolean animated) {
-
-
-        AnimatorSet animatorSet = new AnimatorSet();
-        // set this as already liked so that user cant click again
-        //holder.likeImageView.setImageResource(R.drawable.ic_liked);
-        holder.likeImageView.setTag(R.drawable.ic_liked);
-
-
-        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(holder.likeImageView, "rotation", 0f, 360f);
-        rotationAnim.setDuration(300);
-        rotationAnim.setInterpolator(new AccelerateInterpolator());
-
-        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(holder.likeImageView, "scaleX", 0.2f, 1f);
-        bounceAnimX.setDuration(300);
-        bounceAnimX.setInterpolator(new OvershootInterpolator(4f));
-
-        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(holder.likeImageView, "scaleY", 0.2f, 1f);
-        bounceAnimY.setDuration(300);
-        bounceAnimY.setInterpolator(new OvershootInterpolator(4f));
-        bounceAnimY.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                holder.likeImageView.setImageResource(R.drawable.ic_liked);
-            }
-        });
-
-        animatorSet.play(rotationAnim);
-        animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
-
-        animatorSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-
-            }
-        });
-
-        animatorSet.start();
-
-    }
-
-    private static void resetLikeAnimationState(CourseViewHolder holder) {
-        holder.likeImageView.setVisibility(View.GONE);
-    }
-
-
 }
 
