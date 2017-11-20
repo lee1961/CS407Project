@@ -215,6 +215,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         // Remove listeners before activity stops
+        Log.d("on stop" , " this thing on stops");
         if (mChildEventListener != null) {
             reference.removeEventListener(mChildEventListener);
         }
@@ -224,6 +225,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
         if (mDownvoteListener != null) {
             reference.removeEventListener(mDownvoteListener);
         }
+        DetailedReviewActivity.this.finish();
         super.onStop();
     }
 
@@ -379,9 +381,14 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 mUpvoteListener = upvoteReference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        // Firebase implicitly converts int or longs to long
-                        int upvote = ((Long) dataSnapshot.getValue()).intValue();
-                        mHeart_count.setText(String.valueOf(upvote));
+                        if(dataSnapshot != null) {
+                            if(dataSnapshot.getValue() == null) {
+                                return;
+                            }
+                            // Firebase implicitly converts int or longs to long
+                            int upvote = ((Long) dataSnapshot.getValue()).intValue();
+                            mHeart_count.setText(String.valueOf(upvote));
+                        }
                     }
 
                     @Override
@@ -393,8 +400,14 @@ public class DetailedReviewActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         // Firebase implicitly converts int or longs to long
-                        int downvote = ((Long) dataSnapshot.getValue()).intValue();
-                        mDisheart_count.setText(String.valueOf(downvote));
+                        if(dataSnapshot != null) {
+                            if(dataSnapshot.getValue() == null) {
+                                return;
+                            }
+                            int downvote = ((Long) dataSnapshot.getValue()).intValue();
+                            mDisheart_count.setText(String.valueOf(downvote));
+                        }
+
                     }
 
                     @Override
@@ -409,6 +422,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         // mHeart_btn.startAnimation(anim);
+                        Log.d("button state", "tjhe likt button boolean is " + getLikeButtonState() + " and the unlike buttonstate is " + getUnlikeButtonState());
                         int heart_count = Integer.parseInt(mHeart_count.getText().toString());
                         int disheart_count = Integer.parseInt(mDisheart_count.getText().toString());
                         int increment = 0;
@@ -422,7 +436,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
                             heart_count++;
                             disheart_count--;
                             increment = 2;
-                            isLiked = false;
+                            isLiked = true;
                             animateLikeButton(mHeart_btn);
                         }  else if(getLikeButtonState() && !getUnlikeButtonState()) {
                             heart_count--;
@@ -566,7 +580,6 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 if (userHeart == Heart.NONE) {
                     Log.d("like button","come here4");
                     // Get upvote and increment it
-                    //animateLikeButton(mHeart_btn);
                     int upvote = review.getUpvote();
                     review.setUpvote(++upvote);
                     // Get userHeart and set it to HEARTED
@@ -704,8 +717,8 @@ public class DetailedReviewActivity extends AppCompatActivity {
             Log.d("liek button state"," not inside the hashmap ");
             mHeart_btn.setImageResource(R.drawable.neutral_like);
             mHeart_btn.setTag(R.drawable.neutral_like);
-            mDisheart_btn.setImageResource(R.drawable.dislike);
-            mDisheart_btn.setTag(R.drawable.dislike);
+            mDisheart_btn.setImageResource(R.drawable.neutral_dislike);
+            mDisheart_btn.setTag(R.drawable.neutral_dislike);
             isLiked = false;
             isUnLiked = false;
         }
@@ -809,6 +822,16 @@ public class DetailedReviewActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        Log.d("bakpressed"," on back pressrd");
+        if (mChildEventListener != null) {
+            reference.removeEventListener(mChildEventListener);
+        }
+        if (mUpvoteListener != null) {
+            reference.removeEventListener(mUpvoteListener);
+        }
+        if (mDownvoteListener != null) {
+            reference.removeEventListener(mDownvoteListener);
+        }
         View v = findViewById(R.id.detailParent_layout);
         v.animate()
                 .translationY(Utils.getScreenHeight(this))
@@ -821,12 +844,14 @@ public class DetailedReviewActivity extends AppCompatActivity {
                     }
                 })
                 .start();
+        this.finish();
     }
 
 
-    private static void animateLikeButton(final ImageView likeButton) {
+    private void animateLikeButton(final ImageView likeButton) {
 
-
+        mHeart_btn.setClickable(false);
+        mDisheart_btn.setClickable(false);
         AnimatorSet animatorSet = new AnimatorSet();
         // set this as already liked so that user cant click again
         //holder.likeImageView.setImageResource(R.drawable.ic_liked);
@@ -858,7 +883,8 @@ public class DetailedReviewActivity extends AppCompatActivity {
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-
+                mHeart_btn.setClickable(true);
+                mDisheart_btn.setClickable(true);
             }
         });
         animatorSet.start();
@@ -867,7 +893,8 @@ public class DetailedReviewActivity extends AppCompatActivity {
 
     // animation for downvoting the review
     private void animateUnlikeButton(final ImageView unlikeButton) {
-
+        mHeart_btn.setClickable(false);
+        mDisheart_btn.setClickable(false);
         int duration = 500;
         AnimatorSet animatorSet = new AnimatorSet();
 
@@ -893,6 +920,13 @@ public class DetailedReviewActivity extends AppCompatActivity {
 
         animatorSet.play(rotationAnim);
         animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mHeart_btn.setClickable(true);
+                mDisheart_btn.setClickable(true);
+            }
+        });
 
         animatorSet.start();
     }
