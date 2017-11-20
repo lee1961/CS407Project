@@ -193,15 +193,12 @@
                                 android:gravity="center"
                                 android:orientation="horizontal">
 
-                                <ToggleButton
+                                <ImageView
                                     android:id="@+id/detailed_heart"
                                     android:layout_width="24dp"
                                     android:layout_height="24dp"
-                                    android:background="@drawable/button_heart"
-                                    android:checked="false"
-                                    android:text=""
-                                    android:textOff=""
-                                    android:textOn="" />
+                                    android:src="@drawable/neutral_like"
+                                    />
 
                                 <TextView
                                     android:id="@+id/detailed_heart_count"
@@ -220,15 +217,11 @@
                                 android:gravity="center"
                                 android:orientation="horizontal">
 
-                                <ToggleButton
+                                <ImageView
                                     android:id="@+id/detailed_disheart"
                                     android:layout_width="24dp"
                                     android:layout_height="24dp"
-                                    android:background="@drawable/button_disheart"
-                                    android:checked="false"
-                                    android:text=""
-                                    android:textOff=""
-                                    android:textOn="" />
+                                    android:src="@drawable/neutral_dislike" />
 
                                 <TextView
                                     android:id="@+id/detailed_disheart_count"
