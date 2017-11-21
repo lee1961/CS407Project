@@ -26,6 +26,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.ezclassapp.Activities.Constants;
 import com.example.ezclassapp.Activities.DetailedReviewActivity;
@@ -33,12 +34,14 @@ import com.example.ezclassapp.Activities.SubmitReview;
 import com.example.ezclassapp.Models.Review;
 import com.example.ezclassapp.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,6 +74,7 @@ public class ReviewListFragment extends Fragment {
     private boolean isSortByDate;
     private boolean isSortByLikes;
     private CoordinatorLayout coordinatorLayout;
+
 
     /**
      * Use this factory method to create a new instance of
@@ -135,6 +139,19 @@ public class ReviewListFragment extends Fragment {
                 map.put(userID, true);
                 DatabaseReference mapReference = reviewReference.child(reviewID).child(Constants.MAPCHECK);
                 mapReference.setValue(map);
+                HashMap<String, String> notificationData = new HashMap<>();
+                notificationData.put("from",userID);
+                notificationData.put("type","request");
+                //Toast.makeText(getFragment(), "", Toast.LENGTH_SHORT).show();
+                DatabaseReference mNotificationDatabase = FirebaseDatabase.getInstance().getReference().child("notifications");
+                mNotificationDatabase.child(userID).push().setValue(notificationData).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("databasee","I have to be here");
+                    }
+                });
+                Log.d("checking","Have I reached here?");
+
             }
         });
 
@@ -193,6 +210,7 @@ public class ReviewListFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        Log.d("working","Have I reached onCreate?");
         mFragment = this;
         setHasOptionsMenu(true);
     }
