@@ -143,6 +143,7 @@ public class ReviewListFragment extends Fragment {
                 notificationData.put("from",userID);
                 notificationData.put("type","request");
                 //Toast.makeText(getFragment(), "", Toast.LENGTH_SHORT).show();
+                Log.d("liked","I am inside likes");
                 DatabaseReference mNotificationDatabase = FirebaseDatabase.getInstance().getReference().child("notifications");
                 mNotificationDatabase.child(userID).push().setValue(notificationData).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
