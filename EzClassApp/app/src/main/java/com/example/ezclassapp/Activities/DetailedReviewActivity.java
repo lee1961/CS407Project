@@ -46,6 +46,8 @@ import com.example.ezclassapp.Models.Review;
 import com.example.ezclassapp.Models.User;
 import com.example.ezclassapp.Models.Utils;
 import com.example.ezclassapp.R;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -54,7 +56,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -102,6 +106,9 @@ public class DetailedReviewActivity extends AppCompatActivity {
     private boolean isLiked = false;
     private boolean isUnLiked = false;
 
+    String reviewerID;
+    private DatabaseReference mNotificationDatabase;
+
     // Static method to build and create a new activity to detailedReviewActivity
     public static Intent newInstance(Fragment fragment, String classUID, String reviewUID, int startingLocation) throws IllegalAccessException {
         if (fragment instanceof ReviewListFragment) {
@@ -127,6 +134,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed_review);
         mContext = this;
+        mNotificationDatabase = FirebaseDatabase.getInstance().getReference().child("notifications");
         // Set up all the views
         mRecyclerView = (RecyclerView) findViewById(R.id.detailed_recycler);
         mLayoutManager = new LinearLayoutManager(this) {
@@ -281,6 +289,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
         // Get the userImage first before setting the views
         Log.d("detailed_review", review.toString());
         Log.d("detailed_review", reference.toString());
+        reviewerID = review.getForeignID_userID();
         DatabaseReference user = reference.child(Constants.USER).child(review.getForeignID_userID());
         user.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -422,11 +431,23 @@ public class DetailedReviewActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         // mHeart_btn.startAnimation(anim);
+                        String upvoteId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        HashMap<String,String> notificationData = new HashMap<>();
+                        notificationData.put("from",upvoteId);
+                        notificationData.put("type","request");
+                        mNotificationDatabase.child(reviewerID).push().setValue(notificationData).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d("notifications", "pushed in database");
+                            }
+                        });
+
                         Log.d("button state", "tjhe likt button boolean is " + getLikeButtonState() + " and the unlike buttonstate is " + getUnlikeButtonState());
                         int heart_count = Integer.parseInt(mHeart_count.getText().toString());
                         int disheart_count = Integer.parseInt(mDisheart_count.getText().toString());
                         int increment = 0;
                         //Log.d("button", "the like button ischecked is " + mHeart_btn.isChecked());
+
                         if (!getLikeButtonState() && !getUnlikeButtonState()) {
                             heart_count++;
                             increment = 1;
@@ -453,7 +474,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
                         Log.d("detailed_review", "You pressed the heart button");
                         onHeartClick(reviewReference);
                         if (!review.isPostAnon()) {
-                            setKarmaPoints(review, increment);
+                            //setKarmaPoints(review, increment);
                         }
                     }
                 });
@@ -664,7 +685,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
     }
 
     // Set karma points of user
-    private void setKarmaPoints(Review review, final int increment) {
+    private void setKarmaPoints(final Review review, final int increment) {
         reference.child(Constants.USER).child(review.getForeignID_userID()).runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
@@ -674,6 +695,9 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 }
                 int karma = reviewer.getKarmaPoints();
                 reviewer.setKarmaPoints(karma + increment);
+//                DatabaseReference tokenReference = reference.child(Constants.USER).child(review.getForeignID_userID());
+//                String deviceToken = FirebaseInstanceId.getInstance().getToken();
+//                tokenReference.child("device_token").setValue(deviceToken);
                 mutableData.setValue(reviewer);
                 return Transaction.success(mutableData);
             }

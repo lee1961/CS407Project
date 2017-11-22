@@ -15,6 +15,14 @@ public class User implements Parcelable {
     private int karmaPoints;
     private int postCount;
     private boolean isAdmin;
+    private String device_token;
+
+    public void setDevice_token(String device_token) {
+        this.device_token = device_token;
+    }
+    public String getDevice_token() {
+        return this.device_token;
+    }
 
     public User() {
 
