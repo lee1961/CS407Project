@@ -474,7 +474,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
                         Log.d("detailed_review", "You pressed the heart button");
                         onHeartClick(reviewReference);
                         if (!review.isPostAnon()) {
-                            //setKarmaPoints(review, increment);
+                            setKarmaPoints(review, increment);
                         }
                     }
                 });
