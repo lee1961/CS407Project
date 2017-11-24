@@ -15,11 +15,15 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
+        String notification_title = remoteMessage.getNotification().getTitle();
+        String notification_message = remoteMessage.getNotification().getBody();
+
+
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.mipmap.icon4)
-                        .setContentTitle("New Friend Request")
-                        .setContentText("You have received a new Friend Request");
+                        .setContentTitle("Review update foreground")
+                        .setContentText(notification_message);
         // Sets an ID for the notification
         int mNotificationId = (int)System.currentTimeMillis();
 // Gets an instance of the NotificationManager service
