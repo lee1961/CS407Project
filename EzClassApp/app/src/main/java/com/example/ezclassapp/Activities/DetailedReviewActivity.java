@@ -438,7 +438,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
                         mNotificationDatabase.child(reviewerID).push().setValue(notificationData).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                Log.d("notifications", "like pushed in database");
+                                Log.d("notifications", "like in database");
                             }
                         });
 
@@ -490,7 +490,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
                         mNotificationDatabase.child(reviewerID).push().setValue(notificationData).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                Log.d("notifications", " dislike pushed in database");
+                                Log.d("notifications", "dislike in database");
                             }
                         });
                         int heart_count = Integer.parseInt(mHeart_count.getText().toString());
