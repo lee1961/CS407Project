@@ -27,6 +27,14 @@
         android:roundIcon="@mipmap/icon4"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <service
+            android:name=".Helpers.FirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+            </service>
+
         <activity android:name=".Activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -53,7 +61,12 @@
         <activity
             android:name=".Activities.CreateClassActivity"
             android:parentActivityName=".Activities.MainActivity" />
-        <activity android:name=".Activities.DetailedReviewActivity" />
+        <activity android:name=".Activities.DetailedReviewActivity">
+            <intent-filter>
+                <action android:name="com.example.ezclassapp_TARGET_NOTIFICATION"></action>
+                <category android:name="android.intent.category.DEFAULT"></category>
+            </intent-filter>
+        </activity>
         <activity android:name=".Activities.SubmitReview" />
         <activity android:name=".Activities.UserProfileActivity"></activity>
     </application>
