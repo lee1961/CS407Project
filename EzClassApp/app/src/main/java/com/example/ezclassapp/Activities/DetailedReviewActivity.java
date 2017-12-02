@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -31,6 +32,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.ScaleAnimation;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -48,6 +50,8 @@ import com.example.ezclassapp.Models.Review;
 import com.example.ezclassapp.Models.User;
 import com.example.ezclassapp.Models.Utils;
 import com.example.ezclassapp.R;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
@@ -58,6 +62,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -99,11 +104,16 @@ public class DetailedReviewActivity extends AppCompatActivity {
     private TextView mDisheart_count;
     private TextView mHardScore;
     private TextView mHelpfulScore;
-    private ToggleButton mHeart_btn;
-    private ToggleButton mDisheart_btn;
+    private ImageView mHeart_btn;
+    private ImageView mDisheart_btn;
 
     private ValueEventListener mUpvoteListener;
     private ValueEventListener mDownvoteListener;
+    private boolean isLiked = false;
+    private boolean isUnLiked = false;
+
+    String reviewerID;
+    private DatabaseReference mNotificationDatabase;
 
     // Static method to build and create a new activity to detailedReviewActivity
     public static Intent newInstance(Fragment fragment, String classUID, String reviewUID, int startingLocation) throws IllegalAccessException {
@@ -138,6 +148,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed_review);
         mContext = this;
+        mNotificationDatabase = FirebaseDatabase.getInstance().getReference().child("notifications");
         // Set up all the views
         mRecyclerView = (RecyclerView) findViewById(R.id.detailed_recycler);
         mLayoutManager = new LinearLayoutManager(this) {
@@ -227,6 +238,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         // Remove listeners before activity stops
+        Log.d("on stop" , " this thing on stops");
         if (mChildEventListener != null) {
             reference.removeEventListener(mChildEventListener);
         }
@@ -236,6 +248,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
         if (mDownvoteListener != null) {
             reference.removeEventListener(mDownvoteListener);
         }
+        DetailedReviewActivity.this.finish();
         super.onStop();
     }
 
@@ -341,6 +354,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
         // Get the userImage first before setting the views
         Log.d("detailed_review", review.toString());
         Log.d("detailed_review", reference.toString());
+        reviewerID = review.getForeignID_userID();
         DatabaseReference user = reference.child(Constants.USER).child(review.getForeignID_userID());
         user.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -365,8 +379,8 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 mTip = (TextView) findViewById(R.id.detailed_tips);
                 mHeart_count = (TextView) findViewById(R.id.detailed_heart_count);
                 mDisheart_count = (TextView) findViewById(R.id.detailed_disheart_count);
-                mHeart_btn = (ToggleButton) findViewById(R.id.detailed_heart);
-                mDisheart_btn = (ToggleButton) findViewById(R.id.detailed_disheart);
+                mHeart_btn = (ImageView) findViewById(R.id.detailed_heart);
+                mDisheart_btn = (ImageView) findViewById(R.id.detailed_disheart);
                 mHardScore = (TextView) findViewById(R.id.detailed_difficulty);
                 mHelpfulScore = (TextView) findViewById(R.id.detailed_usefulness);
 
@@ -441,9 +455,14 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 mUpvoteListener = upvoteReference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        // Firebase implicitly converts int or longs to long
-                        int upvote = ((Long) dataSnapshot.getValue()).intValue();
-                        mHeart_count.setText(String.valueOf(upvote));
+                        if(dataSnapshot != null) {
+                            if(dataSnapshot.getValue() == null) {
+                                return;
+                            }
+                            // Firebase implicitly converts int or longs to long
+                            int upvote = ((Long) dataSnapshot.getValue()).intValue();
+                            mHeart_count.setText(String.valueOf(upvote));
+                        }
                     }
 
                     @Override
@@ -455,8 +474,14 @@ public class DetailedReviewActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         // Firebase implicitly converts int or longs to long
-                        int downvote = ((Long) dataSnapshot.getValue()).intValue();
-                        mDisheart_count.setText(String.valueOf(downvote));
+                        if(dataSnapshot != null) {
+                            if(dataSnapshot.getValue() == null) {
+                                return;
+                            }
+                            int downvote = ((Long) dataSnapshot.getValue()).intValue();
+                            mDisheart_count.setText(String.valueOf(downvote));
+                        }
+
                     }
 
                     @Override
@@ -471,21 +496,44 @@ public class DetailedReviewActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         // mHeart_btn.startAnimation(anim);
+                        String upvoteId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        HashMap<String,String> notificationData = new HashMap<>();
+                        notificationData.put("from",upvoteId);
+                        notificationData.put("type","request");
+                        mNotificationDatabase.child(reviewerID).push().setValue(notificationData).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d("notifications", "like in database");
+                            }
+                        });
+
+                        Log.d("button state", "tjhe likt button boolean is " + getLikeButtonState() + " and the unlike buttonstate is " + getUnlikeButtonState());
                         int heart_count = Integer.parseInt(mHeart_count.getText().toString());
                         int disheart_count = Integer.parseInt(mDisheart_count.getText().toString());
                         int increment = 0;
-                        if (mHeart_btn.isChecked() && !mDisheart_btn.isChecked()) {
+                        //Log.d("button", "the like button ischecked is " + mHeart_btn.isChecked());
+
+                        if (!getLikeButtonState() && !getUnlikeButtonState()) {
                             heart_count++;
                             increment = 1;
-                        } else if (mHeart_btn.isChecked() && mDisheart_btn.isChecked()) {
+                            animateLikeButton(mHeart_btn);
+                            isLiked = true;
+                        } else if (!getLikeButtonState() && getUnlikeButtonState()) {
                             heart_count++;
                             disheart_count--;
                             increment = 2;
-                        } else if (!mHeart_btn.isChecked() && !mDisheart_btn.isChecked()) {
+                            isLiked = true;
+                            animateLikeButton(mHeart_btn);
+                        }  else if(getLikeButtonState() && !getUnlikeButtonState()) {
                             heart_count--;
                             increment = -1;
+                            isLiked = false;
+                            mHeart_btn.setImageResource(R.drawable.neutral_like);
+                            mHeart_btn.setTag(R.drawable.neutral_like);
                         }
-                        mDisheart_btn.setChecked(false);
+                        isUnLiked = false;
+                        mDisheart_btn.setImageResource(R.drawable.neutral_dislike);
+                        mDisheart_btn.setTag(R.drawable.neutral_dislike);
                         mHeart_count.setText(String.valueOf(heart_count));
                         mDisheart_count.setText(String.valueOf(disheart_count));
                         Log.d("detailed_review", "You pressed the heart button");
@@ -500,21 +548,41 @@ public class DetailedReviewActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         //  mDisheart_btn.startAnimation(anim);
+                        String upvoteId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        HashMap<String,String> notificationData = new HashMap<>();
+                        notificationData.put("from",upvoteId);
+                        notificationData.put("type","request");
+                        mNotificationDatabase.child(reviewerID).push().setValue(notificationData).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d("notifications", "dislike in database");
+                            }
+                        });
                         int heart_count = Integer.parseInt(mHeart_count.getText().toString());
                         int disheart_count = Integer.parseInt(mDisheart_count.getText().toString());
                         int increment = 0;
-                        if (!mHeart_btn.isChecked() && mDisheart_btn.isChecked()) {
+                        if (!getLikeButtonState() && !getUnlikeButtonState()) {
                             disheart_count++;
                             increment = -1;
-                        } else if (mHeart_btn.isChecked() && mDisheart_btn.isChecked()) {
+                            isUnLiked = true;
+                            animateUnlikeButton(mDisheart_btn);
+                        } else if (getLikeButtonState()  && !getUnlikeButtonState()) {
                             heart_count--;
                             disheart_count++;
                             increment = -2;
-                        } else if (!mHeart_btn.isChecked() && !mDisheart_btn.isChecked()) {
+                            isUnLiked = true;
+                            animateUnlikeButton(mDisheart_btn);
+                        } else if (!getLikeButtonState() && getUnlikeButtonState()) {
                             disheart_count--;
                             increment = 1;
+                            isUnLiked = false;
+                            mDisheart_btn.setImageResource(R.drawable.neutral_dislike);
+                            mDisheart_btn.setTag(R.drawable.neutral_dislike);
                         }
-                        mHeart_btn.setChecked(false);
+                        isLiked = false;
+                      //  mHeart_btn.setChecked(false);
+                        mHeart_btn.setImageResource(R.drawable.neutral_like);
+                        mHeart_btn.setTag(R.drawable.neutral_like);
                         mHeart_count.setText(String.valueOf(heart_count));
                         mDisheart_count.setText(String.valueOf(disheart_count));
                         Log.d("detailed_review", "You pressed the disheart button");
@@ -568,7 +636,9 @@ public class DetailedReviewActivity extends AppCompatActivity {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
                 Review review = mutableData.getValue(Review.class);
+                Log.d("like button","come here");
                 if (review == null) {
+                    Log.d("like button","come here1");
                     return Transaction.success(mutableData);
                 }
                 Heart userHeart;
@@ -579,6 +649,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 }
                 // Initial state: HEARTED
                 if (userHeart == Heart.HEARTED) {
+                    Log.d("like button","come here2");
                     // Get upvote and reduce it
                     int upvote = review.getUpvote();
                     review.setUpvote(--upvote);
@@ -589,6 +660,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 }
                 // Initial state: DISHEARTED
                 if (userHeart == Heart.DISHEARTED) {
+                    Log.d("like button","come here3");
                     // Get upvote and increment it
                     int upvote = review.getUpvote();
                     review.setUpvote(++upvote);
@@ -602,6 +674,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 }
                 // Initial state: NONE
                 if (userHeart == Heart.NONE) {
+                    Log.d("like button","come here4");
                     // Get upvote and increment it
                     int upvote = review.getUpvote();
                     review.setUpvote(++upvote);
@@ -610,6 +683,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
                     heart.put(userUID, Heart.HEARTED);
                     review.setUserHeart(heart);
                 }
+                Log.d("like button","come here5");
                 Log.d("onHeartClickEND", review.toString());
                 mutableData.setValue(review);
                 return Transaction.success(mutableData);
@@ -686,7 +760,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
     }
 
     // Set karma points of user
-    private void setKarmaPoints(Review review, final int increment) {
+    private void setKarmaPoints(final Review review, final int increment) {
         reference.child(Constants.USER).child(review.getForeignID_userID()).runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
@@ -696,6 +770,9 @@ public class DetailedReviewActivity extends AppCompatActivity {
                 }
                 int karma = reviewer.getKarmaPoints();
                 reviewer.setKarmaPoints(karma + increment);
+//                DatabaseReference tokenReference = reference.child(Constants.USER).child(review.getForeignID_userID());
+//                String deviceToken = FirebaseInstanceId.getInstance().getToken();
+//                tokenReference.child("device_token").setValue(deviceToken);
                 mutableData.setValue(reviewer);
                 return Transaction.success(mutableData);
             }
@@ -711,34 +788,78 @@ public class DetailedReviewActivity extends AppCompatActivity {
     private void setHeartState(Map<String, Heart> heartState) {
         if (heartState.containsKey(userUID)) {
             Heart userHeart = heartState.get(userUID);
+            Log.d("like button state", " the like button state is " + userHeart.toString());
             if (userHeart == Heart.NONE) {
-                mHeart_btn.setChecked(false);
-                mDisheart_btn.setChecked(false);
+                //mHeart_btn.setChecked(false);
+                mHeart_btn.setImageResource(R.drawable.neutral_like);
+                mHeart_btn.setTag(R.drawable.neutral_like);
+                mDisheart_btn.setImageResource(R.drawable.neutral_dislike);
+                mDisheart_btn.setTag(R.drawable.neutral_dislike);
+                isLiked = false;
+                isUnLiked = false;
             } else if (userHeart == Heart.HEARTED) {
-                mHeart_btn.setChecked(true);
-                mDisheart_btn.setChecked(false);
+                mHeart_btn.setImageResource(R.drawable.like);
+                mHeart_btn.setTag(R.drawable.like);
+                mDisheart_btn.setImageResource(R.drawable.neutral_dislike);
+                mDisheart_btn.setTag(R.drawable.neutral_dislike);
+                isLiked = true;
+                isUnLiked = false;
             } else if (userHeart == Heart.DISHEARTED) {
-                mHeart_btn.setChecked(false);
-                mDisheart_btn.setChecked(true);
+                mHeart_btn.setImageResource(R.drawable.neutral_like);
+                mHeart_btn.setTag(R.drawable.neutral_like);
+                mDisheart_btn.setImageResource(R.drawable.dislike);
+                mDisheart_btn.setTag(R.drawable.dislike);
+                isLiked = false;
+                isUnLiked = true;
             }
+        } else {
+            Log.d("liek button state"," not inside the hashmap ");
+            mHeart_btn.setImageResource(R.drawable.neutral_like);
+            mHeart_btn.setTag(R.drawable.neutral_like);
+            mDisheart_btn.setImageResource(R.drawable.neutral_dislike);
+            mDisheart_btn.setTag(R.drawable.neutral_dislike);
+            isLiked = false;
+            isUnLiked = false;
         }
     }
 
-    // Set the current state of the heart and dishearted icon
-    private void setHeartState(DataSnapshot dataSnapshot) {
-        Review review = dataSnapshot.getValue(Review.class);
-        Heart userHeart = review.getUserHeart().get(userUID);
-        if (userHeart == Heart.NONE) {
-            mHeart_btn.setChecked(false);
-            mDisheart_btn.setChecked(false);
-        } else if (userHeart == Heart.HEARTED) {
-            mHeart_btn.setChecked(true);
-            mDisheart_btn.setChecked(false);
-        } else if (userHeart == Heart.DISHEARTED) {
-            mHeart_btn.setChecked(false);
-            mDisheart_btn.setChecked(true);
+    /*
+        true = already liked
+        false = did not clicked like/ neutral about it
+     */
+    public boolean getLikeButtonState() {
+        if(isLiked) {
+            return true;
         }
+        return false;
     }
+
+/*
+    true = already disliked
+    false = did not clicked unlike/ neutral about it
+ */
+    public boolean getUnlikeButtonState() {
+        if (isUnLiked) {
+            return true;
+        }
+        return false;
+    }
+
+    // Set the current state of the heart and dishearted icon
+//    private void setHeartState(DataSnapshot dataSnapshot) {
+//        Review review = dataSnapshot.getValue(Review.class);
+//        Heart userHeart = review.getUserHeart().get(userUID);
+//        if (userHeart == Heart.NONE) {
+//            mHeart_btn.setChecked(false);
+//            mDisheart_btn.setChecked(false);
+//        } else if (userHeart == Heart.HEARTED) {
+//            mHeart_btn.setChecked(true);
+//            mDisheart_btn.setChecked(false);
+//        } else if (userHeart == Heart.DISHEARTED) {
+//            mHeart_btn.setChecked(false);
+//            mDisheart_btn.setChecked(true);
+//        }
+//    }
 
     // Set the detailed review text view, such as opinion, tips and username
     private void setTextView(String input, TextView label, TextView view) {
@@ -800,6 +921,16 @@ public class DetailedReviewActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        Log.d("bakpressed"," on back pressrd");
+        if (mChildEventListener != null) {
+            reference.removeEventListener(mChildEventListener);
+        }
+        if (mUpvoteListener != null) {
+            reference.removeEventListener(mUpvoteListener);
+        }
+        if (mDownvoteListener != null) {
+            reference.removeEventListener(mDownvoteListener);
+        }
         View v = findViewById(R.id.detailParent_layout);
         v.animate()
                 .translationY(Utils.getScreenHeight(this))
@@ -812,35 +943,36 @@ public class DetailedReviewActivity extends AppCompatActivity {
                     }
                 })
                 .start();
+        this.finish();
     }
 
 
-    // animation for upvoting the review
-    private void updateUpvoteButton(final ImageView mUpVoteImageView, final ImageView mDownVoteImageView, final TextView mUpVoteTextViewCounter, final String reviewID, final Map<String, Boolean> map, final String userID) {
+    private void animateLikeButton(final ImageView likeButton) {
 
-        int duration = 300;
+        mHeart_btn.setClickable(false);
+        mDisheart_btn.setClickable(false);
         AnimatorSet animatorSet = new AnimatorSet();
-        mUpVoteImageView.setTag(R.drawable.like);
-        mUpVoteImageView.setClickable(false);
-        mDownVoteImageView.setTag(R.drawable.dislike);
-        mDownVoteImageView.setClickable(false);
+        // set this as already liked so that user cant click again
+        //holder.likeImageView.setImageResource(R.drawable.ic_liked);
+        likeButton.setTag(R.drawable.like);
 
-        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(mUpVoteImageView, "rotation", 0f, 360f);
-        rotationAnim.setDuration(duration);
+
+        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(likeButton, "rotation", 0f, 360f);
+        rotationAnim.setDuration(300);
         rotationAnim.setInterpolator(new AccelerateInterpolator());
 
-        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(mUpVoteImageView, "scaleX", 0.2f, 1f);
-        bounceAnimX.setDuration(duration);
+        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(likeButton, "scaleX", 0.2f, 1f);
+        bounceAnimX.setDuration(300);
         bounceAnimX.setInterpolator(new OvershootInterpolator(4f));
 
-        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(mUpVoteImageView, "scaleY", 0.2f, 1f);
-        bounceAnimY.setDuration(duration);
+        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(likeButton, "scaleY", 0.2f, 1f);
+        bounceAnimY.setDuration(300);
         bounceAnimY.setInterpolator(new OvershootInterpolator(4f));
         bounceAnimY.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                mUpVoteImageView.setImageResource(R.drawable.like);
-                mDownVoteImageView.setImageResource(R.drawable.dislike);
+                likeButton.setImageResource(R.drawable.like);
+                likeButton.setTag(R.drawable.like);
             }
         });
 
@@ -850,69 +982,48 @@ public class DetailedReviewActivity extends AppCompatActivity {
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-
-                int count = Integer.parseInt(mUpVoteTextViewCounter.getText().toString());
-                count++;
-                mUpVoteTextViewCounter.setText(String.valueOf(count));
-                DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(classUID);
-                DatabaseReference upVoteReference = reviewReference.child(reviewID);
-                upVoteReference.child(Constants.UPVOTE).setValue(count);
-                map.put(userID, true);
-                DatabaseReference mapReference = reviewReference.child(reviewID).child(Constants.MAPCHECK);
-                mapReference.setValue(map);
+                mHeart_btn.setClickable(true);
+                mDisheart_btn.setClickable(true);
             }
         });
-
         animatorSet.start();
     }
 
 
     // animation for downvoting the review
-    private void updateDownvoteButton(final ImageView mDownVoteImageView, final ImageView mUpVoteImageView, final TextView mDownVoteTextCounter, final String reviewID, final Map<String, Boolean> map, final String userID) {
-
+    private void animateUnlikeButton(final ImageView unlikeButton) {
+        mHeart_btn.setClickable(false);
+        mDisheart_btn.setClickable(false);
         int duration = 500;
         AnimatorSet animatorSet = new AnimatorSet();
-        // set this as already liked so that user cant click again
-        mUpVoteImageView.setTag(R.drawable.like);
-        mUpVoteImageView.setClickable(false);
-        mDownVoteImageView.setTag(R.drawable.dislike);
-        mDownVoteImageView.setClickable(false);
 
 
-        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(mDownVoteImageView, "rotation", 0f, 360f);
+        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(unlikeButton, "rotation", 0f, 360f);
         rotationAnim.setDuration(duration);
         rotationAnim.setInterpolator(new AccelerateInterpolator());
 
-        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(mDownVoteImageView, "scaleX", 0.2f, 1f);
+        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(unlikeButton, "scaleX", 0.2f, 1f);
         bounceAnimX.setDuration(duration);
         bounceAnimX.setInterpolator(new OvershootInterpolator(4f));
 
-        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(mDownVoteImageView, "scaleY", 0.2f, 1f);
+        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(unlikeButton, "scaleY", 0.2f, 1f);
         bounceAnimY.setDuration(duration);
         bounceAnimY.setInterpolator(new OvershootInterpolator(4f));
         bounceAnimY.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                mDownVoteImageView.setImageResource(R.drawable.dislike);
-                mUpVoteImageView.setImageResource(R.drawable.like);
+                unlikeButton.setImageResource(R.drawable.dislike);
+                unlikeButton.setTag(R.drawable.dislike);
             }
         });
 
         animatorSet.play(rotationAnim);
         animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
-
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                int count = Integer.parseInt(mDownVoteTextCounter.getText().toString());
-                count++;
-                mDownVoteTextCounter.setText(String.valueOf(count));
-                DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(classUID);
-                DatabaseReference downVoteReference = reviewReference.child(reviewID);
-                downVoteReference.child(Constants.DOWNVOTE).setValue(count);
-                map.put(userID, false);
-                DatabaseReference mapReference = reviewReference.child(reviewID).child(Constants.MAPCHECK);
-                mapReference.setValue(map);
+                mHeart_btn.setClickable(true);
+                mDisheart_btn.setClickable(true);
             }
         });
 

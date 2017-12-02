@@ -31,12 +31,16 @@ import com.example.ezclassapp.Activities.Constants;
 import com.example.ezclassapp.Activities.DetailedReviewActivity;
 import com.example.ezclassapp.Activities.SubmitReview;
 import com.example.ezclassapp.Models.Review;
+import com.example.ezclassapp.Models.User;
 import com.example.ezclassapp.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +75,8 @@ public class ReviewListFragment extends Fragment {
     private boolean isSortByDate;
     private boolean isSortByLikes;
     private CoordinatorLayout coordinatorLayout;
+    private boolean isAdmin;
+    private  ItemTouchHelper.SimpleCallback simpleCallback;
 
     /**
      * Use this factory method to create a new instance of
@@ -246,6 +252,28 @@ public class ReviewListFragment extends Fragment {
             isSortByDate = args.getBoolean(ARG_PARAM4);
         }
         reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(mCourseId);
+        DatabaseReference userReference = FirebaseDatabase.getInstance().getReference().child(Constants.USER).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot == null) {
+                    return;
+                }
+                User user = dataSnapshot.getValue(User.class);
+                isAdmin = user.isAdmin();
+                Log.d("user admin" , " the user is Admin boolean is " + isAdmin);
+                if(isAdmin) {
+                    ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+                    itemTouchHelper.attachToRecyclerView(ReviewRecyclerView);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         ReviewRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_review);
         changeFilter(isSortByDate);
         mFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.floating_actionBtn);
@@ -258,7 +286,7 @@ public class ReviewListFragment extends Fragment {
                 startActivity(SubmitReviewIntent);
             }
         });
-        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
@@ -266,6 +294,9 @@ public class ReviewListFragment extends Fragment {
 
             @Override
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
+                if(!isAdmin) {
+                    return;
+                }
                 final int position = viewHolder.getAdapterPosition(); //get position which is swipe
 
                 if (direction == ItemTouchHelper.LEFT) {    //if swipe left
@@ -307,9 +338,6 @@ public class ReviewListFragment extends Fragment {
             }
 
         };
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(ReviewRecyclerView);
-
         startIntroAnimation();
 
         /*
