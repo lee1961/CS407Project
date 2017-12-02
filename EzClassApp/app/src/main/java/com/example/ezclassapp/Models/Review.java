@@ -25,7 +25,6 @@ public class Review {
     private Map<String, Boolean> checkUserVoted;
     private Map<String, Heart> userHeart;
     private boolean postAnon;
-
     public Review() {
         this.commentUID = new ArrayList<>();
         this.checkUserVoted = new HashMap<>();
@@ -64,6 +63,7 @@ public class Review {
         this.checkUserVoted = new HashMap<>();
         this.userHeart = new HashMap<>();
     }
+
 
     public Map<String, Heart> getUserHeart() {
         return userHeart;

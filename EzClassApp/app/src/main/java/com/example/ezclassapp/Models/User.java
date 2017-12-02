@@ -23,7 +23,6 @@ public class User implements Parcelable {
     public String getDevice_token() {
         return this.device_token;
     }
-
     public User() {
 
     }

@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -34,6 +36,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.ezclassapp.Adapters.DetailedCommentsAdapter;
@@ -42,12 +45,15 @@ import com.example.ezclassapp.Fragments.ReviewListFragment;
 import com.example.ezclassapp.Helpers.StringImageConverter;
 import com.example.ezclassapp.Models.Comment;
 import com.example.ezclassapp.Models.Heart;
+import com.example.ezclassapp.Models.Report;
 import com.example.ezclassapp.Models.Review;
 import com.example.ezclassapp.Models.User;
 import com.example.ezclassapp.Models.Utils;
 import com.example.ezclassapp.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -129,6 +135,14 @@ public class DetailedReviewActivity extends AppCompatActivity {
         }
     }
 
+    //insert a report menu in the tool bar to report a user
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.report_menu, menu);
+        return true;
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -193,6 +207,7 @@ public class DetailedReviewActivity extends AppCompatActivity {
         }
     }
 
+
     private void startIntroAnimation() {
         final View v = findViewById(R.id.detailParent_layout);
         v.setScaleY(0.1f);
@@ -243,9 +258,59 @@ public class DetailedReviewActivity extends AppCompatActivity {
             case android.R.id.home:
                 finish();
                 return true;
+            case R.id.menu_item_report:
+                reportReview();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    //report review
+    private void reportReview() {
+        //DatabaseReference reportReference = reference.child("Report").child(Constants.USER_UID);
+        //Report report = new Report(Constants.USER_UID);
+        DatabaseReference reviewReference = reference.child(Constants.REVIEW).child(classUID).child(reviewUID);
+        reviewReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Review review = dataSnapshot.getValue(Review.class);
+                storeReport(review);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    //store the report to database
+    private void storeReport(Review review) {
+        //DatabaseReference reportReference = reference.child("Report").child(userUID);
+        String reviewID = review.getID();
+        String opinion = review.getOpinion();
+        String reviewUID = review.getForeignID_userID();
+        String classID = review.getForeignID_classID();
+
+        Report report = new Report(userUID);
+
+        report.setReview(opinion);
+        report.setReviewID(reviewID);
+        report.setReviewUID(reviewUID);
+        report.setClassID(classID);
+
+        DatabaseReference reportReference = reference.child("Report").child(userUID).child(reviewUID);
+        reportReference.setValue(report).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    Toast.makeText(DetailedReviewActivity.this, "Report successfully", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(DetailedReviewActivity.this, "Report failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     // Initialize the FAB to create comments
