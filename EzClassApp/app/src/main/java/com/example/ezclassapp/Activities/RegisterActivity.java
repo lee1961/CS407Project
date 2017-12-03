@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -40,6 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
 
     private FirebaseAuth mAuth;
+    private DatabaseReference mUserDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_register);
 
-
+        mUserDatabase = FirebaseDatabase.getInstance().getReference().child(Constants.USER);
         mToolbar = (Toolbar) findViewById(R.id.login_toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("Create your Account");
@@ -89,7 +91,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
-                    String uid = current_user.getUid();
+                    final String uid = current_user.getUid();
                     mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
                     /*HashMap<String,String> userMap = new HashMap<String, String>();
                     userMap.put("name",display_name);
@@ -102,6 +104,9 @@ public class RegisterActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 mRegProgress.dismiss();
+                                //String current_user_id = mAuth.getCurrentUser().getUid();
+                                String deviceToken = FirebaseInstanceId.getInstance().getToken();
+                                mUserDatabase.child(uid).child("device_token").setValue(deviceToken);
                                 Intent mainIntent = new Intent(RegisterActivity.this, MainActivity.class);
                                 startActivity(mainIntent);
                                 finish();
