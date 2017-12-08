@@ -87,7 +87,7 @@
                     android:layout_width="@dimen/icon_width2"
                     android:layout_height="@dimen/icon_height2"
                     android:padding="@dimen/icon_padding"
-                    android:src="@drawable/neutral_dislike"/>
+                    android:src="@drawable/dislike"/>
 
                 <TextView
                     android:id="@+id/downVoteCounterTextView"
@@ -110,7 +110,7 @@
                     android:layout_width="@dimen/icon_width2"
                     android:layout_height="@dimen/icon_height2"
                     android:padding="@dimen/icon_padding"
-                    android:src="@drawable/neutral_like"/>
+                    android:src="@drawable/like"/>
 
                 <TextView
                     android:id="@+id/upVoteCounterTextView"

@@ -409,49 +409,49 @@ public class ReviewListFragment extends Fragment {
                         }
 
                         viewHolder.mUpVoteTextViewCounter.setText(String.valueOf(review.getUpvote()));
-                        viewHolder.mUpVoteImageView.setTag(R.drawable.neutral_like);
-                        viewHolder.mUpVoteImageView.setImageResource(R.drawable.neutral_like);
+//                        viewHolder.mUpVoteImageView.setTag(R.drawable.neutral_like);
+//                        viewHolder.mUpVoteImageView.setImageResource(R.drawable.neutral_like);
 
                         viewHolder.setReviewUID(getRef(position).getKey());
                         viewHolder.setReviewClassUID(mCourseId);
 
                         viewHolder.mDownVoteTextViewCounter.setText(String.valueOf(review.getDownvote()));
-                        viewHolder.mDownVoteImageView.setTag(R.drawable.neutral_dislike);
-                        viewHolder.mDownVoteImageView.setImageResource(R.drawable.neutral_dislike);
+//                        viewHolder.mDownVoteImageView.setTag(R.drawable.neutral_dislike);
+//                        viewHolder.mDownVoteImageView.setImageResource(R.drawable.neutral_dislike);
 
                         final String reviewID = review.getID();
                         final Map<String, Boolean> map = review.getCheckUserVoted();
                         final String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-                        if (map.containsKey(userID)) {
-                            viewHolder.mUpVoteImageView.setTag(R.drawable.like);
-                            viewHolder.mUpVoteImageView.setImageResource(R.drawable.like);
-                            viewHolder.mDownVoteImageView.setTag(R.drawable.dislike);
-                            viewHolder.mDownVoteImageView.setImageResource(R.drawable.dislike);
-                        } else {
-                            //REACHES HERE means he hasnt upvote the post yet
-                            /* WHEN THE PERSON UPVOTE THE POST */
-                            viewHolder.mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Log.d("tag", "upvoting it");
-                                    viewHolder.mUpVoteImageView.setClickable(false);
-                                    viewHolder.mDownVoteImageView.setClickable(false);
-                                    updateUpvoteButton(viewHolder, reviewID, map, userID);
-
-                                }
-                            });
-                            viewHolder.mDownVoteImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Log.d("tag", "downvoting it");
-                                    viewHolder.mDownVoteImageView.setClickable(false);
-                                    viewHolder.mUpVoteImageView.setClickable(false);
-                                    updateDownvoteButton(viewHolder, reviewID, map, userID);
-                                }
-                            });
-                            viewHolder.mIsAnimated = true;
-                        }
+//                        if (map.containsKey(userID)) {
+//                            viewHolder.mUpVoteImageView.setTag(R.drawable.like);
+//                            viewHolder.mUpVoteImageView.setImageResource(R.drawable.like);
+//                            viewHolder.mDownVoteImageView.setTag(R.drawable.dislike);
+//                            viewHolder.mDownVoteImageView.setImageResource(R.drawable.dislike);
+//                        } else {
+//                            //REACHES HERE means he hasnt upvote the post yet
+//                            /* WHEN THE PERSON UPVOTE THE POST */
+//                            viewHolder.mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v) {
+//                                    Log.d("tag", "upvoting it");
+//                                    viewHolder.mUpVoteImageView.setClickable(false);
+//                                    viewHolder.mDownVoteImageView.setClickable(false);
+//                                    updateUpvoteButton(viewHolder, reviewID, map, userID);
+//
+//                                }
+//                            });
+//                            viewHolder.mDownVoteImageView.setOnClickListener(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v) {
+//                                    Log.d("tag", "downvoting it");
+//                                    viewHolder.mDownVoteImageView.setClickable(false);
+//                                    viewHolder.mUpVoteImageView.setClickable(false);
+//                                    updateDownvoteButton(viewHolder, reviewID, map, userID);
+//                                }
+//                            });
+//                            viewHolder.mIsAnimated = true;
+//                        }
                     }
                 };
 
