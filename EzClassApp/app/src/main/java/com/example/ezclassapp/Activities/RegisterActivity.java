@@ -3,24 +3,17 @@ package com.example.ezclassapp.Activities;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.transition.Explode;
 import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.ezclassapp.Models.User;
@@ -32,8 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.HashMap;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -49,6 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
 
     private FirebaseAuth mAuth;
+    private DatabaseReference mUserDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +50,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_register);
 
-
-        mToolbar = (Toolbar)findViewById(R.id.login_toolbar);
+        mUserDatabase = FirebaseDatabase.getInstance().getReference().child(Constants.USER);
+        mToolbar = (Toolbar) findViewById(R.id.login_toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("Create your Account");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -67,10 +60,10 @@ public class RegisterActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        mDisplayName = (TextInputLayout)findViewById(R.id.reg_display_name);
-        mEmail = (TextInputLayout)findViewById(R.id.login_email);
-        mPassword = (TextInputLayout)findViewById(R.id.login_password);
-        mCreateBtn = (Button)findViewById(R.id.reg_Create_btn);
+        mDisplayName = (TextInputLayout) findViewById(R.id.reg_display_name);
+        mEmail = (TextInputLayout) findViewById(R.id.login_email);
+        mPassword = (TextInputLayout) findViewById(R.id.login_password);
+        mCreateBtn = (Button) findViewById(R.id.reg_Create_btn);
 
         mCreateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,7 +77,7 @@ public class RegisterActivity extends AppCompatActivity {
                     mRegProgress.setMessage("Please wait while we create your account!");
                     mRegProgress.setCanceledOnTouchOutside(false);
                     mRegProgress.show();
-                    register_user(display_name,email,password);
+                    register_user(display_name, email, password);
                 }
 
 
@@ -93,25 +86,45 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void register_user(final String display_name, String email, String password) {
-        mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
-                    String uid = current_user.getUid();
+                    final String uid = current_user.getUid();
+                  
+                    //send email verification
+                    current_user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(RegisterActivity.this, "Email sent", Toast.LENGTH_LONG).show();
+                                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                                finish();
+                            } else {
+                                Toast.makeText(RegisterActivity.this, "Failed to sent the email, double check your email address", Toast.LENGTH_LONG).show();
+                                startActivity(new Intent(RegisterActivity.this, StartActivity.class));
+                                finish();
+                            }
+                        }
+                    });
+
                     mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
                     /*HashMap<String,String> userMap = new HashMap<String, String>();
                     userMap.put("name",display_name);
                     userMap.put("major","Computer Science");
                     userMap.put("image","default");
                     userMap.put("thumb_image","default"); */
-                    User newUser = new User(display_name,"Computer Science","default","default");
+                    User newUser = new User(display_name, "Computer Science", "default", "default", 0, 0, false);
                     mDatabase.setValue(newUser).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 mRegProgress.dismiss();
-                                Intent mainIntent = new Intent(RegisterActivity.this,MainActivity.class);
+                                //String current_user_id = mAuth.getCurrentUser().getUid();
+                                String deviceToken = FirebaseInstanceId.getInstance().getToken();
+                                mUserDatabase.child(uid).child("device_token").setValue(deviceToken);
+                                Intent mainIntent = new Intent(RegisterActivity.this, MainActivity.class);
                                 startActivity(mainIntent);
                                 finish();
                             }
@@ -127,7 +140,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setupWindowAnimations() {
-        Log.e("anim","doing it");
+        Log.e("anim", "doing it");
         Fade fade = new Fade();
         fade.setDuration(1000000);
         getWindow().setEnterTransition(fade);
@@ -142,7 +155,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        overridePendingTransition(R.anim.slide_in,R.anim.slide_out);
+        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 
     }
 }

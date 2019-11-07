@@ -9,9 +9,10 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
-        android:layout_width="76dp"
-        android:layout_height="76dp"
+        android:layout_width="108dp"
+        android:layout_height="108dp"
         android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:padding="8dp"
         app:civ_border_color="@color/material_white"
         app:civ_border_width="2dp" />
 
@@ -28,15 +29,17 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:gravity="start"
+            android:paddingStart="8dp"
             android:text="Hello World"
             android:textColor="@color/material_white"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/header_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingStart="8dp"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:gravity="start"
             android:text="helloworld.purdue.edu"

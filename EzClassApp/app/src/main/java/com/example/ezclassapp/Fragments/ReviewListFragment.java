@@ -5,22 +5,20 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,20 +26,21 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.ezclassapp.Activities.Constants;
 import com.example.ezclassapp.Activities.DetailedReviewActivity;
 import com.example.ezclassapp.Activities.SubmitReview;
 import com.example.ezclassapp.Models.Review;
+import com.example.ezclassapp.Models.User;
 import com.example.ezclassapp.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +65,7 @@ public class ReviewListFragment extends Fragment {
     ArrayList<String> listitems = new ArrayList<>();
     FloatingActionButton mFloatingActionButton;
     Query mQueryReference;
+    LinearLayoutManager MyLayoutManager;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -75,7 +75,8 @@ public class ReviewListFragment extends Fragment {
     private boolean isSortByDate;
     private boolean isSortByLikes;
     private CoordinatorLayout coordinatorLayout;
-    LinearLayoutManager MyLayoutManager;
+    private boolean isAdmin;
+    private  ItemTouchHelper.SimpleCallback simpleCallback;
 
     /**
      * Use this factory method to create a new instance of
@@ -87,11 +88,11 @@ public class ReviewListFragment extends Fragment {
      * @param3 ReviewListCourseID
      */
     // TODO: Rename and change types and number of parameters
-    public static ReviewListFragment newInstance(String fullCourseName, String courseID, List<String> reviewListId,boolean isSortByDate) {
+    public static ReviewListFragment newInstance(String fullCourseName, String courseID, List<String> reviewListId, boolean isSortByDate) {
         final Bundle args = new Bundle();
         args.putString(ARG_PARAM1, fullCourseName);
         args.putString(ARG_PARAM2, courseID);
-        args.putBoolean(ARG_PARAM4,isSortByDate);
+        args.putBoolean(ARG_PARAM4, isSortByDate);
         if (reviewListId == null) {
             args.putStringArrayList(ARG_PARAM3, new ArrayList<String>());
         } else {
@@ -104,7 +105,6 @@ public class ReviewListFragment extends Fragment {
 
     // animation for upvoting the review
     private static void updateUpvoteButton(final ReviewViewHolder holder, final String reviewID, final Map<String, Boolean> map, final String userID) {
-
 
         int duration = 300;
         AnimatorSet animatorSet = new AnimatorSet();
@@ -134,7 +134,6 @@ public class ReviewListFragment extends Fragment {
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-
                 int count = Integer.parseInt(holder.mUpVoteTextViewCounter.getText().toString());
                 count++;
                 DatabaseReference upVoteReference = reviewReference.child(reviewID);
@@ -147,7 +146,6 @@ public class ReviewListFragment extends Fragment {
 
         animatorSet.start();
     }
-
 
     // animation for downvoting the review
     private static void updateDownvoteButton(final ReviewViewHolder holder, final String reviewID, final Map<String, Boolean> map, final String userID) {
@@ -202,19 +200,20 @@ public class ReviewListFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         mFragment = this;
+        setHasOptionsMenu(true);
     }
 
     /*
         how the filter works
      */
     public void changeFilter(boolean sortByDate) {
-        Log.d("sorting" , " sorting value changed to " + sortByDate);
+        Log.d("sorting", " sorting value changed to " + sortByDate);
         ReviewRecyclerView.setHasFixedSize(true);
         MyLayoutManager = new LinearLayoutManager(getActivity());
         MyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         MyLayoutManager.setReverseLayout(true);
         MyLayoutManager.setStackFromEnd(true);
-        if(!sortByDate) {
+        if (!sortByDate) {
             //if u want it sort by number of likes
             mQueryReference = reviewReference.orderByChild("upvote");
         } else {
@@ -253,6 +252,28 @@ public class ReviewListFragment extends Fragment {
             isSortByDate = args.getBoolean(ARG_PARAM4);
         }
         reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(mCourseId);
+        DatabaseReference userReference = FirebaseDatabase.getInstance().getReference().child(Constants.USER).child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot == null) {
+                    return;
+                }
+                User user = dataSnapshot.getValue(User.class);
+                isAdmin = user.isAdmin();
+                Log.d("user admin" , " the user is Admin boolean is " + isAdmin);
+                if(isAdmin) {
+                    ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+                    itemTouchHelper.attachToRecyclerView(ReviewRecyclerView);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         ReviewRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView_review);
         changeFilter(isSortByDate);
         mFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.floating_actionBtn);
@@ -265,15 +286,17 @@ public class ReviewListFragment extends Fragment {
                 startActivity(SubmitReviewIntent);
             }
         });
-        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT) {
+        simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
             }
 
-
             @Override
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
+                if(!isAdmin) {
+                    return;
+                }
                 final int position = viewHolder.getAdapterPosition(); //get position which is swipe
 
                 if (direction == ItemTouchHelper.LEFT) {    //if swipe left
@@ -297,7 +320,7 @@ public class ReviewListFragment extends Fragment {
                              */
                             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                             Review toBeDeletedReview = mReviewViewHolderFirebaseRecyclerAdapter.getItem(viewHolder.getAdapterPosition());
-                            Log.d("remove","removing review by " + toBeDeletedReview.getReviewerName() + " and the reviewID is " + toBeDeletedReview.getID());
+                            Log.d("remove", "removing review by " + toBeDeletedReview.getReviewerName() + " and the reviewID is " + toBeDeletedReview.getID());
                             databaseReference.child(Constants.REVIEW).child(toBeDeletedReview.getForeignID_classID()).child(toBeDeletedReview.getID()).removeValue();
                             mReviewViewHolderFirebaseRecyclerAdapter.notifyDataSetChanged();
                             return;
@@ -305,7 +328,7 @@ public class ReviewListFragment extends Fragment {
                     }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {  //not removing items if cancel is done
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Log.d("cancel","cancel deleting");
+                            Log.d("cancel", "cancel deleting");
                             mReviewViewHolderFirebaseRecyclerAdapter.notifyDataSetChanged();
                             //ReviewRecyclerView.scrollToPosition(viewHolder.getAdapterPosition());
                             return;
@@ -315,9 +338,6 @@ public class ReviewListFragment extends Fragment {
             }
 
         };
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(ReviewRecyclerView);
-
         startIntroAnimation();
 
         /*
@@ -354,8 +374,8 @@ public class ReviewListFragment extends Fragment {
                     @Override
                     protected void populateViewHolder(final ReviewViewHolder viewHolder, Review review, int position) {
                         final DatabaseReference reviewReference = FirebaseDatabase.getInstance().getReference().child(Constants.REVIEW).child(mCourseId);
-                        if(review.getOpinion().length() > 60) {
-                            viewHolder.mReviewtitleTextView.setText(review.getOpinion().toString().substring(0,60) + "....");
+                        if (review.getOpinion().length() > 60) {
+                            viewHolder.mReviewtitleTextView.setText(review.getOpinion().toString().substring(0, 60) + "....");
                         } else {
                             viewHolder.mReviewtitleTextView.setText(review.getOpinion());
                         }
@@ -365,69 +385,73 @@ public class ReviewListFragment extends Fragment {
                             public void onClick(View v) {
                                 try {
                                     if (viewHolder.getReviewUID() != null) {
-                                        Log.d("review_list",viewHolder.getReviewUID());
+                                        Log.d("review_list", viewHolder.getReviewUID());
                                     } else {
                                         Log.d("review_list", "reviewUID is null");
                                     }
                                     //Get location on screen for tapped view
                                     int[] startingLocation = new int[2];
                                     v.getLocationOnScreen(startingLocation);
-                                    Intent detailedReview = DetailedReviewActivity.newInstance(mFragment, viewHolder.getReviewClassUID(),viewHolder.getReviewUID(),startingLocation[1]);
+                                    Intent detailedReview = DetailedReviewActivity.newInstance(mFragment, viewHolder.getReviewClassUID(), viewHolder.getReviewUID(), startingLocation[1]);
                                     mFragment.getActivity().startActivity(detailedReview);
-                                    getActivity().overridePendingTransition(0,0);
+                                    getActivity().overridePendingTransition(0, 0);
                                 } catch (IllegalAccessException e) {
                                     e.printStackTrace();
                                 }
                             }
                         });
 
-
-                        viewHolder.mReviewerName.setText(review.getReviewerName());
+                        if (review.isPostAnon()) {
+                            String anonymous = "Anonymous";
+                            viewHolder.mReviewerName.setText(anonymous);
+                        } else {
+                            viewHolder.mReviewerName.setText(review.getReviewerName());
+                        }
 
                         viewHolder.mUpVoteTextViewCounter.setText(String.valueOf(review.getUpvote()));
-                        viewHolder.mUpVoteImageView.setTag(R.drawable.neutral_like);
-                        viewHolder.mUpVoteImageView.setImageResource(R.drawable.neutral_like);
+//                        viewHolder.mUpVoteImageView.setTag(R.drawable.neutral_like);
+//                        viewHolder.mUpVoteImageView.setImageResource(R.drawable.neutral_like);
 
                         viewHolder.setReviewUID(getRef(position).getKey());
                         viewHolder.setReviewClassUID(mCourseId);
 
                         viewHolder.mDownVoteTextViewCounter.setText(String.valueOf(review.getDownvote()));
-                        viewHolder.mDownVoteImageView.setTag(R.drawable.neutral_dislike);
-                        viewHolder.mDownVoteImageView.setImageResource(R.drawable.neutral_dislike);
+//                        viewHolder.mDownVoteImageView.setTag(R.drawable.neutral_dislike);
+//                        viewHolder.mDownVoteImageView.setImageResource(R.drawable.neutral_dislike);
 
                         final String reviewID = review.getID();
                         final Map<String, Boolean> map = review.getCheckUserVoted();
                         final String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-                        if (map.containsKey(userID)) {
-                            viewHolder.mUpVoteImageView.setTag(R.drawable.like);
-                            viewHolder.mUpVoteImageView.setImageResource(R.drawable.like);
-                            viewHolder.mDownVoteImageView.setTag(R.drawable.dislike);
-                            viewHolder.mDownVoteImageView.setImageResource(R.drawable.dislike);
-                        } else {
-                            //REACHES HERE means he hasnt upvote the post yet
-                            /* WHEN THE PERSON UPVOTE THE POST */
-                            viewHolder.mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Log.d("tag", "upvoting it");
-                                    viewHolder.mUpVoteImageView.setClickable(false);
-                                    viewHolder.mDownVoteImageView.setClickable(false);
-                                    updateUpvoteButton(viewHolder, reviewID, map, userID);
-
-                                }
-                            });
-                            viewHolder.mDownVoteImageView.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Log.d("tag", "downvoting it");
-                                    viewHolder.mDownVoteImageView.setClickable(false);
-                                    viewHolder.mUpVoteImageView.setClickable(false);
-                                    updateDownvoteButton(viewHolder, reviewID, map, userID);
-                                }
-                            });
-                            viewHolder.mIsAnimated = true;
-                        }
+//                        if (map.containsKey(userID)) {
+//                            viewHolder.mUpVoteImageView.setTag(R.drawable.like);
+//                            viewHolder.mUpVoteImageView.setImageResource(R.drawable.like);
+//                            viewHolder.mDownVoteImageView.setTag(R.drawable.dislike);
+//                            viewHolder.mDownVoteImageView.setImageResource(R.drawable.dislike);
+//                        } else {
+//                            //REACHES HERE means he hasnt upvote the post yet
+//                            /* WHEN THE PERSON UPVOTE THE POST */
+//                            viewHolder.mUpVoteImageView.setOnClickListener(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v) {
+//                                    Log.d("tag", "upvoting it");
+//                                    viewHolder.mUpVoteImageView.setClickable(false);
+//                                    viewHolder.mDownVoteImageView.setClickable(false);
+//                                    updateUpvoteButton(viewHolder, reviewID, map, userID);
+//
+//                                }
+//                            });
+//                            viewHolder.mDownVoteImageView.setOnClickListener(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v) {
+//                                    Log.d("tag", "downvoting it");
+//                                    viewHolder.mDownVoteImageView.setClickable(false);
+//                                    viewHolder.mUpVoteImageView.setClickable(false);
+//                                    updateDownvoteButton(viewHolder, reviewID, map, userID);
+//                                }
+//                            });
+//                            viewHolder.mIsAnimated = true;
+//                        }
                     }
                 };
 

@@ -1,5 +1,6 @@
 package com.example.ezclassapp.Models;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,13 +23,16 @@ public class Review {
     private String review;
     private List<String> commentUID;
     private Map<String, Boolean> checkUserVoted;
-
+    private Map<String, Heart> userHeart;
+    private boolean postAnon;
     public Review() {
-
+        this.commentUID = new ArrayList<>();
+        this.checkUserVoted = new HashMap<>();
+        this.userHeart = new HashMap<>();
     }
 
-    public Review(String ID, String reviewerName, String foreignID_classID, String opinion,String foreignID_userID,
-                  String review,int difficulty,int usefulness) {
+    public Review(String ID, String reviewerName, String foreignID_classID, String opinion, String foreignID_userID,
+                  String review, int difficulty, int usefulness) {
         this.ID = ID;
         this.reviewerName = reviewerName;
         this.foreignID_classID = foreignID_classID;
@@ -39,7 +43,42 @@ public class Review {
         this.tips = review;
         this.difficulty = difficulty;
         this.usefulness = usefulness;
+        this.commentUID = new ArrayList<>();
+        this.checkUserVoted = new HashMap<>();
+        this.userHeart = new HashMap<>();
+    }
 
+    public Review(String ID, String reviewerName, String foreignID_classID, String foreignID_userID,
+                  String opinion, String tips, int difficulty, int usefulness, boolean postAnon) {
+        this.ID = ID;
+        this.reviewerName = reviewerName;
+        this.foreignID_classID = foreignID_classID;
+        this.foreignID_userID = foreignID_userID;
+        this.opinion = opinion;
+        this.tips = tips;
+        this.difficulty = difficulty;
+        this.usefulness = usefulness;
+        this.postAnon = postAnon;
+        this.commentUID = new ArrayList<>();
+        this.checkUserVoted = new HashMap<>();
+        this.userHeart = new HashMap<>();
+    }
+
+
+    public Map<String, Heart> getUserHeart() {
+        return userHeart;
+    }
+
+    public void setUserHeart(Map<String, Heart> userHeart) {
+        this.userHeart = userHeart;
+    }
+
+    public boolean isPostAnon() {
+        return postAnon;
+    }
+
+    public void setPostAnon(boolean postAnon) {
+        this.postAnon = postAnon;
     }
 
     public String getReviewerName() {
@@ -138,6 +177,14 @@ public class Review {
         this.checkUserVoted = checkUserVoted;
     }
 
+    public String getReview() {
+        return review;
+    }
+
+    public void setReview(String review) {
+        this.review = review;
+    }
+
     @Override
     public String toString() {
         return "Review{" +
@@ -151,15 +198,11 @@ public class Review {
                 ", usefulness=" + usefulness +
                 ", upvote=" + upvote +
                 ", downvote=" + downvote +
+                ", review='" + review + '\'' +
                 ", commentUID=" + commentUID +
                 ", checkUserVoted=" + checkUserVoted +
+                ", userHeart=" + userHeart +
+                ", postAnon=" + postAnon +
                 '}';
-    }
-    public void setReview(String review) {
-        this.review = review;
-    }
-
-    public String getReview() {
-        return review;
     }
 }
